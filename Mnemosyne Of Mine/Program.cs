@@ -50,7 +50,7 @@ namespace Mnemosyne_Of_Mine
                     reader.ReadToFollowing("Password");
                     Password = reader.ReadElementContentAsString();
                     reader.ReadToFollowing("flavortext");
-                    flavortext = reader.ReadElementContentAsString().Split('\"');
+                    flavortext = reader.ReadElementContentAsString().Split('\"'); // split by a ", because commas
                 }
             }
             else
@@ -73,7 +73,7 @@ namespace Mnemosyne_Of_Mine
                 Console.WriteLine("Type in your password");
                 Password = Console.ReadLine();
             }
-            reddit.LogIn(Username, Password);
+            reddit.LogIn(Username, Password); //log in
             bool isMnemosyneThereAlready = false;
             string[] repliedTo = File.ReadAllLines(@".\Replied_To.txt");
             var repliedList = repliedTo.ToList();
