@@ -167,6 +167,9 @@ namespace Mnemosyne_Of_Mine
                     writer.WriteStartElement("Password");
                     writer.WriteString(password);
                     writer.WriteEndElement();
+                    Console.WriteLine("You have to add flavortext manually after the fact, go into the config file and seperate each flavor text with a \"");
+                    writer.WriteStartElement("flavortext");
+                    writer.WriteEndElement();
                     writer.WriteEndElement();
                     writer.WriteEndDocument();
                     writer.Flush();
