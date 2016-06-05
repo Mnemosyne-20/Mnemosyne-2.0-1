@@ -8,6 +8,7 @@ using System.Xml;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using RedditSharp;
+using Newtonsoft.Json;
 namespace Mnemosyne_Of_Mine
 {
     class Program
@@ -22,7 +23,7 @@ namespace Mnemosyne_Of_Mine
             string Reqlimit;
             string Password;
             string Username;
-            var reddit = new Reddit();
+            string Oauth = null;
             Console.Title = "Mnemosyne by chugga_fan, copying off of /u/ITSigno's code as a backup";
             var exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com)");
             string d_head = "Archive links for this discussion: \n\n";
@@ -38,19 +39,18 @@ namespace Mnemosyne_Of_Mine
                     reader.ReadToFollowing("Settings");
                     reader.ReadToFollowing("subreddit");
                     subreddit = reader.ReadElementContentAsString();
-                    Console.WriteLine(subreddit);
                     reader.ReadToFollowing("ReqLimit");
                     Reqlimit = reader.ReadElementContentAsString();
-                    Console.WriteLine(Reqlimit);
                     reader.ReadToFollowing("SleepTime");
                     sleepCount = reader.ReadElementContentAsInt();
-                    Console.WriteLine(sleepCount);
                     reader.ReadToFollowing("Username");
                     Username = reader.ReadElementContentAsString();
                     reader.ReadToFollowing("Password");
                     Password = reader.ReadElementContentAsString();
                     reader.ReadToFollowing("flavortext");
                     flavortext = reader.ReadElementContentAsString().Split('\"'); // split by a ", because commas
+                    //reader.ReadToFollowing("Oauth");
+                    //Oauth = reader.ReadElementContentAsString();
                 }
             }
             else
@@ -59,6 +59,23 @@ namespace Mnemosyne_Of_Mine
                 createNewPath();
                 goto helper;
             }
+            if (Password == "Y")
+            {
+                Console.WriteLine("Type in your password");
+                Password = Console.ReadLine();
+            }
+            Reddit reddit = null;
+            if (Oauth != null)
+                reddit = new Reddit(Oauth);
+            else
+            {
+                reddit = new Reddit(WebAgent.RateLimitMode.Pace);
+                reddit.LogIn(Username, Password);
+            }
+            reddit.InitOrUpdateUser();
+            bool authenticated = reddit.User != null;
+            if (!authenticated)
+                Console.WriteLine("Invalid token");
             var sub = reddit.GetSubreddit(subreddit);
             if (!File.Exists(@".\Replied_To.txt"))
             {
@@ -68,12 +85,6 @@ namespace Mnemosyne_Of_Mine
             {
                 File.Create(@".\Failed.txt").Dispose();
             }
-            if(Password == "Y")
-            {
-                Console.WriteLine("Type in your password");
-                Password = Console.ReadLine();
-            }
-            reddit.LogIn(Username, Password); //log in
             bool isMnemosyneThereAlready = false;
             string[] repliedTo = File.ReadAllLines(@".\Replied_To.txt");
             var repliedList = repliedTo.ToList();
@@ -94,6 +105,7 @@ namespace Mnemosyne_Of_Mine
                                 isMnemosyneThereAlready = true; // check for the other bot, will add option for more later TODO: check other bot
                                 break;
                             }
+                            System.Threading.Thread.Sleep(2000);
                         }
                         if (isMnemosyneThereAlready == true|| repliedList.Contains(post.Id))
                         {
@@ -101,9 +113,9 @@ namespace Mnemosyne_Of_Mine
                         }
                         archiveURL = Archive(@"archive.is", post.Url.ToString());
                         Console.WriteLine(archiveURL);
-                        repliedList.Add(post.Id + '\n');
+                        repliedList.Add(post.Id);
                         File.WriteAllLines(@".\Replied_To.txt", repliedList.ToArray());
-                        if (archiveURL == null)
+                        if (archiveURL == null || archiveURL == "http://archive.is/submit/")
                         {
                             File.AppendAllText(@".\Failed.txt", "Failed to archive: " + post.Permalink + "\nurl: " + archiveURL + "\n");
                             continue;
@@ -111,17 +123,17 @@ namespace Mnemosyne_Of_Mine
                         // logic for which header needs to be posted
                         string head = post.IsSelfPost ? d_head : p_head;
                         string c = head + "* **Archive** " + archiveURL + "\n\n" + footer + flavortext[random.Next(0,flavortext.Length - 1)] + botsrights;
-                        //post.Comment(c);
+                        System.Threading.Thread.Sleep(2000);
+                        post.Comment(c);
                         Console.WriteLine(c);
-                        Console.ReadLine();
-                        break;
+                        System.Threading.Thread.Sleep(sleepCount);
                     }
-                    break;
                 }
                 catch (Exception e)
-                {
+                { 
                     File.AppendAllText(@".\Errors.txt", "Error: " + e.Message + "\n" + e.StackTrace + '\n');
                 }
+                System.Threading.Thread.Sleep(sleepCount);
             }
 
         }
@@ -170,6 +182,11 @@ namespace Mnemosyne_Of_Mine
                     Console.WriteLine("You have to add flavortext manually after the fact, go into the config file and seperate each flavor text with a \"");
                     writer.WriteStartElement("flavortext");
                     writer.WriteEndElement();
+                    Console.WriteLine("What's your Oauth token?");
+                    string oAuth = Console.ReadLine();
+                    writer.WriteStartElement("Oauth");
+                    writer.WriteString(oAuth);
+                    writer.WriteEndElement();
                     writer.WriteEndElement();
                     writer.WriteEndDocument();
                     writer.Flush();
@@ -191,7 +208,9 @@ namespace Mnemosyne_Of_Mine
         static string Archive(string serviceURL, string url)
         {
             string archiveURL = null;
-            using (var client = new HttpClient())
+            HttpClientHandler handle = new HttpClientHandler();
+            handle.AllowAutoRedirect = true;
+            using (var client = new HttpClient(handle))
             {
                 var values = new Dictionary<string, string>
                 {
@@ -204,7 +223,21 @@ namespace Mnemosyne_Of_Mine
                 /// </summary>
                 var response = client.PostAsync(serviceURL, content);
                 var loc = response.Result;
+                client.Dispose();
                 archiveURL = loc.RequestMessage.RequestUri.ToString();
+                if (archiveURL == "http://archive.is/submit/")
+                {
+                    Console.WriteLine(archiveURL);
+                    StringReader reader = new StringReader(loc.ToString());
+                    for(int i = 0; i < 3; i++)
+                        reader.ReadLine();
+                    string wanted = reader.ReadLine();
+                    string[] sides = wanted.Split('=');
+                    Console.WriteLine(sides[1]);
+                    archiveURL = sides[1];
+                    Console.WriteLine(loc);
+                    Console.ReadLine();
+                }
             }
             return archiveURL;
         }
