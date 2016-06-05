@@ -48,7 +48,7 @@ namespace Mnemosyne_Of_Mine
                     reader.ReadToFollowing("Password");
                     Password = reader.ReadElementContentAsString();
                     reader.ReadToFollowing("flavortext");
-                    flavortext = reader.ReadElementContentAsString().Split('\"'); // split by a ", because commas
+                    flavortext = reader.ReadElementContentAsString().Split('\"'); // split by a " because commas
                     //reader.ReadToFollowing("Oauth");
                     //Oauth = reader.ReadElementContentAsString();
                 }
@@ -102,12 +102,12 @@ namespace Mnemosyne_Of_Mine
                         {
                             if (comment.Author == "mnemosyne-0001")
                             {
-                                isMnemosyneThereAlready = true; // check for the other bot, will add option for more later TODO: check other bot
+                                isMnemosyneThereAlready = true; // check for the other bot, will add option for more later TODO: check other bots, inc, self
                                 break;
                             }
                             System.Threading.Thread.Sleep(2000);
                         }
-                        if (isMnemosyneThereAlready == true|| repliedList.Contains(post.Id))
+                        if (isMnemosyneThereAlready == true || repliedList.Contains(post.Id))
                         {
                             continue;
                         }
@@ -122,18 +122,19 @@ namespace Mnemosyne_Of_Mine
                         }
                         // logic for which header needs to be posted
                         string head = post.IsSelfPost ? d_head : p_head;
-                        string c = head + "* **Archive** " + archiveURL + "\n\n" + footer + flavortext[random.Next(0,flavortext.Length - 1)] + botsrights;
-                        System.Threading.Thread.Sleep(2000);
+                        string c = head + "* **Archive** " + archiveURL + "\n\n" + footer + flavortext[random.Next(0, flavortext.Length - 1)] + botsrights;
+                        Console.WriteLine("waiting");
+                        System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
                         post.Comment(c);
                         Console.WriteLine(c);
-                        System.Threading.Thread.Sleep(sleepCount);
                     }
                 }
                 catch (Exception e)
                 { 
                     File.AppendAllText(@".\Errors.txt", "Error: " + e.Message + "\n" + e.StackTrace + '\n');
                 }
-                System.Threading.Thread.Sleep(sleepCount);
+                Console.WriteLine("waiting for next batch");
+                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(sleepCount));
             }
 
         }
@@ -218,6 +219,7 @@ namespace Mnemosyne_Of_Mine
                 };
                 var content = new FormUrlEncodedContent(values);
                 serviceURL = "http://" + serviceURL + "/submit/";
+                Console.WriteLine("Damnit");
                 /// <summary>
                 /// This puts a request to the archive site, so yhea...
                 /// </summary>
