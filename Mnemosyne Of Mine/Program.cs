@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Xml;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using RedditSharp;
-using Newtonsoft.Json;
 using System.Data.SqlClient;
 namespace Mnemosyne_Of_Mine
 {
@@ -26,40 +23,34 @@ namespace Mnemosyne_Of_Mine
             string Username;
             string Oauth = null;
             Console.Title = "Mnemosyne by chugga_fan, copying off of /u/ITSigno's code as a backup";
-            var exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com)");
+            var exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be)");
             string d_head = "Archive links for this discussion: \n\n";
             string p_head = "Archive links for this post: \n\n";
             string footer = "----\n\nI am Mnemosyne 2.0, ";
             string botsrights = "^^^^/r/botsrights";
-            helper:
-            ;
-            if (File.Exists(@".\config.xml"))
-            {
-                using (XmlReader reader = XmlReader.Create(new StringReader(File.ReadAllText(@".\config.xml"))))
-                {
-                    reader.ReadToFollowing("Settings");
-                    reader.ReadToFollowing("subreddit");
-                    subreddit = reader.ReadElementContentAsString();
-                    reader.ReadToFollowing("ReqLimit");
-                    Reqlimit = reader.ReadElementContentAsString();
-                    reader.ReadToFollowing("SleepTime");
-                    sleepCount = reader.ReadElementContentAsInt();
-                    reader.ReadToFollowing("Username");
-                    Username = reader.ReadElementContentAsString();
-                    reader.ReadToFollowing("Password");
-                    Password = reader.ReadElementContentAsString();
-                    reader.ReadToFollowing("flavortext");
-                    flavortext = reader.ReadElementContentAsString().Split('\"'); // split by a " because commas
-                    //reader.ReadToFollowing("Oauth");
-                    //Oauth = reader.ReadElementContentAsString();
-                }
-            }
-            else
+            if(!File.Exists(@".\config.xml"))
             {
                 Console.WriteLine("File doesn't exist, let's setup a config file");
                 createNewPath();
-                goto helper;
             }
+            using (XmlReader reader = XmlReader.Create(new StringReader(File.ReadAllText(@".\config.xml"))))
+            {
+                reader.ReadToFollowing("Settings");
+                reader.ReadToFollowing("subreddit");
+                subreddit = reader.ReadElementContentAsString();
+                reader.ReadToFollowing("ReqLimit");
+                Reqlimit = reader.ReadElementContentAsString();
+                reader.ReadToFollowing("SleepTime");
+                sleepCount = reader.ReadElementContentAsInt();
+                reader.ReadToFollowing("Username");
+                Username = reader.ReadElementContentAsString();
+                reader.ReadToFollowing("Password");
+                Password = reader.ReadElementContentAsString();
+                reader.ReadToFollowing("flavortext");
+                flavortext = reader.ReadElementContentAsString().Split('\"'); // split by a " because commas
+                //reader.ReadToFollowing("Oauth");
+                //Oauth = reader.ReadElementContentAsString();
+            } 
             //if(!File.Exists("D:\\RepliedToList.mdf")) //TODO: ADD THIS
             //{
             //    CreateDatabase();
@@ -72,16 +63,20 @@ namespace Mnemosyne_Of_Mine
             }
             Reddit reddit = null;
             if (Oauth != null)
+            {
                 reddit = new Reddit(Oauth);
+            }
             else
             {
                 reddit = new Reddit(WebAgent.RateLimitMode.Pace);
                 reddit.LogIn(Username, Password);
             }
             reddit.InitOrUpdateUser();
-            bool authenticated = reddit.User != null;
+            bool authenticated = (reddit.User != null);
             if (!authenticated)
+            {
                 Console.WriteLine("Invalid token");
+            }
             var sub = reddit.GetSubreddit(subreddit);
             if (!File.Exists(@".\Replied_To.txt"))
             {
@@ -115,7 +110,7 @@ namespace Mnemosyne_Of_Mine
                         }
                         if (isMnemosyneThereAlready == true || repliedList.Contains(post.Id))
                         {
-                            continue;
+                            break;
                         }
                         archiveURL = Archive(@"archive.is", post.Url.ToString());
                         Console.WriteLine(archiveURL);
@@ -128,7 +123,7 @@ namespace Mnemosyne_Of_Mine
                         }
                         // logic for which header needs to be posted
                         string head = post.IsSelfPost ? d_head : p_head;
-                        string c = head + "* **Archive** " + archiveURL + "\n\n" + footer + flavortext[random.Next(0, flavortext.Length - 1)] + botsrights;
+                        string c = head + "* **Archive** " + archiveURL + "\n\n" + footer + flavortext[random.Next(0, flavortext.Length - 1)] + botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
                         Console.WriteLine("waiting");
                         System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
                         post.Comment(c);
@@ -153,7 +148,7 @@ namespace Mnemosyne_Of_Mine
             Console.Clear();
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true; // will indent
-            settings.IndentChars = ("\t"); // tabs
+            settings.IndentChars = ("\t"); // tabs, because fuck spaces
             settings.OmitXmlDeclaration = true;
             try
             {
@@ -183,7 +178,7 @@ namespace Mnemosyne_Of_Mine
                     writer.WriteEndElement();
                     Console.WriteLine("What about password? note: this is stored in plaintext, don't actually send out in a git or type Y (just \"Y\") to not use a password in the config, and require one on startup");
                     string password = Console.ReadLine();
-                    writer.WriteStartElement("Password");
+                    writer.WriteStartElement("Password"); //Password feild, as OAuth hasn't been setup yet
                     writer.WriteString(password);
                     writer.WriteEndElement();
                     Console.WriteLine("You have to add flavortext manually after the fact, go into the config file and seperate each flavor text with a \"");
@@ -206,40 +201,40 @@ namespace Mnemosyne_Of_Mine
                 Console.ReadKey();
             }
         }
-        /// <summary>
-        /// TODO: MAKE THIS WORK
-        /// </summary>
-        static void CreateDatabase()
-        {
-            string str;
-            SqlConnection connection = new SqlConnection();
-            str = "CREATE DATABASE RepliedTo ON PRIMARY " +
-                "(NAME = RepliedTo_Data, " +
-                "FILENAME = 'D:\\RepliedToList.mdf' " +
-                "SIZE = 2MB, MAXSIZE = 10MB, FILEGROWTH = 10%) " +
-                "FILENAME = 'D:\\RepliedToLog.ldf', " +
-                "SIZE = 1MB, " +
-                "MAXSIZE = 5MB, " +
-                "FILEGROWTH = 10%)";
-            SqlCommand command = new SqlCommand(str, connection);
-            try
-            {
-                connection.Open();
-                command.ExecuteNonQuery();
-                Console.WriteLine("Database successfully created");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message + '\n' + e.StackTrace);
-            }
-            finally
-            {
-                if (connection.State == System.Data.ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
-        }
+        ///// <summary>
+        ///// TODO: MAKE THIS WORK
+        ///// </summary>
+        //static void CreateDatabase()
+        //{
+        //    string str;
+        //    SqlConnection connection = new SqlConnection();
+        //    str = "CREATE DATABASE RepliedTo ON PRIMARY " +
+        //        "(NAME = RepliedTo_Data, " +
+        //        "FILENAME = 'D:\\RepliedToList.mdf' " +
+        //        "SIZE = 2MB, MAXSIZE = 10MB, FILEGROWTH = 10%) " +
+        //        "FILENAME = 'D:\\RepliedToLog.ldf', " +
+        //        "SIZE = 1MB, " +
+        //        "MAXSIZE = 5MB, " +
+        //        "FILEGROWTH = 10%)";
+        //    SqlCommand command = new SqlCommand(str, connection);
+        //    try
+        //    {
+        //        connection.Open();
+        //        command.ExecuteNonQuery();
+        //        Console.WriteLine("Database successfully created");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e.Message + '\n' + e.StackTrace);
+        //    }
+        //    finally
+        //    {
+        //        if (connection.State == System.Data.ConnectionState.Open)
+        //        {
+        //            connection.Close();
+        //        }
+        //    }
+        //}
         /// <summary>
         /// Gets the string of the Archive, goddamn once this is finished i will have no idea how this works
         /// </summary>
@@ -265,20 +260,18 @@ namespace Mnemosyne_Of_Mine
                 /// </summary>
                 var response = client.PostAsync(serviceURL, content);
                 var loc = response.Result;
-                client.Dispose();
                 archiveURL = loc.RequestMessage.RequestUri.ToString();
                 if (archiveURL == "http://archive.is/submit/")
                 {
-                    Console.WriteLine(archiveURL);
                     StringReader reader = new StringReader(loc.ToString());
-                    for(int i = 0; i < 3; i++)
+                    for (int i = 0; i < 3; i++)
+                    {
                         reader.ReadLine();
+                    }
                     string wanted = reader.ReadLine();
                     string[] sides = wanted.Split('=');
                     Console.WriteLine(sides[1]);
                     archiveURL = sides[1];
-                    Console.WriteLine(loc);
-                    Console.ReadLine();
                 }
             }
             return archiveURL;
