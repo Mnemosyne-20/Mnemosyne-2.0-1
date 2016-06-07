@@ -13,20 +13,16 @@ namespace Mnemosyne_Of_Mine
         static void Main(string[] args)
         {
             var random = new Random();
-            string[] flavortext;
-            string subreddit;
             string archiveURL;
-            int sleepCount;
-            string Reqlimit;
-            string Password;
-            string Username;
             string Oauth = null;
             Console.Title = "Mnemosyne by chugga_fan, copying off of /u/ITSigno's code as a backup";
+            #region constants
             var exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be)");
             string d_head = "Archive links for this discussion: \n\n";
             string p_head = "Archive links for this post: \n\n";
             string footer = "----\n\nI am Mnemosyne 2.0, ";
             string botsrights = "^^^^/r/botsrights";
+            #endregion
             if(!File.Exists(@".\config.xml"))
             {
                 Console.WriteLine("File doesn't exist, let's setup a config file");
@@ -59,18 +55,12 @@ namespace Mnemosyne_Of_Mine
             {
                 Console.WriteLine("Invalid token");
             }
+            createFiles();
             var sub = reddit.GetSubreddit(ReleventInfo.SubReddit);
-            if (!File.Exists(@".\Replied_To.txt"))
-            {
-                File.Create(@".\Replied_To.txt").Dispose();
-            }
-            if (!File.Exists(@".\Failed.txt"))
-            {
-                File.Create(@".\Failed.txt").Dispose();
-            }
             bool isMnemosyneThereAlready = false;
             string[] repliedTo = File.ReadAllLines(@".\Replied_To.txt");
             var repliedList = repliedTo.ToList();
+            #region postChecking
             while (true)
             {
                 try
@@ -104,12 +94,14 @@ namespace Mnemosyne_Of_Mine
                             continue;
                         }
                         // logic for which header needs to be posted
+                        #region commentlogic
                         string head = post.IsSelfPost ? d_head : p_head;
                         string c = head + "* **Archive** " + archiveURL + "\n\n" + footer + ReleventInfo.FlavorText[random.Next(0, ReleventInfo.FlavorText.Length - 1)] + botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
                         Console.WriteLine("waiting");
                         System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
                         post.Comment(c);
                         Console.WriteLine(c);
+                        #endregion
                     }
                 }
                 catch (Exception e)
@@ -119,7 +111,22 @@ namespace Mnemosyne_Of_Mine
                 Console.WriteLine("waiting for next batch");
                 System.Threading.Thread.Sleep(TimeSpan.FromSeconds(ReleventInfo.SleepTime));
             }
+            #endregion
 
+        }
+        /// <summary>
+        /// Creates our files
+        /// </summary>
+        static void createFiles()
+        {
+            if (!File.Exists(@".\Replied_To.txt"))
+            {
+                File.Create(@".\Replied_To.txt").Dispose();
+            }
+            if (!File.Exists(@".\Failed.txt"))
+            {
+                File.Create(@".\Failed.txt").Dispose();
+            }
         }
         /// <summary>
         /// This creates a new config file at the location of .\config.xml
@@ -136,6 +143,7 @@ namespace Mnemosyne_Of_Mine
             {
                 using (writer = XmlWriter.Create(@".\config.xml", settings)) //this should be obvious
                 {
+                    #region writers
                     writer.WriteStartDocument();
                     writer.WriteStartElement("Settings");
                     Console.WriteLine("So, what is your subreddit this bot will run on?");
@@ -174,6 +182,7 @@ namespace Mnemosyne_Of_Mine
                     writer.WriteEndElement();
                     writer.WriteEndDocument();
                     writer.Flush();
+                    #endregion
                 }
             }
             catch (Exception e)
@@ -245,6 +254,7 @@ namespace Mnemosyne_Of_Mine
                 archiveURL = loc.RequestMessage.RequestUri.ToString();
                 if (archiveURL == "http://archive.is/submit/")
                 {
+                    #region fixing it
                     StringReader reader = new StringReader(loc.ToString());
                     for (int i = 0; i < 3; i++)
                     {
@@ -254,6 +264,7 @@ namespace Mnemosyne_Of_Mine
                     string[] sides = wanted.Split('=');
                     Console.WriteLine(sides[1]);
                     archiveURL = sides[1];
+                    #endregion
                 }
             }
             return archiveURL;
