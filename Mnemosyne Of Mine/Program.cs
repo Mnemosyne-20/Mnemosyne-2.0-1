@@ -6,7 +6,6 @@ using System.Xml;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using RedditSharp;
-using System.Data.SqlClient;
 namespace Mnemosyne_Of_Mine
 {
     class Program
@@ -33,32 +32,15 @@ namespace Mnemosyne_Of_Mine
                 Console.WriteLine("File doesn't exist, let's setup a config file");
                 createNewPath();
             }
-            using (XmlReader reader = XmlReader.Create(new StringReader(File.ReadAllText(@".\config.xml"))))
-            {
-                reader.ReadToFollowing("Settings");
-                reader.ReadToFollowing("subreddit");
-                subreddit = reader.ReadElementContentAsString();
-                reader.ReadToFollowing("ReqLimit");
-                Reqlimit = reader.ReadElementContentAsString();
-                reader.ReadToFollowing("SleepTime");
-                sleepCount = reader.ReadElementContentAsInt();
-                reader.ReadToFollowing("Username");
-                Username = reader.ReadElementContentAsString();
-                reader.ReadToFollowing("Password");
-                Password = reader.ReadElementContentAsString();
-                reader.ReadToFollowing("flavortext");
-                flavortext = reader.ReadElementContentAsString().Split('\"'); // split by a " because commas
-                //reader.ReadToFollowing("Oauth");
-                //Oauth = reader.ReadElementContentAsString();
-            } 
+            DataStorage ReleventInfo = new DataStorage(@".\config.xml");
             //if(!File.Exists("D:\\RepliedToList.mdf")) //TODO: ADD THIS
             //{
             //    CreateDatabase();
             //}
-            if (Password == "Y")
+            if (ReleventInfo.Password == "Y")
             {
                 Console.WriteLine("Type in your password");
-                Password = Console.ReadLine();
+                ReleventInfo.Password = Console.ReadLine();
                 Console.Clear();
             }
             Reddit reddit = null;
@@ -69,7 +51,7 @@ namespace Mnemosyne_Of_Mine
             else
             {
                 reddit = new Reddit(WebAgent.RateLimitMode.Pace);
-                reddit.LogIn(Username, Password);
+                reddit.LogIn(ReleventInfo.Username, ReleventInfo.Password);
             }
             reddit.InitOrUpdateUser();
             bool authenticated = (reddit.User != null);
@@ -77,10 +59,10 @@ namespace Mnemosyne_Of_Mine
             {
                 Console.WriteLine("Invalid token");
             }
-            var sub = reddit.GetSubreddit(subreddit);
+            var sub = reddit.GetSubreddit(ReleventInfo.SubReddit);
             if (!File.Exists(@".\Replied_To.txt"))
             {
-                File.Create(@".\Replied_To.txt");
+                File.Create(@".\Replied_To.txt").Dispose();
             }
             if (!File.Exists(@".\Failed.txt"))
             {
@@ -93,7 +75,7 @@ namespace Mnemosyne_Of_Mine
             {
                 try
                 {
-                    foreach (var post in sub.New.Take(int.Parse(Reqlimit)))
+                    foreach (var post in sub.New.Take(ReleventInfo.ReqLimit))
                     {
                         if (exclude.IsMatch(post.Url.ToString()))
                         {
@@ -123,7 +105,7 @@ namespace Mnemosyne_Of_Mine
                         }
                         // logic for which header needs to be posted
                         string head = post.IsSelfPost ? d_head : p_head;
-                        string c = head + "* **Archive** " + archiveURL + "\n\n" + footer + flavortext[random.Next(0, flavortext.Length - 1)] + botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
+                        string c = head + "* **Archive** " + archiveURL + "\n\n" + footer + ReleventInfo.FlavorText[random.Next(0, ReleventInfo.FlavorText.Length - 1)] + botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
                         Console.WriteLine("waiting");
                         System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
                         post.Comment(c);
@@ -135,7 +117,7 @@ namespace Mnemosyne_Of_Mine
                     File.AppendAllText(@".\Errors.txt", "Error: " + e.Message + "\n" + e.StackTrace + '\n');
                 }
                 Console.WriteLine("waiting for next batch");
-                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(sleepCount));
+                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(ReleventInfo.SleepTime));
             }
 
         }
@@ -236,11 +218,11 @@ namespace Mnemosyne_Of_Mine
         //    }
         //}
         /// <summary>
-        /// Gets the string of the Archive, goddamn once this is finished i will have no idea how this works
+        /// Gets the url of the Archive, goddamn once this is finished i will have no idea how this works
         /// </summary>
         /// <param name="serviceURL">Archiving service, generally archive.is</param>
         /// <param name="url">The url that we're archiving</param>
-        /// <returns>the archive string</returns>
+        /// <returns>the archive url</returns>
         static string Archive(string serviceURL, string url)
         {
             string archiveURL = null;
