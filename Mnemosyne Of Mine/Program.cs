@@ -133,7 +133,6 @@ namespace Mnemosyne_Of_Mine
         /// </summary>
         static void createNewPath()
         {
-            XmlWriter writer = null;
             Console.Clear();
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true; // will indent
@@ -141,49 +140,7 @@ namespace Mnemosyne_Of_Mine
             settings.OmitXmlDeclaration = true;
             try
             {
-                using (writer = XmlWriter.Create(@".\config.xml", settings)) //this should be obvious
-                {
-                    #region writers
-                    writer.WriteStartDocument();
-                    writer.WriteStartElement("Settings");
-                    Console.WriteLine("So, what is your subreddit this bot will run on?");
-                    string subreddit = Console.ReadLine();
-                    writer.WriteStartElement("subreddit");
-                    writer.WriteString(subreddit);
-                    writer.WriteEndElement();
-                    Console.WriteLine("What do you want the request limit to be?");
-                    string reqlimit = Console.ReadLine();
-                    writer.WriteStartElement("ReqLimit");
-                    writer.WriteString(reqlimit);
-                    writer.WriteEndElement();
-                    Console.WriteLine("What is the sleep time?");
-                    string sleepTime = Console.ReadLine();
-                    writer.WriteStartElement("SleepTime");
-                    writer.WriteString(sleepTime);
-                    writer.WriteEndElement();
-                    Console.WriteLine("What is your username?");
-                    string username = Console.ReadLine();
-                    writer.WriteStartElement("Username");
-                    writer.WriteString(username);
-                    writer.WriteEndElement();
-                    Console.WriteLine("What about password? note: this is stored in plaintext, don't actually send out in a git or type Y (just \"Y\") to not use a password in the config, and require one on startup");
-                    string password = Console.ReadLine();
-                    writer.WriteStartElement("Password"); //Password feild, as OAuth hasn't been setup yet
-                    writer.WriteString(password);
-                    writer.WriteEndElement();
-                    Console.WriteLine("You have to add flavortext manually after the fact, go into the config file and seperate each flavor text with a \"");
-                    writer.WriteStartElement("flavortext");
-                    writer.WriteEndElement();
-                    Console.WriteLine("What's your Oauth token?");
-                    string oAuth = Console.ReadLine();
-                    writer.WriteStartElement("Oauth");
-                    writer.WriteString(oAuth);
-                    writer.WriteEndElement();
-                    writer.WriteEndElement();
-                    writer.WriteEndDocument();
-                    writer.Flush();
-                    #endregion
-                }
+                ConfigWriter.writeConfig(settings);
             }
             catch (Exception e)
             {
@@ -192,40 +149,6 @@ namespace Mnemosyne_Of_Mine
                 Console.ReadKey();
             }
         }
-        ///// <summary>
-        ///// TODO: MAKE THIS WORK
-        ///// </summary>
-        //static void CreateDatabase()
-        //{
-        //    string str;
-        //    SqlConnection connection = new SqlConnection();
-        //    str = "CREATE DATABASE RepliedTo ON PRIMARY " +
-        //        "(NAME = RepliedTo_Data, " +
-        //        "FILENAME = 'D:\\RepliedToList.mdf' " +
-        //        "SIZE = 2MB, MAXSIZE = 10MB, FILEGROWTH = 10%) " +
-        //        "FILENAME = 'D:\\RepliedToLog.ldf', " +
-        //        "SIZE = 1MB, " +
-        //        "MAXSIZE = 5MB, " +
-        //        "FILEGROWTH = 10%)";
-        //    SqlCommand command = new SqlCommand(str, connection);
-        //    try
-        //    {
-        //        connection.Open();
-        //        command.ExecuteNonQuery();
-        //        Console.WriteLine("Database successfully created");
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine(e.Message + '\n' + e.StackTrace);
-        //    }
-        //    finally
-        //    {
-        //        if (connection.State == System.Data.ConnectionState.Open)
-        //        {
-        //            connection.Close();
-        //        }
-        //    }
-        //}
         /// <summary>
         /// Gets the url of the Archive, goddamn once this is finished i will have no idea how this works
         /// </summary>
