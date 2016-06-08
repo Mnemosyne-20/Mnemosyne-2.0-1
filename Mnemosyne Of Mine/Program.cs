@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using RedditSharp;
 namespace Mnemosyne_Of_Mine
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
@@ -57,6 +57,7 @@ namespace Mnemosyne_Of_Mine
             }
             createFiles();
             var sub = reddit.GetSubreddit(ReleventInfo.SubReddit);
+            var repostSub = reddit.GetSubreddit(ReleventInfo.Repost);
             bool isMnemosyneThereAlready = false;
             string[] repliedTo = File.ReadAllLines(@".\Replied_To.txt");
             var repliedList = repliedTo.ToList();
@@ -67,6 +68,10 @@ namespace Mnemosyne_Of_Mine
                 {
                     foreach (var post in sub.New.Take(ReleventInfo.ReqLimit))
                     {
+                        if(repliedList.Contains(post.Id))
+                        {
+                            break;
+                        }
                         if (exclude.IsMatch(post.Url.ToString()))
                         {
                             continue;
@@ -80,7 +85,7 @@ namespace Mnemosyne_Of_Mine
                             }
                             System.Threading.Thread.Sleep(2000);
                         }
-                        if (isMnemosyneThereAlready == true || repliedList.Contains(post.Id))
+                        if (isMnemosyneThereAlready == true)
                         {
                             break;
                         }
@@ -113,7 +118,28 @@ namespace Mnemosyne_Of_Mine
                 { 
                     File.AppendAllText(@".\Errors.txt", "Error: " + e.Message + "\n" + e.StackTrace + '\n');
                 }
-                Console.WriteLine("waiting for next batch");
+                Console.WriteLine("waiting for next batch from sub1");
+                foreach(var post in repostSub.New.Take(10))
+                {
+                    if(repliedList.Contains(post.Id))
+                    {
+                        break;
+                    }
+                    if(post.IsSelfPost)
+                    {
+                        continue;
+                    }
+                    double repostPer = ReleventInfo.checkRepost(post.Title);
+                    if(repostPer > .5 && post.Url.ToString().Contains("imgur"))
+                    {
+                        string comment = $"Your post had a {repostPer} similarity match for the title to the fake karly cross guys code vs girls code image\n\n----\n\n Please message /u/chugga_fan if this is incorrect, you can also ask for the source from him^^^^/r/botsrights";
+                        post.Comment(comment);
+                        Console.Write(comment);
+                        repliedList.Add(post.Id);
+                    }
+
+                }
+                Console.WriteLine("Repost check done");
                 System.Threading.Thread.Sleep(TimeSpan.FromSeconds(ReleventInfo.SleepTime));
             }
             #endregion
@@ -200,6 +226,19 @@ namespace Mnemosyne_Of_Mine
         static void logIn(Reddit reddit, DataStorage user)
         {
             reddit.LogIn(user.Username, user.Password);
+        }
+        static double checkRepost(this DataStorage storage, string title)
+        {
+            double perMatch = 0;
+            string[] h = "The difference between girls and guys code programs".Split(' ');
+            foreach (var word in h)
+            {
+                if (title.Contains(word))
+                {
+                    perMatch++;
+                }
+            }
+            return (title.Split(' ').Length / perMatch) / 10;
         }
     }
 }
