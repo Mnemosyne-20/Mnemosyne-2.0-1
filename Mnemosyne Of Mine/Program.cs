@@ -47,7 +47,7 @@ namespace Mnemosyne_Of_Mine
             else
             {
                 reddit = new Reddit(WebAgent.RateLimitMode.Pace);
-                reddit.LogIn(ReleventInfo.Username, ReleventInfo.Password);
+                logIn(reddit, ReleventInfo);
             }
             reddit.InitOrUpdateUser();
             bool authenticated = (reddit.User != null);
@@ -96,7 +96,12 @@ namespace Mnemosyne_Of_Mine
                         // logic for which header needs to be posted
                         #region commentlogic
                         string head = post.IsSelfPost ? d_head : p_head;
-                        string c = head + "* **Archive** " + archiveURL + "\n\n" + footer + ReleventInfo.FlavorText[random.Next(0, ReleventInfo.FlavorText.Length - 1)] + botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
+                        string c = head 
+                            + "* **Archive** " 
+                            + archiveURL 
+                            + "\n\n" + footer 
+                            + ReleventInfo.FlavorText[random.Next(0, ReleventInfo.FlavorText.Length - 1)]
+                            + botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
                         Console.WriteLine("waiting");
                         System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
                         post.Comment(c);
@@ -191,6 +196,10 @@ namespace Mnemosyne_Of_Mine
                 }
             }
             return archiveURL;
+        }
+        static void logIn(Reddit reddit, DataStorage user)
+        {
+            reddit.LogIn(user.Username, user.Password);
         }
     }
 }

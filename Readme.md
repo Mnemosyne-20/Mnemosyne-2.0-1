@@ -1,3 +1,1 @@
-Needs 
-#RedditSharp
- to work, get it from the nuget package manager
+Needs RedditSharp to work, get it from the nuget package manager will implement my own classes and extensions for it eventually
