@@ -130,7 +130,7 @@ namespace Mnemosyne_Of_Mine
                         continue;
                     }
                     double repostPer = ReleventInfo.checkRepost(post.Title);
-                    if(repostPer > .5 && post.Url.ToString().Contains("imgur"))
+                    if(repostPer > .5 && post.Url.ToString().Contains("imgur") && !double.IsInfinity(repostPer))
                     {
                         string comment = $"Your post had a {repostPer} similarity match for the title to the fake karly cross guys code vs girls code image\n\n----\n\n Please message /u/chugga_fan if this is incorrect, you can also ask for the source from him^^^^/r/botsrights";
                         post.Comment(comment);
