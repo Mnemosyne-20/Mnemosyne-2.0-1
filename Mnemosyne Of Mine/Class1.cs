@@ -29,6 +29,8 @@ namespace Mnemosyne_Of_Mine
                 FlavorText = reader.ReadElementContentAsString().Split('\"'); // split by a " because commas
                 reader.ReadToFollowing("Oauth");
                 OAuth = reader.ReadElementContentAsString();
+                reader.ReadToFollowing("Repost");
+                Repost = reader.ReadElementContentAsString();
             }
         }
         public string Password { get; set; }
@@ -38,5 +40,6 @@ namespace Mnemosyne_Of_Mine
         public int ReqLimit { get; private set; }
         public int SleepTime { get; private set; }
         public string SubReddit { get; private set; }
+        public string Repost { get; private set; }
     }
 }
