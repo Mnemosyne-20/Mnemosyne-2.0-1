@@ -23,7 +23,7 @@ namespace Mnemosyne_Of_Mine
             string footer = "----\n\nI am Mnemosyne 2.0, ";
             string botsrights = "^^^^/r/botsrights";
             #endregion
-            if(!File.Exists(@".\config.xml"))
+            if (!File.Exists(@".\config.xml"))
             {
                 Console.WriteLine("File doesn't exist, let's setup a config file");
                 createNewPath();
@@ -68,7 +68,7 @@ namespace Mnemosyne_Of_Mine
                 {
                     foreach (var post in sub.New.Take(ReleventInfo.ReqLimit))
                     {
-                        if(repliedList.Contains(post.Id))
+                        if (repliedList.Contains(post.Id))
                         {
                             break;
                         }
@@ -101,10 +101,10 @@ namespace Mnemosyne_Of_Mine
                         // logic for which header needs to be posted
                         #region commentlogic
                         string head = post.IsSelfPost ? d_head : p_head;
-                        string c = head 
-                            + "* **Archive** " 
-                            + archiveURL 
-                            + "\n\n" + footer 
+                        string c = head
+                            + "* **Archive** "
+                            + archiveURL
+                            + "\n\n" + footer
                             + ReleventInfo.FlavorText[random.Next(0, ReleventInfo.FlavorText.Length - 1)]
                             + botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
                         Console.WriteLine("waiting");
@@ -115,35 +115,42 @@ namespace Mnemosyne_Of_Mine
                     }
                 }
                 catch (Exception e)
-                { 
+                {
                     File.AppendAllText(@".\Errors.txt", "Error: " + e.Message + "\n" + e.StackTrace + '\n');
                 }
                 Console.WriteLine("waiting for next batch from sub1");
-                foreach(var post in repostSub.New.Take(10))
+                try
                 {
-                    if(repliedList.Contains(post.Id))
+                    foreach (var post in repostSub.New.Take(10))
                     {
-                        break;
-                    }
-                    if(post.IsSelfPost)
-                    {
-                        continue;
-                    }
-                    double repostPer = ReleventInfo.checkRepost(post.Title);
-                    if(repostPer > .5 && post.Url.ToString().Contains("imgur") && !double.IsInfinity(repostPer))
-                    {
-                        string comment = $"Your post had a {repostPer} similarity match for the title to the fake karly cross guys code vs girls code image\n\n----\n\n Please message /u/chugga_fan if this is incorrect, you can also ask for the source from him^^^^/r/botsrights";
-                        post.Comment(comment);
-                        Console.Write(comment);
-                        repliedList.Add(post.Id);
-                    }
+                        if (repliedList.Contains(post.Id))
+                        {
+                            break;
+                        }
+                        if (post.IsSelfPost)
+                        {
+                            continue;
+                        }
+                        double repostPer = ReleventInfo.checkRepost(post.Title);
+                        if (repostPer > .5 && post.Url.ToString().Contains("imgur") && !double.IsInfinity(repostPer))
+                        {
+                            string comment = $"Your post had a {repostPer} similarity match for the title to the fake karly cross guys code vs girls code image\n\n----\n\n Please message /u/chugga_fan if this is incorrect, you can also ask for the source from him^^^^/r/botsrights";
+                            post.Comment(comment);
+                            Console.Write(comment);
+                            repliedList.Add(post.Id);
+                        }
 
+                    }
+                    Console.WriteLine("Repost check done");
+                    System.Threading.Thread.Sleep(TimeSpan.FromSeconds(ReleventInfo.SleepTime));
                 }
-                Console.WriteLine("Repost check done");
-                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(ReleventInfo.SleepTime));
-            }
-            #endregion
+                catch (Exception e)
+                {
+                    File.AppendAllText(@".\Errors.txt", "Error: " + e.Message + "\n" + e.StackTrace + '\n');
+                }
+                #endregion
 
+            }
         }
         /// <summary>
         /// Creates our files
