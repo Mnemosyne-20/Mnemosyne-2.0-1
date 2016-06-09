@@ -139,17 +139,15 @@ namespace Mnemosyne_Of_Mine
                             Console.Write(comment);
                             repliedList.Add(post.Id);
                         }
-
                     }
-                    Console.WriteLine("Repost check done");
-                    System.Threading.Thread.Sleep(TimeSpan.FromSeconds(ReleventInfo.SleepTime));
                 }
                 catch (Exception e)
                 {
                     File.AppendAllText(@".\Errors.txt", "Error: " + e.Message + "\n" + e.StackTrace + '\n');
                 }
+                Console.WriteLine("Repost check done");
+                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(ReleventInfo.SleepTime));
                 #endregion
-
             }
         }
         /// <summary>
