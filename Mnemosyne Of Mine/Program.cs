@@ -142,7 +142,7 @@ namespace Mnemosyne_Of_Mine
                         if (repostPer > .5 && !double.IsInfinity(repostPer))
                         {
                             string comment = $"Your post had a {repostPer} similarity match for the title to the fake karly cross guys code vs girls code image\n\n----\n\n Please message /u/chugga_fan if this is incorrect, you can also ask for the source from him^^^^/r/botsrights";
-                            post.Comment(comment);
+                            //post.Comment(comment);
                             Console.Write(comment);
                             repliedList.Add(post.Id);
                         }
@@ -213,7 +213,7 @@ namespace Mnemosyne_Of_Mine
         static double checkRepost(this RedditSharp.Things.Post post)
         {
             double perMatch = 0;
-            string[] h = "The difference between girls and guys code programs".Split(' ');
+            string[] h = "difference between girls and guys code programs".Split(' ');
             foreach (var word in h)
             {
                 if (post.Title.Contains(word))

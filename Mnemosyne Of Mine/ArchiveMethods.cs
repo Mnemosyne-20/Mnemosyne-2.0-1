@@ -24,7 +24,6 @@ namespace Mnemosyne_Of_Mine
         /// <returns>the archive url</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String)")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Damnit")]
         public static string Archive(string serviceURL, string url)
         {
             string archiveURL = null;
@@ -39,7 +38,6 @@ namespace Mnemosyne_Of_Mine
                 };
                 var content = new FormUrlEncodedContent(values);
                 serviceURL = "http://" + serviceURL + "/submit/";
-                Console.WriteLine("Damnit");
                 /// <summary>
                 /// This puts a request to the archive site, so yhea...
                 /// </summary>
