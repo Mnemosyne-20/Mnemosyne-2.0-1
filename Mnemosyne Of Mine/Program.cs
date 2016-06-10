@@ -172,7 +172,7 @@ namespace Mnemosyne_Of_Mine
                 }
                 catch (Exception e)
                 {
-                    File.AppendAllText(@".\Errors.txt", $"Error: {e.Message}\n{e.StackTrace}\n");
+                    File.AppendAllText(@".\Errors.txt", $"Error: {e.Message}\n{e}");
                 }
 #if REPOSTCHECK
                 Console.WriteLine("Repost check done");

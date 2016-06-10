@@ -40,24 +40,15 @@ namespace Mnemosyne_Of_Mine
                 };
                 var content = new FormUrlEncodedContent(values);
                 serviceURL = "http://" + serviceURL + "/submit/";
-                Task<HttpResponseMessage> response = null;
                 /// <summary>
                 /// This puts a request to the archive site, so yhea...
                 /// </summary>
-                try
-                {
-                    response = client.PostAsync(serviceURL, content);
-                }
-                finally
-                {
-                    content.Dispose();
-                }
-                var loc = response.Result;
-                archiveURL = loc.RequestMessage.RequestUri.ToString();
+                var response = client.PostAsync(serviceURL, content).Result;
+                archiveURL = response.RequestMessage.RequestUri.ToString();
                 if (archiveURL == "http://archive.is/submit/")
                 {
                     #region fixing it
-                    StringReader reader = new StringReader(loc.ToString());
+                    StringReader reader = new StringReader(response.ToString());
                     for (int i = 0; i < 3; i++)
                     {
                         reader.ReadLine();
