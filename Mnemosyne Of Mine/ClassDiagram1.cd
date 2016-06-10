@@ -1,48 +1,61 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="NameAndType">
   <Class Name="Mnemosyne_Of_Mine.ImageComparer" Collapsed="true">
-    <Position X="14.25" Y="0.5" Width="1.5" />
+    <Position X="6.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAQAAAAAAAAAAAAAAAAAEAAAIAAAAAAAAAAEAIAAA=</HashCode>
       <FileName>ImageComparison.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Mnemosyne_Of_Mine.Program" Collapsed="true">
-    <Position X="16" Y="0.5" Width="1.5" />
+    <Position X="3" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AgAQAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAABAAAAAA=</HashCode>
+      <HashCode>AgAQAAAAAAAAABAAAAAAAAAAAAAIAAAAAAAABAAAAAA=</HashCode>
       <FileName>Program.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="System.Object" Collapsed="true">
-    <Position X="6" Y="0.5" Width="1.5" />
+    <Position X="0.5" Y="0.5" Width="1.5" />
     <TypeIdentifier />
   </Class>
-  <Class Name="Mnemosyne_Of_Mine.ConfigWriter">
-    <Position X="2.75" Y="1.75" Width="3.25" />
+  <Class Name="Mnemosyne_Of_Mine.ConfigWriter" Collapsed="true">
+    <Position X="4.75" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA=</HashCode>
       <FileName>ConfigWriter.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Mnemosyne_Of_Mine.Sql">
-    <Position X="9" Y="1.75" Width="4.25" />
+  <Class Name="Mnemosyne_Of_Mine.Sql" Collapsed="true">
+    <Position X="4.75" Y="1.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Sql.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Mnemosyne_Of_Mine.UserData">
+  <Class Name="Mnemosyne_Of_Mine.UserData" Collapsed="true">
     <Position X="0.5" Y="1.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>BAAABAAAAAAAAIAQAQAAAAAAAAAAEAACAAAAIAAAAAA=</HashCode>
       <FileName>UserStorage.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Mnemosyne_Of_Mine.ArchiveMethods">
-    <Position X="6.75" Y="1.75" Width="1.5" />
+  <Class Name="Mnemosyne_Of_Mine.ArchiveMethods" Collapsed="true">
+    <Position X="3" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAgAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
       <FileName>ArchiveMethods.cs</FileName>
     </TypeIdentifier>
   </Class>

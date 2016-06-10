@@ -87,7 +87,7 @@ namespace Mnemosyne_Of_Mine
                         }
                         foreach (var comment in post.Comments)
                         {
-                            if (comment.Author == "mnemosyne-0001" ) // don't need to check for self, that's what the already-replied list is for
+                            if (comment.Author == "mnemosyne-0001") // don't need to check for self, that's what the already-replied list is for
                             {
                                 isMnemosyneThereAlready = true; // check for the other bot, will add option for more later TODO: check other bots, inc, self
                                 break;
@@ -103,7 +103,7 @@ namespace Mnemosyne_Of_Mine
                         Console.WriteLine(archiveURL);
                         if (ArchiveMethods.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
                         {
-                            ArchiveLinks.Add("* **Post** " + archiveURL + "\n");
+                            ArchiveLinks.Add($"* **Post** {archiveURL}\n");
                         }
                         if (post.IsSelfPost)
                         {
@@ -128,10 +128,10 @@ namespace Mnemosyne_Of_Mine
                         File.WriteAllLines(@".\Replied_To.txt", repliedList.ToArray());
 
                         // logic for which header needs to be posted
-#region commentlogic
+                        #region commentlogic
                         string head = post.IsSelfPost ? d_head : p_head;
                         string LinksListBody = "";
-                        foreach(string str in ArchiveLinks)
+                        foreach (string str in ArchiveLinks)
                         {
                             LinksListBody += str + "\n";
                         }
@@ -144,24 +144,20 @@ namespace Mnemosyne_Of_Mine
                         System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
                         post.Comment(c);
                         Console.WriteLine(c);
-#endregion
+                        #endregion
                     }
                     Console.WriteLine("waiting for next batch from sub1");
 #if REPOSTCHECK
                     foreach (var post in repostSub.New.Take(10))
                     {
                         Console.Title = "Checking sub: " + post.SubredditName + " for reposts";
-                        if (!post.Url.ToString().Contains("imgur"))
+                        if (!post.Url.ToString().Contains("imgur") || post.IsSelfPost)
                         {
                             continue;
                         }
                         if (repliedList.Contains(post.Id))
                         {
                             break;
-                        }
-                        if (post.IsSelfPost)
-                        {
-                            continue;
                         }
                         double repostPer = post.checkRepost();
                         if (repostPer > .5 && !double.IsInfinity(repostPer))
@@ -176,7 +172,7 @@ namespace Mnemosyne_Of_Mine
                 }
                 catch (Exception e)
                 {
-                    File.AppendAllText(@".\Errors.txt", "Error: " + e.Message + "\n" + e.StackTrace + '\n');
+                    File.AppendAllText(@".\Errors.txt", $"Error: {e.Message}\n{e.StackTrace}\n");
                 }
 #if REPOSTCHECK
                 Console.WriteLine("Repost check done");
