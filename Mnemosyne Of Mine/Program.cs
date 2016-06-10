@@ -87,22 +87,25 @@ namespace Mnemosyne_Of_Mine
                         }
                         foreach (var comment in post.Comments)
                         {
-                            if (comment.Author == "mnemosyne-0001" || comment.Author == ReleventInfo.Username)
+                            if (comment.Author == "mnemosyne-0001" ) // don't need to check for self, that's what the already-replied list is for
                             {
                                 isMnemosyneThereAlready = true; // check for the other bot, will add option for more later TODO: check other bots, inc, self
                                 break;
                             }
                             System.Threading.Thread.Sleep(2000);
                         }
-                        if (isMnemosyneThereAlready == true)
+                        if (isMnemosyneThereAlready == true && !post.IsSelfPost)
                         {
                             break;
                         }
                         List<string> ArchiveLinks = new List<string>();
                         archiveURL = ArchiveMethods.Archive(@"archive.is", post.Url.ToString());
                         Console.WriteLine(archiveURL);
-                        ArchiveLinks.Add("* **Post** " + archiveURL);
-                        if(post.IsSelfPost)
+                        if (ArchiveMethods.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
+                        {
+                            ArchiveLinks.Add("* **Post** " + archiveURL + "\n");
+                        }
+                        if (post.IsSelfPost)
                         {
                             List<string> LinksToArchive = LinkFinder.FindLinks(post.SelfTextHtml);
                             int counter = 1;
@@ -110,20 +113,20 @@ namespace Mnemosyne_Of_Mine
                             {
                                 if (!exclude.IsMatch(link))
                                 {
-                                    // should this be rate limited in some way?
+                                    // already rate limited
                                     archiveURL = ArchiveMethods.Archive(@"archive.is", link);
                                     ArchiveLinks.Add($"* **Link {counter.ToString()}** {archiveURL}");
+                                    if (ArchiveMethods.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
+                                    {
+                                        ArchiveLinks.Add($"* **Link {counter.ToString()}** {archiveURL}");
+                                    }
                                     ++counter;
                                 }
                             }
-                        }                        
+                        }
                         repliedList.Add(post.Id);
                         File.WriteAllLines(@".\Replied_To.txt", repliedList.ToArray());
-                        if (archiveURL == null || archiveURL == "http://archive.is/submit/")
-                        {
-                            File.AppendAllText(@".\Failed.txt", "Failed to archive: " + post.Permalink + "\nurl: " + archiveURL + "\n");
-                            continue;
-                        }
+
                         // logic for which header needs to be posted
 #region commentlogic
                         string head = post.IsSelfPost ? d_head : p_head;

@@ -63,5 +63,21 @@ namespace Mnemosyne_Of_Mine
             }
             return archiveURL;
         }
+        /// <summary>
+        /// Making sure that we got the correct archive
+        /// </summary>
+        /// <param name="postPermalink">Permalink to fail post</param>
+        /// <param name="archiveURL">the url of the archive we recived</param>
+        /// <returns>wether or not it succeded</returns>
+        public static bool VerifyArchiveResult(string postPermalink, string archiveURL)
+        {
+            if (archiveURL == null || archiveURL == "http://archive.is/submit/")
+            {
+                File.AppendAllText(@".\Failed.txt", "Failed to archive: " + postPermalink + "\nurl: " + archiveURL + "\n");
+                return false;
+            }
+
+            return true;
+        }
     }
 }
