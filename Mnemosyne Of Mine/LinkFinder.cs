@@ -21,8 +21,7 @@ namespace Mnemosyne_Of_Mine
 
             // I love how htmlagilitypack has essentially zero documentation
             HtmlDocument body = new HtmlDocument();
-            StringReader holyShitWhyIsTheStringItselfNotGoodEnough = new StringReader(PostBody);
-            body.Load(holyShitWhyIsTheStringItselfNotGoodEnough);
+            body.LoadHtml(PostBody);
 
             HtmlNodeCollection links = body.DocumentNode.SelectNodes("//a[@href]");
             if (links != null)
@@ -32,7 +31,6 @@ namespace Mnemosyne_Of_Mine
                     LinksList.Add(link.Attributes["href"].Value);
                 }
             }
-
             return LinksList;
         }
     }
