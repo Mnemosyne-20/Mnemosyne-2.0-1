@@ -68,8 +68,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
-    <Compile Include="Class2.cs" />
+    <Compile Include="ArchiveMethods.cs" />
+    <Compile Include="UserStorage.cs" />
+    <Compile Include="ImageComparison.cs" />
     <Compile Include="ConfigWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Xml;
-using System.Net.Http;
 using System.Text.RegularExpressions;
 using RedditSharp;
 namespace Mnemosyne_Of_Mine
@@ -28,7 +26,7 @@ namespace Mnemosyne_Of_Mine
                 Console.WriteLine("File doesn't exist, let's setup a config file");
                 createNewPath();
             }
-            DataStorage ReleventInfo = new DataStorage(@".\config.xml");
+            UserData ReleventInfo = new UserData(@".\config.xml");
             //if(!File.Exists("D:\\RepliedToList.mdf")) //TODO: ADD THIS
             //{
             //    CreateDatabase();
@@ -47,7 +45,7 @@ namespace Mnemosyne_Of_Mine
             else
             {
                 reddit = new Reddit(WebAgent.RateLimitMode.Pace);
-                logIn(reddit, ReleventInfo);
+                reddit.logIn(ReleventInfo);
             }
             reddit.InitOrUpdateUser();
             bool authenticated = (reddit.User != null);
@@ -89,7 +87,7 @@ namespace Mnemosyne_Of_Mine
                         {
                             break;
                         }
-                        archiveURL = Archive(@"archive.is", post.Url.ToString());
+                        archiveURL = ArchiveMethods.Archive(@"archive.is", post.Url.ToString());
                         Console.WriteLine(archiveURL);
                         repliedList.Add(post.Id);
                         File.WriteAllLines(@".\Replied_To.txt", repliedList.ToArray());
@@ -131,7 +129,7 @@ namespace Mnemosyne_Of_Mine
                         {
                             continue;
                         }
-                        double repostPer = ReleventInfo.checkRepost(post.Title);
+                        double repostPer = post.checkRepost();
                         if (repostPer > .5 && post.Url.ToString().Contains("imgur") && !double.IsInfinity(repostPer))
                         {
                             string comment = $"Your post had a {repostPer} similarity match for the title to the fake karly cross guys code vs girls code image\n\n----\n\n Please message /u/chugga_fan if this is incorrect, you can also ask for the source from him^^^^/r/botsrights";
@@ -186,64 +184,32 @@ namespace Mnemosyne_Of_Mine
             }
         }
         /// <summary>
-        /// Gets the url of the Archive, goddamn once this is finished i will have no idea how this works
+        /// logs you in, simpler for the UserData method
         /// </summary>
-        /// <param name="serviceURL">Archiving service, generally archive.is</param>
-        /// <param name="url">The url that we're archiving</param>
-        /// <returns>the archive url</returns>
-        static string Archive(string serviceURL, string url)
-        {
-            string archiveURL = null;
-            HttpClientHandler handle = new HttpClientHandler();
-            handle.AllowAutoRedirect = true;
-            using (var client = new HttpClient(handle))
-            {
-                var values = new Dictionary<string, string>
-                {
-                    {"url", url }
-                };
-                var content = new FormUrlEncodedContent(values);
-                serviceURL = "http://" + serviceURL + "/submit/";
-                Console.WriteLine("Damnit");
-                /// <summary>
-                /// This puts a request to the archive site, so yhea...
-                /// </summary>
-                var response = client.PostAsync(serviceURL, content);
-                var loc = response.Result;
-                archiveURL = loc.RequestMessage.RequestUri.ToString();
-                if (archiveURL == "http://archive.is/submit/")
-                {
-                    #region fixing it
-                    StringReader reader = new StringReader(loc.ToString());
-                    for (int i = 0; i < 3; i++)
-                    {
-                        reader.ReadLine();
-                    }
-                    string wanted = reader.ReadLine();
-                    string[] sides = wanted.Split('=');
-                    Console.WriteLine(sides[1]);
-                    archiveURL = sides[1];
-                    #endregion
-                }
-            }
-            return archiveURL;
-        }
-        static void logIn(Reddit reddit, DataStorage user)
+        /// <param name="reddit">the reddit object</param>
+        /// <param name="user">The user data storage from the config file</param>
+        static void logIn(this Reddit reddit, UserData user)
         {
             reddit.LogIn(user.Username, user.Password);
         }
-        static double checkRepost(this DataStorage storage, string title)
+        /// <summary>
+        /// This is there for checking the % chance that /r/programmerhumor has a repost
+        /// </summary>
+        /// <param name="storage">the userdata storage you have</param>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        static double checkRepost(this RedditSharp.Things.Post post)
         {
             double perMatch = 0;
             string[] h = "The difference between girls and guys code programs".Split(' ');
             foreach (var word in h)
             {
-                if (title.Contains(word))
+                if (post.Title.Contains(word))
                 {
                     perMatch++;
                 }
             }
-            return (title.Split(' ').Length / perMatch) / 10;
+            return (post.Title.Split(' ').Length / perMatch) / 10;
         }
     }
 }

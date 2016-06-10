@@ -8,6 +8,7 @@ namespace Mnemosyne_Of_Mine
 {
     /// <summary>
     /// Image comparison class to match and rate if bitmapped images are similar.
+    /// will actually use to get reposts on /r/programmerhumor eventually, natm tho
     /// </summary>
     public static class ImageComparer
     {

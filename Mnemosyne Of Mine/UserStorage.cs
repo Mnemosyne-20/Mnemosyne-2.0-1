@@ -1,11 +1,10 @@
 ﻿using System.IO;
 using System.Xml;
-
 namespace Mnemosyne_Of_Mine
 {
-    internal class DataStorage
+    internal class UserData
     {
-        public DataStorage(string path)
+        public UserData(string path)
         {
             using (XmlReader reader = XmlReader.Create(new StringReader(File.ReadAllText(@".\config.xml"))))
             {

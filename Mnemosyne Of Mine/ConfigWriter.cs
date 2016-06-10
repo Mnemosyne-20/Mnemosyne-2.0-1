@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Mnemosyne_Of_Mine
 {
     class ConfigWriter
     {
+        /// <summary>
+        /// Runs user through process of creating a config file with semi-interface type deal
+        /// </summary>
+        /// <param name="settings">settings to write to the file with (tabs, etc)</param>
         internal static void writeConfig(XmlWriterSettings settings)
         {
             XmlWriter writer = null;
