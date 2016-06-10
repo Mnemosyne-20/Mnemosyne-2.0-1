@@ -10,10 +10,10 @@ namespace Mnemosyne_Of_Mine
     {
         static void Main(string[] args)
         {
+            Console.Title = "Mnemosyne by chugga_fan, Archive AWAY!";
             var random = new Random();
             string archiveURL;
             string Oauth = null;
-            Console.Title = "Mnemosyne by chugga_fan, copying off of /u/ITSigno's code as a backup";
             #region constants
             var exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be)");
             string d_head = "Archive links for this discussion: \n\n";
@@ -27,17 +27,12 @@ namespace Mnemosyne_Of_Mine
                 createNewConfig();
             }
             UserData ReleventInfo = new UserData(@".\config.xml");
+#if SQL
             if (!File.Exists(@".\RepliedToList.mdf")) //TODO: ADD THIS
             {
-                try
-                {
                     Sql.CreateDatabase();
-                }
-                catch
-                {
-                    // ignore, as not implemented
-                }
             }
+#endif
             if (ReleventInfo.Password == "Y")
             {
                 Console.WriteLine("Type in your password");
@@ -66,13 +61,14 @@ namespace Mnemosyne_Of_Mine
             bool isMnemosyneThereAlready = false;
             string[] repliedTo = File.ReadAllLines(@".\Replied_To.txt");
             var repliedList = repliedTo.ToList();
-            #region postChecking
+#region postChecking
             while (true)
             {
                 try
                 {
                     foreach (var post in sub.New.Take(ReleventInfo.ReqLimit))
                     {
+                        Console.Title = "Checking sub: " + post.SubredditName;
                         if (repliedList.Contains(post.Id))
                         {
                             break;
@@ -104,7 +100,7 @@ namespace Mnemosyne_Of_Mine
                             continue;
                         }
                         // logic for which header needs to be posted
-                        #region commentlogic
+#region commentlogic
                         string head = post.IsSelfPost ? d_head : p_head;
                         string c = head
                             + "* **Archive** "
@@ -116,11 +112,17 @@ namespace Mnemosyne_Of_Mine
                         System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
                         post.Comment(c);
                         Console.WriteLine(c);
-                        #endregion
+#endregion
                     }
                     Console.WriteLine("waiting for next batch from sub1");
+#if REPOSTCHECK
                     foreach (var post in repostSub.New.Take(10))
                     {
+                        Console.Title = "Checking sub: " + post.SubredditName + " for reposts";
+                        if (!post.Url.ToString().Contains("imgur"))
+                        {
+                            continue;
+                        }
                         if (repliedList.Contains(post.Id))
                         {
                             break;
@@ -130,7 +132,7 @@ namespace Mnemosyne_Of_Mine
                             continue;
                         }
                         double repostPer = post.checkRepost();
-                        if (repostPer > .5 && post.Url.ToString().Contains("imgur") && !double.IsInfinity(repostPer))
+                        if (repostPer > .5 && !double.IsInfinity(repostPer))
                         {
                             string comment = $"Your post had a {repostPer} similarity match for the title to the fake karly cross guys code vs girls code image\n\n----\n\n Please message /u/chugga_fan if this is incorrect, you can also ask for the source from him^^^^/r/botsrights";
                             post.Comment(comment);
@@ -138,14 +140,17 @@ namespace Mnemosyne_Of_Mine
                             repliedList.Add(post.Id);
                         }
                     }
+#endif
                 }
                 catch (Exception e)
                 {
                     File.AppendAllText(@".\Errors.txt", "Error: " + e.Message + "\n" + e.StackTrace + '\n');
                 }
+#if REPOSTCHECK
                 Console.WriteLine("Repost check done");
+#endif
                 System.Threading.Thread.Sleep(TimeSpan.FromSeconds(ReleventInfo.SleepTime));
-                #endregion
+#endregion
             }
         }
         /// <summary>
@@ -193,11 +198,10 @@ namespace Mnemosyne_Of_Mine
             reddit.LogIn(user.Username, user.Password);
         }
         /// <summary>
-        /// This is there for checking the % chance that /r/programmerhumor has a repost
+        /// % likelyhood match
         /// </summary>
-        /// <param name="storage">the userdata storage you have</param>
-        /// <param name="title"></param>
-        /// <returns></returns>
+        /// <param name="post">Post from redditsharp see <seealso cref="RedditSharp.Things.Post"/></param>
+        /// <returns>a percent match to the annoying post</returns>
         static double checkRepost(this RedditSharp.Things.Post post)
         {
             double perMatch = 0;

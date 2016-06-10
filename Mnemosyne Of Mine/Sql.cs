@@ -9,8 +9,6 @@ namespace Mnemosyne_Of_Mine
         /// </summary>
         internal static void CreateDatabase()
         {
-            throw new NotImplementedException();
-#pragma warning disable
             string str;
             SqlConnection connection = new SqlConnection();
             str = "CREATE DATABASE RepliedTo ON PRIMARY " +
@@ -39,7 +37,6 @@ namespace Mnemosyne_Of_Mine
                     connection.Close();
                 }
             }
-#pragma warning restore
         }
     }
 }
