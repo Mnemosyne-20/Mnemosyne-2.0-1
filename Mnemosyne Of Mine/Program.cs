@@ -24,13 +24,20 @@ namespace Mnemosyne_Of_Mine
             if (!File.Exists(@".\config.xml"))
             {
                 Console.WriteLine("File doesn't exist, let's setup a config file");
-                createNewPath();
+                createNewConfig();
             }
             UserData ReleventInfo = new UserData(@".\config.xml");
-            //if(!File.Exists("D:\\RepliedToList.mdf")) //TODO: ADD THIS
-            //{
-            //    CreateDatabase();
-            //}
+            if (!File.Exists(@".\RepliedToList.mdf")) //TODO: ADD THIS
+            {
+                try
+                {
+                    Sql.CreateDatabase();
+                }
+                catch
+                {
+                    // ignore, as not implemented
+                }
+            }
             if (ReleventInfo.Password == "Y")
             {
                 Console.WriteLine("Type in your password");
@@ -76,7 +83,7 @@ namespace Mnemosyne_Of_Mine
                         }
                         foreach (var comment in post.Comments)
                         {
-                            if (comment.Author == "mnemosyne-0001")
+                            if (comment.Author == "mnemosyne-0001" || comment.Author == ReleventInfo.Username)
                             {
                                 isMnemosyneThereAlready = true; // check for the other bot, will add option for more later TODO: check other bots, inc, self
                                 break;
@@ -111,14 +118,7 @@ namespace Mnemosyne_Of_Mine
                         Console.WriteLine(c);
                         #endregion
                     }
-                }
-                catch (Exception e)
-                {
-                    File.AppendAllText(@".\Errors.txt", "Error: " + e.Message + "\n" + e.StackTrace + '\n');
-                }
-                Console.WriteLine("waiting for next batch from sub1");
-                try
-                {
+                    Console.WriteLine("waiting for next batch from sub1");
                     foreach (var post in repostSub.New.Take(10))
                     {
                         if (repliedList.Contains(post.Id))
@@ -165,7 +165,7 @@ namespace Mnemosyne_Of_Mine
         /// <summary>
         /// This creates a new config file at the location of .\config.xml
         /// </summary>
-        static void createNewPath()
+        static void createNewConfig()
         {
             Console.Clear();
             XmlWriterSettings settings = new XmlWriterSettings();
