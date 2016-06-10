@@ -12,6 +12,7 @@ namespace Mnemosyne_Of_Mine
     /// </summary>
     public static class ImageComparer
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private static void DownloadImage(string uri)
         {
             var name = Path.GetFileName(new Uri(uri).LocalPath);
@@ -55,6 +56,8 @@ namespace Mnemosyne_Of_Mine
         /// <param name="filepath">The filepath.</param>
         /// <param name="similarityThreshold">The similarity threshold.</param>
         /// <returns>Boolean result</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "filepath")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public static bool CompareImages(string image, string targetImage, double compareLevel, string filepath, float similarityThreshold)
         {
             // Load images into bitmaps
@@ -81,7 +84,8 @@ namespace Mnemosyne_Of_Mine
 
             // Return true if similarity score is equal or greater than the comparison level
             var match = results[0].Similarity >= compareLevel;
-
+            newBitmap1.Dispose();
+            newBitmap2.Dispose();
             return match;
         }
 

@@ -2,11 +2,16 @@
 using System.Data.SqlClient;
 namespace Mnemosyne_Of_Mine
 {
-    class Sql
+    static class Sql
     {
         /// <summary>
         /// TODO: MAKE THIS WORK
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String)")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal static void CreateDatabase()
         {
             string str;
@@ -36,6 +41,7 @@ namespace Mnemosyne_Of_Mine
                 {
                     connection.Close();
                 }
+                command.Dispose();
             }
         }
     }

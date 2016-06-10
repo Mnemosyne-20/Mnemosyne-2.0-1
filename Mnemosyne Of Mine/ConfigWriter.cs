@@ -3,12 +3,18 @@ using System.Xml;
 
 namespace Mnemosyne_Of_Mine
 {
-    class ConfigWriter
+    static class ConfigWriter
     {
         /// <summary>
         /// Runs user through process of creating a config file with semi-interface type deal
         /// </summary>
         /// <param name="settings">settings to write to the file with (tabs, etc)</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String)")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "subreddit")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "seperate")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Oauth")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "git")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "flavortext")]
         internal static void writeConfig(XmlWriterSettings settings)
         {
             XmlWriter writer = null;

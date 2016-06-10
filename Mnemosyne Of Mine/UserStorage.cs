@@ -4,9 +4,15 @@ namespace Mnemosyne_Of_Mine
 {
     internal class UserData
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.Int32.Parse(System.String)")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.Int32.Parse(System.String,System.Globalization.NumberStyles)")]
         public UserData(string path)
         {
-            using (XmlReader reader = XmlReader.Create(new StringReader(File.ReadAllText(@".\config.xml"))))
+            var readers = new StringReader(File.ReadAllText(path));
+            using (XmlReader reader = XmlReader.Create(readers))
             {
                 reader.ReadToFollowing("Settings");
                 reader.ReadToFollowing("subreddit");
@@ -28,13 +34,16 @@ namespace Mnemosyne_Of_Mine
                     reader.ReadToFollowing("Repost");
                     Repost = reader.ReadElementContentAsString();
                 }
-                catch
+#pragma warning disable CS0168 // Variable is declared but never used
+                catch (System.Exception e)
+#pragma warning restore CS0168 // Variable is declared but never used
                 {
-
+                    
                 }
             }
         }
         public string Password { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public string OAuth { get; private set; }
         public string[] FlavorText { get; private set; }
         public string Username { get; private set; }
