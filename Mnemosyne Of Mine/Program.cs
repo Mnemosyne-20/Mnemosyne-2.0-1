@@ -177,6 +177,7 @@ namespace Mnemosyne_Of_Mine
 #if REPOSTCHECK
                 Console.WriteLine("Repost check done");
 #endif
+                Console.Title = "Sleeping";
                 System.Threading.Thread.Sleep(TimeSpan.FromSeconds(ReleventInfo.SleepTime));
 #endregion
             }
