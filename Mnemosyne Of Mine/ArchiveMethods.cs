@@ -63,5 +63,16 @@ namespace Mnemosyne_Of_Mine
             }
             return archiveURL;
         }
+
+        public static bool VerifyArchiveResult(string postPermalink, string archiveURL)
+        {
+            if (archiveURL == null || archiveURL == "http://archive.is/submit/")
+            {
+                File.AppendAllText(@".\Failed.txt", "Failed to archive: " + postPermalink + "\nurl: " + archiveURL + "\n");
+                return false;
+            }
+
+            return true;
+        }
     }
 }

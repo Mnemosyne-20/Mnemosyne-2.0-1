@@ -101,7 +101,9 @@ namespace Mnemosyne_Of_Mine
                         List<string> ArchiveLinks = new List<string>();
                         archiveURL = ArchiveMethods.Archive(@"archive.is", post.Url.ToString());
                         Console.WriteLine(archiveURL);
-                        ArchiveLinks.Add("* **Post** " + archiveURL);
+                        if(ArchiveMethods.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
+                            ArchiveLinks.Add("* **Post** " + archiveURL);
+
                         if(post.IsSelfPost)
                         {
                             List<string> LinksToArchive = LinkFinder.FindLinks(post.SelfTextHtml);
@@ -112,18 +114,16 @@ namespace Mnemosyne_Of_Mine
                                 {
                                     // should this be rate limited in some way?
                                     archiveURL = ArchiveMethods.Archive(@"archive.is", link);
-                                    ArchiveLinks.Add("* **Link " + counter.ToString() + "** " + archiveURL);
+                                    if(ArchiveMethods.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
+                                        ArchiveLinks.Add("* **Link " + counter.ToString() + "** " + archiveURL);
+
                                     ++counter;
                                 }
                             }
                         }                        
                         repliedList.Add(post.Id);
                         File.WriteAllLines(@".\Replied_To.txt", repliedList.ToArray());
-                        if (archiveURL == null || archiveURL == "http://archive.is/submit/")
-                        {
-                            File.AppendAllText(@".\Failed.txt", "Failed to archive: " + post.Permalink + "\nurl: " + archiveURL + "\n");
-                            continue;
-                        }
+
                         // logic for which header needs to be posted
 #region commentlogic
                         string head = post.IsSelfPost ? d_head : p_head;
