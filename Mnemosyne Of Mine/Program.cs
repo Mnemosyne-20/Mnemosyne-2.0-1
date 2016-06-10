@@ -112,7 +112,7 @@ namespace Mnemosyne_Of_Mine
                                 {
                                     // should this be rate limited in some way?
                                     archiveURL = ArchiveMethods.Archive(@"archive.is", link);
-                                    ArchiveLinks.Add("* **Link " + counter.ToString() + "** " + archiveURL);
+                                    ArchiveLinks.Add($"* **Link {counter.ToString()}** {archiveURL}");
                                     ++counter;
                                 }
                             }

@@ -4,6 +4,10 @@ namespace Mnemosyne_Of_Mine
 {
     internal class UserData
     {
+        /// <summary>
+        /// This is the userdata, stored in an object, this helps lol
+        /// </summary>
+        /// <param name="path">the path to the config file</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.Int32.Parse(System.String)")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
