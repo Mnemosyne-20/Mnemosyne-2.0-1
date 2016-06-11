@@ -115,7 +115,6 @@ namespace Mnemosyne_Of_Mine
                                 {
                                     // already rate limited
                                     archiveURL = ArchiveMethods.Archive(@"archive.is", link);
-                                    ArchiveLinks.Add($"* **Link {counter.ToString()}** {archiveURL}");
                                     if (ArchiveMethods.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
                                     {
                                         ArchiveLinks.Add($"* **Link {counter.ToString()}** {archiveURL}");

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using HtmlAgilityPack;
+using System.Text.RegularExpressions;
 
 namespace Mnemosyne_Of_Mine
 {
@@ -15,17 +15,13 @@ namespace Mnemosyne_Of_Mine
             List<string> LinksList = new List<string>();
 
             // I love how htmlagilitypack has essentially zero documentation
-            HtmlDocument body = new HtmlDocument();
-            body.LoadHtml(PostBody);
-
-            HtmlNodeCollection links = body.DocumentNode.SelectNodes("//a[@href]");
-            if (links != null)
+            var match = Regex.Match(PostBody, @"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?");
+            while(match.Success)
             {
-                foreach (HtmlNode link in links)
-                {
-                    LinksList.Add(link.Attributes["href"].Value);
-                }
+                LinksList.Add(match.Value);
+                match = match.NextMatch();
             }
+            System.Console.WriteLine(string.Join("\n", LinksList.ToArray()));
             return LinksList;
         }
     }
