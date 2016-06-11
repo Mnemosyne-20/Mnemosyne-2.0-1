@@ -21,7 +21,6 @@ namespace Mnemosyne_Of_Mine
                 LinksList.Add(match.Value);
                 match = match.NextMatch();
             }
-            System.Console.WriteLine(string.Join("\n", LinksList.ToArray()));
             return LinksList;
         }
     }

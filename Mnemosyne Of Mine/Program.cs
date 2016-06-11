@@ -145,7 +145,7 @@ namespace Mnemosyne_Of_Mine
                         Console.WriteLine(c);
                         #endregion
                     }
-                    Console.WriteLine("waiting for next batch from sub1");
+                    Console.WriteLine($"waiting for next batch from {sub.Name}");
 #if REPOSTCHECK
                     foreach (var post in repostSub.New.Take(10))
                     {
