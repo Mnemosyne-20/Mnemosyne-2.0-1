@@ -94,16 +94,18 @@ namespace Mnemosyne_Of_Mine
                             }
                             System.Threading.Thread.Sleep(2000);
                         }
-                        if (isMnemosyneThereAlready == true && !post.IsSelfPost)
+                        if (isMnemosyneThereAlready && !post.IsSelfPost)
                         {
                             break;
                         }
                         List<string> ArchiveLinks = new List<string>();
-                        archiveURL = ArchiveMethods.Archive(@"archive.is", post.Url.ToString());
-                        Console.WriteLine(archiveURL);
-                        if (ArchiveMethods.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
+                        if (!isMnemosyneThereAlready)
                         {
-                            ArchiveLinks.Add($"* **Post** {archiveURL}\n");
+                            archiveURL = ArchiveMethods.Archive(@"archive.is", post.Url.ToString());
+                            if (ArchiveMethods.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
+                            {
+                                ArchiveLinks.Add($"* **Post** {archiveURL}\n");
+                            }
                         }
                         if (post.IsSelfPost)
                         {
