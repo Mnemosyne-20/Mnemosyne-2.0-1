@@ -38,6 +38,34 @@ namespace Mnemosyne_Of_Mine
                 writer.WriteStartElement("SleepTime");
                 writer.WriteString(sleepTime);
                 writer.WriteEndElement();
+                Console.WriteLine("Use OAuth? (Y/N)");
+                bool bUseOAuth = false;
+                string useOAuthResponse = Console.ReadLine();
+                if(useOAuthResponse.ToUpper() == "Y")
+                {
+                    bUseOAuth = true;
+                }
+                writer.WriteStartElement("UseOAuth");
+                writer.WriteString(bUseOAuth.ToString());
+                writer.WriteEndElement();
+                if (bUseOAuth)
+                {
+                    Console.WriteLine("OAuth Client ID?");
+                    string oauthClientID = Console.ReadLine();
+                    writer.WriteStartElement("OAuthClientID");
+                    writer.WriteString(oauthClientID);
+                    writer.WriteEndElement();
+                    Console.WriteLine("OAuth Client Secret?");
+                    string oauthClientSecret = Console.ReadLine();
+                    writer.WriteStartElement("OAuthClientSecret");
+                    writer.WriteString(oauthClientSecret);
+                    writer.WriteEndElement();
+                    Console.WriteLine("Redirect URI?"); // pointless for a bot but the auth API still asks for it
+                    string redirectURI = Console.ReadLine();
+                    writer.WriteStartElement("RedirectURI");
+                    writer.WriteString(redirectURI);
+                    writer.WriteEndElement();
+                }
                 Console.WriteLine("What is your username?");
                 string username = Console.ReadLine();
                 writer.WriteStartElement("Username");
@@ -50,11 +78,6 @@ namespace Mnemosyne_Of_Mine
                 writer.WriteEndElement();
                 Console.WriteLine("You have to add flavortext manually after the fact, go into the config file and seperate each flavor text with a \"");
                 writer.WriteStartElement("flavortext");
-                writer.WriteEndElement();
-                Console.WriteLine("What's your Oauth token?");
-                string oAuth = Console.ReadLine();
-                writer.WriteStartElement("Oauth");
-                writer.WriteString(oAuth);
                 writer.WriteEndElement();
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
