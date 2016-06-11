@@ -90,11 +90,11 @@ namespace Mnemosyne_Of_Mine
 #region postChecking
             while (true)
             {
+                Console.Title = "Checking sub: " + sub.Name;
                 try
                 {
                     foreach (var post in sub.New.Take(ReleventInfo.ReqLimit))
                     {
-                        Console.Title = "Checking sub: " + post.SubredditName;
                         if (repliedList.Contains(post.Id))
                         {
                             break;
@@ -142,7 +142,7 @@ namespace Mnemosyne_Of_Mine
                                     if (Archiving.VerifyArchiveResult(link, archiveURL))
                                     {
                                         string hostname = new Uri(link).Host;
-                                        ArchiveLinks.Add($"* **Link: {counter.ToString()}** ({hostname}): {archiveURL}");
+                                        ArchiveLinks.Add($"* **Link: {counter.ToString()}** ({hostname}): {archiveURL}\n");
                                         ++counter;
                                     }
                                 }
