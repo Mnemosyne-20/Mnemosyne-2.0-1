@@ -49,16 +49,6 @@
       <FileName>UserStorage.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Mnemosyne_Of_Mine.ArchiveMethods" Collapsed="true">
-    <Position X="3" Y="0.5" Width="1.5" />
-    <Compartments>
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAgAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ArchiveMethods.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="Mnemosyne_Of_Mine.LinkFinder" Collapsed="true">
     <Position X="3" Y="1.5" Width="1.5" />
     <TypeIdentifier>

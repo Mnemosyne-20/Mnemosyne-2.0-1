@@ -63,14 +63,14 @@ namespace ArchiveLibrary
         /// <summary>
         /// Making sure that we got the correct archive
         /// </summary>
-        /// <param name="postPermalink">Permalink to fail post</param>
+        /// <param name="originalURL">Original URL of archive</param>
         /// <param name="archiveURL">the url of the archive we recived</param>
         /// <returns>wether or not it succeded</returns>
-        public static bool VerifyArchiveResult(string postPermalink, string archiveURL)
+        public static bool VerifyArchiveResult(string originalURL, string archiveURL)
         {
             if (archiveURL == null || archiveURL == "http://archive.is/submit/")
             {
-                throw new FailureToArchiveException($"Failed to archive: {postPermalink}, ");
+                throw new FailureToArchiveException($"Failed to archive: {originalURL} \n");
             }
             return true;
         }
