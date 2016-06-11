@@ -116,7 +116,7 @@ namespace Mnemosyne_Of_Mine
                             break;
                         }
                         List<string> ArchiveLinks = new List<string>();
-                        if (!isMnemosyneThereAlready)
+                        if (!isMnemosyneThereAlready && !post.IsSelfPost)
                         {
                             archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString());
                             if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
