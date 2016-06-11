@@ -15,11 +15,13 @@ namespace Mnemosyne_Of_Mine
         {
             List<string> LinksList = new List<string>();
 
-            var match = Regex.Match(PostBody, @"""(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?""");
+            var match = Regex.Match(PostBody, @"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?"); // this regex works fine, was using it in prod
             while(match.Success)
             {
-                string foundLink = match.Value.TrimEnd('"').TrimStart('"');
-                LinksList.Add(foundLink);
+                if (!LinksList.Contains(match.Value))
+                {
+                    LinksList.Add(match.Value);
+                }
                 match = match.NextMatch();
             }
             return LinksList;
