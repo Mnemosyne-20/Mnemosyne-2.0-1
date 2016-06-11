@@ -47,7 +47,6 @@ namespace Mnemosyne_Of_Mine
             AuthProvider OAuthProvider;
             string OAuthToken = "";
             bool bAuthenticated = false;
-
             if (ReleventInfo.bUseOAuth)
             {
                 OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI);
