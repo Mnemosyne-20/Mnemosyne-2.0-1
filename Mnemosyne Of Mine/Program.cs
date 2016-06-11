@@ -113,6 +113,10 @@ namespace Mnemosyne_Of_Mine
                             int counter = 1;
                             foreach (string link in LinksToArchive)
                             {
+                                if(LinksToArchive == null)
+                                {
+                                    break;
+                                }
                                 if (!exclude.IsMatch(link))
                                 {
                                     // already rate limited
