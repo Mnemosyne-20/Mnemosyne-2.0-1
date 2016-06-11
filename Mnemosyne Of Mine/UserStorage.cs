@@ -43,8 +43,6 @@ namespace Mnemosyne_Of_Mine
                 Password = reader.ReadElementContentAsString();
                 reader.ReadToFollowing("flavortext");
                 FlavorText = reader.ReadElementContentAsString().Split('\"'); // split by a " because commas
-                //reader.ReadToFollowing("Oauth");
-                //OAuth = reader.ReadElementContentAsString();
                 try
                 {
                     reader.ReadToFollowing("Repost");
