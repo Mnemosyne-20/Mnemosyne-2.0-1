@@ -12,8 +12,6 @@ namespace Mnemosyne_Of_Mine
         /// This pages through the comments of a post and tries to archive them
         /// </summary>
         /// <param name="postID">id for the post that you will get links in the comments and archive</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "postID")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void Archive(string postID)
         {
             throw new NotImplementedException();
@@ -25,7 +23,6 @@ namespace Mnemosyne_Of_Mine
         /// <param name="url">The url that we're archiving</param>
         /// <returns>the archive url</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String)")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public static string Archive(string serviceURL, string url)
         {
             string archiveURL = null;
@@ -33,7 +30,6 @@ namespace Mnemosyne_Of_Mine
             handle.AllowAutoRedirect = true;
             using (var client = new HttpClient(handle))
             {
-                handle.Dispose();
                 var values = new Dictionary<string, string>
                 {
                     {"url", url }
@@ -61,6 +57,7 @@ namespace Mnemosyne_Of_Mine
                     #endregion
                 }
             }
+            handle.Dispose();
             return archiveURL;
         }
         /// <summary>
