@@ -111,12 +111,17 @@ namespace Mnemosyne_Of_Mine
                             }
                             System.Threading.Thread.Sleep(2000);
                         }
-                        if (isMnemosyneThereAlready && !post.IsSelfPost)
+                        if (isMnemosyneThereAlready || !post.IsSelfPost)
                         {
                             break;
                         }
                         List<string> ArchiveLinks = new List<string>();
-                        if (!isMnemosyneThereAlready && !post.IsSelfPost)
+                        List<string> LinksToArchive = LinkFinder.FindLinks(post.SelfTextHtml);
+                        if (LinksToArchive.Count < 1)
+                        {
+                            break;
+                        }
+                        if (!isMnemosyneThereAlready && post.IsSelfPost)
                         {
                             archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString());
                             if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
@@ -126,14 +131,9 @@ namespace Mnemosyne_Of_Mine
                         }
                         if (post.IsSelfPost)
                         {
-                            List<string> LinksToArchive = LinkFinder.FindLinks(post.SelfTextHtml);
                             int counter = 1;
                             foreach (string link in LinksToArchive)
                             {
-                                if(LinksToArchive.Count < 1)
-                                {
-                                    break;
-                                }
                                 if (!exclude.IsMatch(link))
                                 {
                                     // already rate limited
