@@ -5,6 +5,7 @@ using System.Xml;
 using System.Text.RegularExpressions;
 using RedditSharp;
 using System.Collections.Generic;
+using ArchiveLibrary;
 namespace Mnemosyne_Of_Mine
 {
     static class Program
@@ -101,8 +102,8 @@ namespace Mnemosyne_Of_Mine
                         List<string> ArchiveLinks = new List<string>();
                         if (!isMnemosyneThereAlready)
                         {
-                            archiveURL = ArchiveMethods.Archive(@"archive.is", post.Url.ToString());
-                            if (ArchiveMethods.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
+                            archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString());
+                            if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
                             {
                                 ArchiveLinks.Add($"* **Post** {archiveURL}\n");
                             }
@@ -120,8 +121,8 @@ namespace Mnemosyne_Of_Mine
                                 if (!exclude.IsMatch(link))
                                 {
                                     // already rate limited
-                                    archiveURL = ArchiveMethods.Archive(@"archive.is", link);
-                                    if (ArchiveMethods.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
+                                    archiveURL = Archiving.Archive(@"archive.is", link);
+                                    if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
                                     {
                                         ArchiveLinks.Add($"* **Link {counter.ToString()}** {archiveURL}");
                                     }
@@ -145,13 +146,12 @@ namespace Mnemosyne_Of_Mine
                             + "\n\n" + footer
                             + ReleventInfo.FlavorText[random.Next(0, ReleventInfo.FlavorText.Length - 1)]
                             + botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
-                        Console.WriteLine("waiting");
                         System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
                         post.Comment(c);
                         Console.WriteLine(c);
                         #endregion
                     }
-                    Console.WriteLine($"waiting for next batch from {sub.Name}");
+                    Console.Title = $"waiting for next batch from {sub.Name}";
 #if REPOSTCHECK
                     foreach (var post in repostSub.New.Take(10))
                     {
@@ -174,6 +174,10 @@ namespace Mnemosyne_Of_Mine
                         }
                     }
 #endif
+                }
+                catch (FailureToArchiveException ex)
+                {
+                    File.AppendAllText(@".\Failed.txt", ex.Message + '\n');
                 }
                 catch (Exception e)
                 {

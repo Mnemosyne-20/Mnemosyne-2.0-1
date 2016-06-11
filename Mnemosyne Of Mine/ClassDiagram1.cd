@@ -8,7 +8,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Mnemosyne_Of_Mine.Program" Collapsed="true">
-    <Position X="3" Y="1.5" Width="1.5" />
+    <Position X="4.75" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AgAQAAAAAAAAABAAAAAAAAAAAAAIAAAAAAAABAAAAAA=</HashCode>
       <FileName>Program.cs</FileName>
@@ -29,7 +29,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Mnemosyne_Of_Mine.Sql" Collapsed="true">
-    <Position X="4.75" Y="1.5" Width="1.5" />
+    <Position X="6.5" Y="1.5" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -57,6 +57,13 @@
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAgAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
       <FileName>ArchiveMethods.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mnemosyne_Of_Mine.LinkFinder" Collapsed="true">
+    <Position X="3" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>LinkFinder.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />
