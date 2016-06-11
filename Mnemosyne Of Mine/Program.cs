@@ -122,11 +122,12 @@ namespace Mnemosyne_Of_Mine
                                 {
                                     // already rate limited
                                     archiveURL = Archiving.Archive(@"archive.is", link);
-                                    if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
+                                    if (Archiving.VerifyArchiveResult(link, archiveURL))
                                     {
-                                        ArchiveLinks.Add($"* **Link {counter.ToString()}** {archiveURL}");
+                                        string hostname = new Uri(link).Host;
+                                        ArchiveLinks.Add($"* **Link: {counter.ToString()}** ({hostname}): {archiveURL}");
+                                        ++counter;
                                     }
-                                    ++counter;
                                 }
                             }
                         }
