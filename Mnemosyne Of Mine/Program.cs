@@ -113,7 +113,7 @@ namespace Mnemosyne_Of_Mine
                             int counter = 1;
                             foreach (string link in LinksToArchive)
                             {
-                                if(LinksToArchive == null)
+                                if(LinksToArchive.Count < 1)
                                 {
                                     break;
                                 }
