@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mnemosyne Of Mine", "Mnemosyne Of Mine\Mnemosyne Of Mine.csproj", "{74D41547-349B-458D-A437-93EFA3B19099}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1C8EA747-89C2-4F4B-A3B5-D65041ECF3FC} = {1C8EA747-89C2-4F4B-A3B5-D65041ECF3FC}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BE8B808A-3C5C-4A0F-99CA-1D83AA921D26}"
 	ProjectSection(SolutionItems) = preProject

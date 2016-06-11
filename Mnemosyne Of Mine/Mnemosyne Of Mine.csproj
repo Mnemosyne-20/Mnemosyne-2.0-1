@@ -131,6 +131,12 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ArchiveLibrary\ArchiveLibrary.csproj">
+      <Project>{1c8ea747-89c2-4f4b-a3b5-d65041ecf3fc}</Project>
+      <Name>ArchiveLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
