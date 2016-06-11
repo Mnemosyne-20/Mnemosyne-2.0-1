@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Mnemosyne_Of_Mine
@@ -14,11 +15,11 @@ namespace Mnemosyne_Of_Mine
         {
             List<string> LinksList = new List<string>();
 
-            // I love how htmlagilitypack has essentially zero documentation
-            var match = Regex.Match(PostBody, @"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?");
+            var match = Regex.Match(PostBody, @"""(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?""");
             while(match.Success)
             {
-                LinksList.Add(match.Value);
+                string foundLink = match.Value.TrimEnd('"').TrimStart('"');
+                LinksList.Add(foundLink);
                 match = match.NextMatch();
             }
             return LinksList;

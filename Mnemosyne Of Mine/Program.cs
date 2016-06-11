@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 using RedditSharp;
 using System.Collections.Generic;
 using ArchiveLibrary;
+using RedditSharp.Things;
+
 namespace Mnemosyne_Of_Mine
 {
     static class Program
@@ -22,7 +24,6 @@ namespace Mnemosyne_Of_Mine
             Console.Title = "Mnemosyne by chugga_fan, Archive AWAY!";
             var random = new Random();
             string archiveURL;
-            string Oauth = null;
             #region constants
             var exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be)");
             string d_head = "Archive links for this discussion: \n\n";
@@ -42,31 +43,47 @@ namespace Mnemosyne_Of_Mine
                     Sql.CreateDatabase();
             }
 #endif
-            if (ReleventInfo.Password == "Y")
+            Reddit reddit;
+            AuthProvider OAuthProvider;
+            string OAuthToken = "";
+            bool bAuthenticated = false;
+
+            if (ReleventInfo.bUseOAuth)
             {
-                Console.WriteLine("Type in your password");
-                ReleventInfo.Password = Console.ReadLine();
-                Console.Clear();
-            }
-            Reddit reddit = null;
-            if (Oauth != null)
-            {
-                reddit = new Reddit(Oauth);
+                OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI);
+                if (ReleventInfo.Password == "Y")
+                {
+                    Console.WriteLine("Type in your password");
+                    ReleventInfo.Password = Console.ReadLine();
+                    Console.Clear();
+                }
+                OAuthToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
+                reddit = new Reddit(OAuthToken);
             }
             else
             {
+                if (ReleventInfo.Password == "Y")
+                {
+                    Console.WriteLine("Type in your password");
+                    ReleventInfo.Password = Console.ReadLine();
+                    Console.Clear();
+                }
                 reddit = new Reddit(WebAgent.RateLimitMode.Pace);
                 reddit.logIn(ReleventInfo);
+                reddit.InitOrUpdateUser();
             }
-            reddit.InitOrUpdateUser();
-            bool authenticated = (reddit.User != null);
-            if (!authenticated)
+            bAuthenticated = (reddit.User != null);
+            if (!bAuthenticated)
             {
-                Console.WriteLine("Invalid token");
+                Console.WriteLine("User authentication failed");
             }
             createFiles();
-            var sub = reddit.GetSubreddit(ReleventInfo.SubReddit);
-            var repostSub = reddit.GetSubreddit(ReleventInfo.Repost);
+            Subreddit sub = reddit.GetSubreddit(ReleventInfo.SubReddit);
+            Subreddit repostSub;
+            if (ReleventInfo.Repost != null && ReleventInfo.Repost != "")
+            {
+                repostSub = reddit.GetSubreddit(ReleventInfo.Repost);
+            }
             bool isMnemosyneThereAlready = false;
             string[] repliedTo = File.ReadAllLines(@".\Replied_To.txt");
             var repliedList = repliedTo.ToList();
@@ -154,24 +171,27 @@ namespace Mnemosyne_Of_Mine
                     }
                     Console.Title = $"waiting for next batch from {sub.Name}";
 #if REPOSTCHECK
-                    foreach (var post in repostSub.New.Take(10))
+                    if(repostSub != null)
                     {
-                        Console.Title = "Checking sub: " + post.SubredditName + " for reposts";
-                        if (!post.Url.ToString().Contains("imgur") || post.IsSelfPost)
+                        foreach (var post in repostSub.New.Take(10))
                         {
-                            continue;
-                        }
-                        if (repliedList.Contains(post.Id))
-                        {
-                            break;
-                        }
-                        double repostPer = post.checkRepost();
-                        if (repostPer > .5 && !double.IsInfinity(repostPer))
-                        {
-                            string comment = $"Your post had a {repostPer} similarity match for the title to the fake karly cross guys code vs girls code image\n\n----\n\n Please message /u/chugga_fan if this is incorrect, you can also ask for the source from him^^^^/r/botsrights";
-                            //post.Comment(comment);
-                            Console.Write(comment);
-                            repliedList.Add(post.Id);
+                            Console.Title = "Checking sub: " + post.SubredditName + " for reposts";
+                            if (!post.Url.ToString().Contains("imgur") || post.IsSelfPost)
+                            {
+                                continue;
+                            }
+                            if (repliedList.Contains(post.Id))
+                            {
+                                break;
+                            }
+                            double repostPer = post.checkRepost();
+                            if (repostPer > .5 && !double.IsInfinity(repostPer))
+                            {
+                                string comment = $"Your post had a {repostPer} similarity match for the title to the fake karly cross guys code vs girls code image\n\n----\n\n Please message /u/chugga_fan if this is incorrect, you can also ask for the source from him^^^^/r/botsrights";
+                                //post.Comment(comment);
+                                Console.Write(comment);
+                                repliedList.Add(post.Id);
+                            }
                         }
                     }
 #endif
