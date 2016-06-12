@@ -189,6 +189,13 @@ namespace Mnemosyne_Of_Mine
                     }
 #endif
                 }
+                catch (System.Net.WebException)
+                {
+                    OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI);
+                    OAuthToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
+                    reddit = new Reddit(OAuthToken);
+                    reddit.InitOrUpdateUser();
+                }
                 catch (FailureToArchiveException ex)
                 {
                     File.AppendAllText(@".\Failed.txt", ex.Message + '\n');
