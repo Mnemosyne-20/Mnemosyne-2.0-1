@@ -19,10 +19,12 @@ namespace Mnemosyne_Of_Mine
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object)")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "chuggafan")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "botsrights")]
+
+        static Random random = new Random();
+
         static void Main(string[] args)
         {
             Console.Title = "Mnemosyne by chugga_fan, Archive AWAY!";
-            var random = new Random();
             #region constants
             var exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be)");
             string d_head = "Archive links for this discussion: \n\n";
@@ -112,62 +114,31 @@ namespace Mnemosyne_Of_Mine
                             }
                             System.Threading.Thread.Sleep(2000);
                         }
-                        if (isMnemosyneThereAlready || !post.IsSelfPost)
+                        if (!isMnemosyneThereAlready || post.IsSelfPost)
                         {
-                            break;
-                        }
-                        List<string> ArchiveLinks = new List<string>();
-                        List<string> LinksToArchive = LinkFinder.FindLinks(post.SelfTextHtml);
-                        if (LinksToArchive.Count < 1)
-                        {
-                            break;
-                        }
-                        if (!isMnemosyneThereAlready && post.IsSelfPost)
-                        {
-                            string archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString());
-                            if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
+                            List<string> ArchiveLinks = new List<string>();
+                            bool bDoPostArchiving = false; // temp off switch for archiving self posts themselves
+                            if(bDoPostArchiving)
                             {
-                                ArchiveLinks.Add($"* **Post** {archiveURL}\n");
-                            }
-                        }
-                        if (post.IsSelfPost)
-                        {
-                            int counter = 1;
-                            foreach (string link in LinksToArchive)
-                            {
-                                if (!exclude.IsMatch(link))
+                                string archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString());
+                                if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
                                 {
-                                    // already rate limited
-                                    string archiveURL = Archiving.Archive(@"archive.is", link);
-                                    if (Archiving.VerifyArchiveResult(link, archiveURL))
-                                    {
-                                        string hostname = new Uri(link).Host;
-                                        ArchiveLinks.Add($"* **Link: {counter.ToString()}** ({hostname}): {archiveURL}\n");
-                                        ++counter;
-                                    }
+                                    ArchiveLinks.Add($"* **Post** {archiveURL}\n");
+                                }
+                            }
+
+                            List<string> FoundLinks = LinkFinder.FindLinks(post.SelfTextHtml);
+                            if (FoundLinks.Count >= 1)
+                            {
+                                ArchiveLinks.AddRange(ArchivePostLinks(ReleventInfo, FoundLinks, exclude));
+                                if (ArchiveLinks.Count >= 1)
+                                {
+                                    PostArchiveLinks(ReleventInfo, d_head, p_head, footer, botsrights, post, ArchiveLinks);
+                                    repliedList.Add(post.Id);
+                                    File.WriteAllLines(@".\Replied_To.txt", repliedList.ToArray());
                                 }
                             }
                         }
-                        repliedList.Add(post.Id);
-                        File.WriteAllLines(@".\Replied_To.txt", repliedList.ToArray());
-
-                        // logic for which header needs to be posted
-                        #region commentlogic
-                        string head = post.IsSelfPost ? d_head : p_head;
-                        string LinksListBody = "";
-                        foreach (string str in ArchiveLinks)
-                        {
-                            LinksListBody += str + "\n";
-                        }
-                        string c = head
-                            + LinksListBody
-                            + "\n\n" + footer
-                            + ReleventInfo.FlavorText[random.Next(0, ReleventInfo.FlavorText.Length - 1)]
-                            + botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
-                        System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
-                        post.Comment(c);
-                        Console.WriteLine(c);
-                        #endregion
                     }
                     Console.Title = $"waiting for next batch from {sub.Name}";
 #if REPOSTCHECK
@@ -280,6 +251,28 @@ namespace Mnemosyne_Of_Mine
             return (post.Title.Split(' ').Length / perMatch) / 10;
         }
 
+        static List<string> ArchivePostLinks(UserData config, List<string> FoundLinks, Regex exclusions)
+        {
+            List<string> ArchiveLinks = new List<string>();            
+            int counter = 1;
+            foreach (string link in FoundLinks)
+            {
+                if (!exclusions.IsMatch(link))
+                {
+                    string archiveURL = Archiving.Archive(@"archive.is", link);
+                    if (Archiving.VerifyArchiveResult(link, archiveURL))
+                    {
+                        string hostname = new Uri(link).Host;
+                        ArchiveLinks.Add($"* **Link: {counter.ToString()}** ({hostname}): {archiveURL}\n");
+                        ++counter;
+                    }
+                }
+                // putting counter increment here would fix the "Link X isn't the Xth link" situation when posts also have links that are excluded from archiving
+            }
+            return ArchiveLinks;            
+        }
+
+        // this isn't anywhere near complete, usable, ready, or sanitary. do not ingest.
         static void ArchiveCommentLinks(UserData config, Subreddit sub, Regex exclusions, List<string> commentsSeenList)
         {
             foreach (Comment comment in sub.Comments.Take(config.ReqLimit)) // not entirely happy on this
@@ -305,6 +298,24 @@ namespace Mnemosyne_Of_Mine
                 }
                 commentsSeenList.Add(commentID);
             }
+        }
+
+        static void PostArchiveLinks(UserData config, string d_head, string p_head, string footer, string botsrights, Post post, List<string> ArchiveLinks) // not a fan of the params
+        {
+            string head = post.IsSelfPost ? d_head : p_head;
+            string LinksListBody = "";
+            foreach (string str in ArchiveLinks)
+            {
+                LinksListBody += str + "\n";
+            }
+            string c = head
+                + LinksListBody
+                + "\n\n" + footer
+                + config.FlavorText[random.Next(0, config.FlavorText.Length - 1)]
+                + botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
+            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
+            post.Comment(c);
+            Console.WriteLine(c);
         }
     }
 }
