@@ -7,6 +7,7 @@ using RedditSharp;
 using System.Collections.Generic;
 using ArchiveLibrary;
 using RedditSharp.Things;
+using System.Text;
 
 namespace Mnemosyne_Of_Mine
 {
@@ -91,8 +92,7 @@ namespace Mnemosyne_Of_Mine
                 repostSub = reddit.GetSubreddit(ReleventInfo.Repost);
             }
             bool isMnemosyneThereAlready = false;
-            string[] repliedTo = File.ReadAllLines(@".\Replied_To.txt");
-            var repliedList = repliedTo.ToList();
+            Dictionary<string, string> ReplyDict = ReadReplyTrackingFile(@".\ReplyTracker.txt");
             string[] commentsSeen = File.ReadAllLines(@".\Comments_Seen.txt");
             List<string> commentsSeenList = commentsSeen.ToList();
 #region postChecking
@@ -103,7 +103,7 @@ namespace Mnemosyne_Of_Mine
                 {
                     foreach (var post in sub.New.Take(ReleventInfo.ReqLimit))
                     {
-                        if (repliedList.Contains(post.Id))
+                        if (ReplyDict.ContainsKey(post.Id))
                         {
                             break;
                         }
@@ -136,17 +136,16 @@ namespace Mnemosyne_Of_Mine
                             List<string> FoundLinks = LinkFinder.FindLinks(post.SelfTextHtml);
                             if (FoundLinks.Count >= 1)
                             {
-                                ArchiveLinks.AddRange(ArchivePostLinks(ReleventInfo, FoundLinks, exclude));
-                                if (ArchiveLinks.Count >= 1)
-                                {
-                                    PostArchiveLinks(ReleventInfo, d_head, p_head, footer, botsrights, post, ArchiveLinks);
-                                    repliedList.Add(post.Id);
-                                    File.WriteAllLines(@".\Replied_To.txt", repliedList.ToArray());
-                                }
+                                ArchiveLinks.AddRange(ArchivePostLinks(ReleventInfo, FoundLinks, exclude));                                
+                            }
+                            if (ArchiveLinks.Count >= 1)
+                            {
+                                PostArchiveLinks(ReleventInfo, ReplyDict, d_head, p_head, footer, botsrights, post, ArchiveLinks);
+                                WriteReplyTrackingFile(ReplyDict); // this should probably be done elsewhere
                             }
                         }
                     }
-                    foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit)) // not entirely happy on this
+                    foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit)) // not entirely happy on this, hopefully redditsharp throttles things on its own if needed
                     {
                         if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
                         {
@@ -209,9 +208,9 @@ namespace Mnemosyne_Of_Mine
         /// </summary>
         static void createFiles()
         {
-            if (!File.Exists(@".\Replied_To.txt"))
+            if (!File.Exists(@".\ReplyTracker.txt"))
             {
-                File.Create(@".\Replied_To.txt").Dispose();
+                File.Create(@".\ReplyTracker.txt").Dispose();
             }
             if (!File.Exists(@".\Failed.txt"))
             {
@@ -319,7 +318,7 @@ namespace Mnemosyne_Of_Mine
             commentsSeenList.Add(commentID);
         }
 
-        static void PostArchiveLinks(UserData config, string d_head, string p_head, string footer, string botsrights, Post post, List<string> ArchiveLinks) // not a fan of the params
+        static void PostArchiveLinks(UserData config, Dictionary<string, string> ReplyDict, string d_head, string p_head, string footer, string botsrights, Post post, List<string> ArchiveLinks) // not a fan of the params
         {
             string head = post.IsSelfPost ? d_head : p_head;
             string LinksListBody = "";
@@ -333,8 +332,43 @@ namespace Mnemosyne_Of_Mine
                 + config.FlavorText[random.Next(0, config.FlavorText.Length - 1)]
                 + botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
-            post.Comment(c);
+            Comment botComment = post.Comment(c);
+            ReplyDict.Add(post.Id, botComment.Id);
             Console.WriteLine(c);
+        }
+
+        static void EditArchiveListComment()
+        {
+
+        }
+
+        static Dictionary<string,string> ReadReplyTrackingFile(string file)
+        {
+            Dictionary<string, string> replyDict = new Dictionary<string, string>();
+            string fileIn = File.ReadAllText(file);
+            string[] elements = fileIn.Split(new char[]{':',','}, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < elements.Length; i += 2)
+            {
+                string postID = elements[i];
+                string botCommentID = elements[i + 1];
+                replyDict.Add(postID, botCommentID);                
+            }
+
+            return replyDict;
+        }
+
+        static void WriteReplyTrackingFile(Dictionary<string,string> replyDict)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach (KeyValuePair<string,string> reply in replyDict)
+            {
+                builder.Append(reply.Key);
+                builder.Append(':');
+                builder.Append(reply.Value);
+                builder.Append(',');
+            }
+
+            File.WriteAllText(@".\ReplyTracker.txt", builder.ToString(0, builder.Length - 1));
         }
     }
 }
