@@ -140,6 +140,11 @@ namespace Mnemosyne_Of_Mine
                             }
                         }
                     }
+                    foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit)) // not entirely happy on this
+                    {
+                        ArchiveCommentLinks(ReleventInfo, comment, exclude, commentsSeenList);
+                        File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray()); // may be better to write this after the loop?
+                    }
                     Console.Title = $"waiting for next batch from {sub.Name}";
 #if REPOSTCHECK
                     if(repostSub != null)
@@ -270,7 +275,7 @@ namespace Mnemosyne_Of_Mine
                     if (Archiving.VerifyArchiveResult(link, archiveURL))
                     {
                         string hostname = new Uri(link).Host.Replace("www.","");
-                        ArchiveLinks.Add($"* **Link: {counter.ToString()}** [{hostname}]({link}): {archiveURL}\n");
+                        ArchiveLinks.Add($"* **Link: {counter.ToString()}** [({hostname})]({link}): {archiveURL}\n");
                         ++counter;
                     }
                 }
@@ -280,31 +285,29 @@ namespace Mnemosyne_Of_Mine
         }
 
         // this isn't anywhere near complete, usable, ready, or sanitary. do not ingest.
-        static void ArchiveCommentLinks(UserData config, Subreddit sub, Regex exclusions, List<string> commentsSeenList)
+        static void ArchiveCommentLinks(UserData config, Comment comment, Regex exclusions, List<string> commentsSeenList)
         {
-            foreach (Comment comment in sub.Comments.Take(config.ReqLimit)) // not entirely happy on this
+            List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
+            List<string> ArchivedLinks = new List<string>();
+            string commentID = comment.Id;
+            foreach (string link in FoundLinks)
             {
-                List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
-                List<string> ArchivedLinks = new List<string>();
-                string commentID = comment.Id;
-                foreach (string link in FoundLinks)
+                // foreach already handles empty collection case
+                if (!exclusions.IsMatch(link))
                 {
-                    // foreach already handles empty collection case
-                    if (!exclusions.IsMatch(link))
+                    if (!commentsSeenList.Contains(commentID))
                     {
-                        if (!commentsSeenList.Contains(commentID))
+                        /*string archiveURL = Archiving.Archive(@"archive.is", link);
+                        if (Archiving.VerifyArchiveResult(link, archiveURL))
                         {
-                            string archiveURL = Archiving.Archive(@"archive.is", link);
-                            if (Archiving.VerifyArchiveResult(link, archiveURL))
-                            {
-                                string hostname = new Uri(link).Host;
-                                ArchivedLinks.Add($"Placeholder Text: ({hostname}): {archiveURL}\n");
-                            }
-                        }
+                            string hostname = new Uri(link).Host;
+                            ArchivedLinks.Add($"Placeholder Text: ({hostname}): {archiveURL}\n");
+                        }*/
+                        Console.WriteLine($"Found {link} in comment {commentID}");
                     }
                 }
-                commentsSeenList.Add(commentID);
             }
+            commentsSeenList.Add(commentID);
         }
 
         static void PostArchiveLinks(UserData config, string d_head, string p_head, string footer, string botsrights, Post post, List<string> ArchiveLinks) // not a fan of the params
