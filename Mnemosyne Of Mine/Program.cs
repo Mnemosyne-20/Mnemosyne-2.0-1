@@ -269,8 +269,8 @@ namespace Mnemosyne_Of_Mine
                     string archiveURL = Archiving.Archive(@"archive.is", link);
                     if (Archiving.VerifyArchiveResult(link, archiveURL))
                     {
-                        string hostname = new Uri(link).Host;
-                        ArchiveLinks.Add($"* **Link: {counter.ToString()}** ({hostname}): {archiveURL}\n");
+                        string hostname = new Uri(link).Host.Replace("www.","");
+                        ArchiveLinks.Add($"* **Link: {counter.ToString()}** [{hostname}]({link}): {archiveURL}\n");
                         ++counter;
                     }
                 }
