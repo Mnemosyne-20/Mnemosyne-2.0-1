@@ -23,7 +23,6 @@ namespace Mnemosyne_Of_Mine
         {
             Console.Title = "Mnemosyne by chugga_fan, Archive AWAY!";
             var random = new Random();
-            string archiveURL;
             #region constants
             var exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be)");
             string d_head = "Archive links for this discussion: \n\n";
@@ -87,6 +86,8 @@ namespace Mnemosyne_Of_Mine
             bool isMnemosyneThereAlready = false;
             string[] repliedTo = File.ReadAllLines(@".\Replied_To.txt");
             var repliedList = repliedTo.ToList();
+            string[] commentsSeen = File.ReadAllLines(@".\Comments_Seen.txt");
+            List<string> commentsSeenList = commentsSeen.ToList();
 #region postChecking
             while (true)
             {
@@ -119,7 +120,7 @@ namespace Mnemosyne_Of_Mine
                         List<string> ArchiveLinks = new List<string>();
                         if (!isMnemosyneThereAlready)
                         {
-                            archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString());
+                            string archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString());
                             if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
                             {
                                 ArchiveLinks.Add($"* **Post** {archiveURL}\n");
@@ -138,7 +139,7 @@ namespace Mnemosyne_Of_Mine
                                 if (!exclude.IsMatch(link))
                                 {
                                     // already rate limited
-                                    archiveURL = Archiving.Archive(@"archive.is", link);
+                                    string archiveURL = Archiving.Archive(@"archive.is", link);
                                     if (Archiving.VerifyArchiveResult(link, archiveURL))
                                     {
                                         string hostname = new Uri(link).Host;
@@ -225,6 +226,10 @@ namespace Mnemosyne_Of_Mine
             {
                 File.Create(@".\Failed.txt").Dispose();
             }
+            if (!File.Exists(@".\Comments_Seen.txt")) // this might end up being an absolutely terrible idea.
+            {
+                File.Create(@".\Comments_Seen.txt").Dispose();
+            }
         }
         /// <summary>
         /// This creates a new config file at the location of .\config.xml
@@ -274,6 +279,33 @@ namespace Mnemosyne_Of_Mine
                 }
             }
             return (post.Title.Split(' ').Length / perMatch) / 10;
+        }
+
+        static void ArchiveCommentLinks(UserData config, Subreddit sub, Regex exclusions, List<string> commentsSeenList)
+        {
+            foreach (Comment comment in sub.Comments.Take(config.ReqLimit)) // not entirely happy on this
+            {
+                List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
+                List<string> ArchivedLinks = new List<string>();
+                string commentID = comment.Id;
+                foreach (string link in FoundLinks)
+                {
+                    // foreach already handles empty collection case
+                    if (!exclusions.IsMatch(link))
+                    {
+                        if (!commentsSeenList.Contains(commentID))
+                        {
+                            string archiveURL = Archiving.Archive(@"archive.is", link);
+                            if (Archiving.VerifyArchiveResult(link, archiveURL))
+                            {
+                                string hostname = new Uri(link).Host;
+                                ArchivedLinks.Add($"Placeholder Text: ({hostname}): {archiveURL}\n");
+                            }
+                        }
+                    }
+                }
+                commentsSeenList.Add(commentID);
+            }
         }
     }
 }
