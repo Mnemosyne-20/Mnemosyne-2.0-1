@@ -149,7 +149,7 @@ namespace Mnemosyne_Of_Mine
                     {
                         if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
                         {
-                            ArchiveCommentLinks(ReleventInfo, comment, exclude, commentsSeenList);
+                            ArchiveCommentLinks(ReleventInfo, ReplyDict, comment, exclude, commentsSeenList);
                         }
                         File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray()); // may be better to write this after the loop?
                     }
@@ -283,7 +283,7 @@ namespace Mnemosyne_Of_Mine
                     if (Archiving.VerifyArchiveResult(link, archiveURL))
                     {
                         string hostname = new Uri(link).Host.Replace("www.","");
-                        ArchiveLinks.Add($"* **Link: {counter.ToString()}** [({hostname})]({link}): {archiveURL}\n");
+                        ArchiveLinks.Add($"* **Link: {counter.ToString()}** ([{hostname}]({link})): {archiveURL}\n");
                         ++counter;
                     }
                 }
@@ -293,7 +293,7 @@ namespace Mnemosyne_Of_Mine
         }
 
         // this isn't anywhere near complete, usable, ready, or sanitary. do not ingest.
-        static void ArchiveCommentLinks(UserData config, Comment comment, Regex exclusions, List<string> commentsSeenList)
+        static void ArchiveCommentLinks(UserData config, Dictionary<string,string> ReplyDict, Comment comment, Regex exclusions, List<string> commentsSeenList)
         {
             List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
             List<string> ArchivedLinks = new List<string>();
@@ -305,13 +305,18 @@ namespace Mnemosyne_Of_Mine
                 {
                     if (!commentsSeenList.Contains(commentID))
                     {
-                        /*string archiveURL = Archiving.Archive(@"archive.is", link);
-                        if (Archiving.VerifyArchiveResult(link, archiveURL))
+                        string actualLinkID = comment.LinkId.Substring(3); // because apparently the link id starting with t3_ is intended for reasons but it's useless here
+                        bool bHasPostITT = ReplyDict.ContainsKey(actualLinkID);
+                        if (bHasPostITT)
                         {
-                            string hostname = new Uri(link).Host;
-                            ArchivedLinks.Add($"Placeholder Text: ({hostname}): {archiveURL}\n");
-                        }*/
-                        Console.WriteLine($"Found {link} in comment {commentID}");
+                            Console.WriteLine($"Found {link} in comment {commentID} and I have a post in {actualLinkID}");
+                            /*string archiveURL = Archiving.Archive(@"archive.is", link);
+                            if (Archiving.VerifyArchiveResult(link, archiveURL))
+                            {
+                                string hostname = new Uri(link).Host;
+                                ArchivedLinks.Add($"Placeholder Text: ({hostname}): {archiveURL}\n");
+                            }*/
+                        }
                     }
                 }
             }
