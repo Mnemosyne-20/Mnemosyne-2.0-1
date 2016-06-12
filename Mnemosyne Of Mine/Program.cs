@@ -121,29 +121,23 @@ namespace Mnemosyne_Of_Mine
                         {
                             break;
                         }
-                        if (!isMnemosyneThereAlready && post.IsSelfPost)
+                        archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString());
+                        if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
                         {
-                            archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString());
-                            if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
-                            {
-                                ArchiveLinks.Add($"* **Post** {archiveURL}\n");
-                            }
+                            ArchiveLinks.Add($"* **Post** {archiveURL}\n");
                         }
-                        if (post.IsSelfPost)
+                        int counter = 1;
+                        foreach (string link in LinksToArchive)
                         {
-                            int counter = 1;
-                            foreach (string link in LinksToArchive)
+                            if (!exclude.IsMatch(link))
                             {
-                                if (!exclude.IsMatch(link))
+                                // already rate limited
+                                archiveURL = Archiving.Archive(@"archive.is", link);
+                                if (Archiving.VerifyArchiveResult(link, archiveURL))
                                 {
-                                    // already rate limited
-                                    archiveURL = Archiving.Archive(@"archive.is", link);
-                                    if (Archiving.VerifyArchiveResult(link, archiveURL))
-                                    {
-                                        string hostname = new Uri(link).Host;
-                                        ArchiveLinks.Add($"* **Link: {counter.ToString()}** ({hostname}): {archiveURL}\n");
-                                        ++counter;
-                                    }
+                                    string hostname = new Uri(link).Host;
+                                    ArchiveLinks.Add($"* **Link: {counter.ToString()}** ({hostname}): {archiveURL}\n");
+                                    ++counter;
                                 }
                             }
                         }
