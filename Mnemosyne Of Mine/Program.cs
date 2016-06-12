@@ -34,9 +34,9 @@ namespace Mnemosyne_Of_Mine
             Console.Title = "Mnemosyne by chugga_fan, Archive AWAY!";
             #region constants
             var exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be)");
-            string d_head = "Archive for this discussion: \n\n";
+            string d_head = "Archives for links in this post: \n\n";
             string p_head = "Archive for this post: \n\n";
-            string footer = "----\n\nI am Mnemosyne 2.0, ";
+            string footer = "----\nI am Mnemosyne 2.0, ";
             string botsrights = "^^^^/r/botsrights";
             #endregion
             if (!File.Exists(@".\config.xml"))
@@ -145,6 +145,7 @@ namespace Mnemosyne_Of_Mine
                             }
                         }
                     }
+                    //FIXME: this being so close to post link archiving could potentially cause double comments and bot may hurt itself in its confusion
                     foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit)) // not entirely happy on this, hopefully redditsharp throttles things on its own if needed
                     {
                         if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
@@ -279,13 +280,14 @@ namespace Mnemosyne_Of_Mine
             {
                 if (!exclusions.IsMatch(link))
                 {
-                    string archiveURL = Archiving.Archive(@"archive.is", link);
-                    if (Archiving.VerifyArchiveResult(link, archiveURL))
-                    {
+                    //string archiveURL = Archiving.Archive(@"archive.is", link);
+                    //if (Archiving.VerifyArchiveResult(link, archiveURL))
+                    //{
                         string hostname = new Uri(link).Host.Replace("www.","");
+                        string archiveURL = "Placeholder Text";
                         ArchiveLinks.Add($"* **Link: {counter.ToString()}** ([{hostname}]({link})): {archiveURL}\n");
                         ++counter;
-                    }
+                    //}
                 }
                 // putting counter increment here would fix the "Link X isn't the Xth link" situation when posts also have links that are excluded from archiving
             }
@@ -303,29 +305,31 @@ namespace Mnemosyne_Of_Mine
                 // foreach already handles empty collection case
                 if (!exclusions.IsMatch(link))
                 {
-                    if (!commentsSeenList.Contains(commentID))
+                    Console.WriteLine($"Found {link} in comment {commentID}");
+                    /*string archiveURL = Archiving.Archive(@"archive.is", link);
+                    if (Archiving.VerifyArchiveResult(link, archiveURL))
                     {
-                        string actualLinkID = comment.LinkId.Substring(3); // because apparently the link id starting with t3_ is intended for reasons but it's useless here
-                        bool bHasPostITT = ReplyDict.ContainsKey(actualLinkID);
-                        if (bHasPostITT)
-                        {
-                            Console.WriteLine($"Found {link} in comment {commentID} and I have a post in {actualLinkID}");
-                            /*string archiveURL = Archiving.Archive(@"archive.is", link);
-                            if (Archiving.VerifyArchiveResult(link, archiveURL))
-                            {
-                                string hostname = new Uri(link).Host;
-                                ArchivedLinks.Add($"Placeholder Text: ({hostname}): {archiveURL}\n");
-                            }*/
-                            string hostname = new Uri(link).Host.Replace("www.", "");
-                            ArchivedLinks.Add($"* **By [{comment.Author}]({comment.Shortlink})** ([{hostname}]({link})): *soon.*\n");
-                            Console.WriteLine($"Getting comment {ReplyDict[actualLinkID]} in post {actualLinkID} from sub {config.SubReddit}");
-                            //Comment botComment = reddit.GetComment(config.SubReddit, actualLinkID, ReplyDict[actualLinkID]);
-                            string botCommentThingID = "t1_" + ReplyDict[actualLinkID]; // thanks redditsharp for having broken GetComment methods
-                            Comment botComment = (Comment)reddit.GetThingByFullname(botCommentThingID);
-                            EditArchiveListComment(botComment, ArchivedLinks);
-                        }
-                    }
+                        string hostname = new Uri(link).Host;
+                        ArchivedLinks.Add($"Placeholder Text: ({hostname}): {archiveURL}\n");
+                    }*/
+                    string hostname = new Uri(link).Host.Replace("www.", "");
+                    ArchivedLinks.Add($"* **By [{comment.Author}]({comment.Shortlink})** ([{hostname}]({link})): Placeholder Text.\n"); //FIXME: comment.Shortlink is wrong
                 }
+            }
+            string actualLinkID = comment.LinkId.Substring(3); // because apparently the link id starting with t3_ is intended for reasons but it's useless here
+            bool bHasPostITT = ReplyDict.ContainsKey(actualLinkID);
+            if (bHasPostITT)
+            {
+                Console.WriteLine($"Already have post in {actualLinkID}, getting comment {ReplyDict[actualLinkID]}");
+                //Comment botComment = reddit.GetComment(config.SubReddit, actualLinkID, ReplyDict[actualLinkID]);
+                string botCommentThingID = "t1_" + ReplyDict[actualLinkID]; // thanks redditsharp for having broken GetComment methods
+                Comment botComment = (Comment)reddit.GetThingByFullname(botCommentThingID);
+                EditArchiveListComment(botComment, ArchivedLinks);
+            }
+            else
+            {
+                Console.WriteLine($"No comment in {actualLinkID} to edit, making new one");
+                //PostArchiveLinks(config, ReplyDict, "Archives for links in comments:\n\n", "Archives for links in comments:\n\n", "", "", null, ArchivedLinks); // TODO: get post object from actualLinkID
             }
             commentsSeenList.Add(commentID);
         }
@@ -336,11 +340,11 @@ namespace Mnemosyne_Of_Mine
             string LinksListBody = "";
             foreach (string str in ArchiveLinks)
             {
-                LinksListBody += str + "\n";
+                LinksListBody += str;
             }
             string c = head
                 + LinksListBody
-                + "\n\n" + footer
+                + "\n" + footer
                 + config.FlavorText[random.Next(0, config.FlavorText.Length - 1)]
                 + botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
@@ -359,27 +363,29 @@ namespace Mnemosyne_Of_Mine
                 string[] oldCommentLines = targetComment.Body.Split(new string[] { "\n" }, StringSplitOptions.None);
                 if (oldCommentLines != null && oldCommentLines.Length >= 1)
                 {
-                    string[] head = oldCommentLines.Take(oldCommentLines.Length - 6).ToArray();
-                    //Console.WriteLine("================");
-                    //Console.WriteLine(String.Join("\n", head));
-                    //Console.WriteLine("================");
-                    string[] tail = oldCommentLines.Skip(oldCommentLines.Length - 6).ToArray();
-                    //Console.WriteLine(String.Join("\n", tail));
-                    //Console.WriteLine("================");
+                    string[] head = oldCommentLines.Take(oldCommentLines.Length - 3).ToArray();
+                    Console.WriteLine("=====HEAD=====");
+                    Console.WriteLine(String.Join("\n", head));
+                    Console.WriteLine("=====TAIL=====");
+                    string[] tail = oldCommentLines.Skip(oldCommentLines.Length - 3).ToArray();
+                    Console.WriteLine(String.Join("\n", tail));
+                    Console.WriteLine("==============");
 
                     newCommentText += String.Join("\n", head);
                     if (head.Length >= 1)
                     {
                         if (head[head.Length - 1].StartsWith("* **By"))
                         {
+                            Console.WriteLine("Adding to comment archive list");
                             foreach (string str in ArchivesToInsert)
                             {
-                                newCommentText += str;
+                                newCommentText += "\n" + str;
                             }
                             bEditGood = true;
                         }
                         else if (head[head.Length - 1].StartsWith("* **Link"))
                         {
+                            Console.WriteLine("No existing comment archive list to add to, starting one");
                             newCommentText += "\n\n----\nArchives for links in comments: \n\n";
                             foreach(string str in ArchivesToInsert)
                             {
