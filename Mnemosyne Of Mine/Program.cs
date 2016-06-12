@@ -342,40 +342,73 @@ namespace Mnemosyne_Of_Mine
             Console.WriteLine(c);
         }
 
-        static void EditArchiveListComment(Comment targetComment)
+        static void EditArchiveListComment(Comment targetComment, List<string> ArchivesToInsert)
         {
-            string[] oldCommentLines = targetComment.Body.Split(new string[]{"\n"}, StringSplitOptions.None);
-            if (oldCommentLines != null && oldCommentLines.Length > 1)
+            if (ArchivesToInsert.Count > 0)
             {
-                int editIndex = (oldCommentLines.Length - 1) - 7;
-                if(editIndex > 1)
+                bool bEditGood = false;
+                string newCommentText = "";
+                string[] oldCommentLines = targetComment.Body.Split(new string[] { "\n" }, StringSplitOptions.None);
+                if (oldCommentLines != null && oldCommentLines.Length >= 1)
                 {
-                    if (oldCommentLines[editIndex - 1].StartsWith("* **By"))
+                    string[] head = oldCommentLines.Take(oldCommentLines.Length - 8).ToArray();
+                    string[] tail = oldCommentLines.Skip(oldCommentLines.Length - 8).ToArray(); // may need to be 7?
+                    for (int i = 0; i < head.Length; i++)
                     {
-                        // just start adding the new archive lines here
-                        // * **By [{username}]({commentLink})** ([{hostname}]({link})): {archiveURL}\n
+                        newCommentText += head[i];
                     }
-                    else if(oldCommentLines[editIndex - 1].StartsWith("* **Link"))
+                    if (head.Length >= 1)
                     {
-                        // add archive links for comments header
-                        // then start adding archive lines
-                        // Archive links for links in comments: \n\n
-                        // * **By [{username}]({commentLink})** ([{hostname}]({link})): {archiveURL}\n
+                        if (head[head.Length - 1].StartsWith("* **By"))
+                        {
+                            foreach (string str in ArchivesToInsert)
+                            {
+                                newCommentText += str;
+                            }
+                            bEditGood = true;
+                            // just start adding the new archive lines here
+                            // * **By [{username}]({commentLink})** ([{hostname}]({link})): {archiveURL}\n
+                        }
+                        else if (head[head.Length - 1].StartsWith("* **Link"))
+                        {
+                            newCommentText += "Archive links for links in comments: \n\n";
+                            foreach(string str in ArchivesToInsert)
+                            {
+                                newCommentText += str;
+                            }
+                            bEditGood = true;
+                            // add archive links for comments header
+                            // then start adding archive lines
+                            // Archive links for links in comments: \n\n
+                            // * **By [{username}]({commentLink})** ([{hostname}]({link})): {archiveURL}\n
+                        }
+                        else
+                        {
+                            Console.WriteLine("Good job you can't even count right");
+                        }
+                        for(int i = 0; i < tail.Length; i++)
+                        {
+                            newCommentText += tail;
+                        }
                     }
                     else
                     {
-                        // wait what the fuck
-                        // how
+                        Console.WriteLine("Comment head somehow empty, ya blew it");
                     }
                 }
                 else
                 {
-                    // definitely shouldn't happen but I wouldn't be surprised if it does
+                    Console.WriteLine("You can't even split the comment right what the shit");
                 }
+                /*if(bEditGood)
+                {
+                    targetComment.EditText(NewCommentText);
+                }*/
             }
-
-            //string NewCommentText = "";
-            //targetComment.EditText(NewCommentText);
+            else
+            {
+                Console.WriteLine("Called to edit comment but got empty insertion list");
+            }
         }
 
         static Dictionary<string,string> ReadReplyTrackingFile(string file)
