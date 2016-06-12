@@ -46,7 +46,6 @@ namespace Mnemosyne_Of_Mine
             AuthProvider OAuthProvider;
             string OAuthToken = "";
             bool bAuthenticated = false;
-
             if (ReleventInfo.bUseOAuth)
             {
                 OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI);
@@ -113,12 +112,17 @@ namespace Mnemosyne_Of_Mine
                             }
                             System.Threading.Thread.Sleep(2000);
                         }
-                        if (isMnemosyneThereAlready && !post.IsSelfPost)
+                        if (isMnemosyneThereAlready || !post.IsSelfPost)
                         {
                             break;
                         }
                         List<string> ArchiveLinks = new List<string>();
-                        if (!isMnemosyneThereAlready)
+                        List<string> LinksToArchive = LinkFinder.FindLinks(post.SelfTextHtml);
+                        if (LinksToArchive.Count < 1)
+                        {
+                            break;
+                        }
+                        if (!isMnemosyneThereAlready && post.IsSelfPost)
                         {
                             string archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString());
                             if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
@@ -128,14 +132,9 @@ namespace Mnemosyne_Of_Mine
                         }
                         if (post.IsSelfPost)
                         {
-                            List<string> LinksToArchive = LinkFinder.FindLinks(post.SelfTextHtml);
                             int counter = 1;
                             foreach (string link in LinksToArchive)
                             {
-                                if(LinksToArchive.Count < 1)
-                                {
-                                    break;
-                                }
                                 if (!exclude.IsMatch(link))
                                 {
                                     // already rate limited

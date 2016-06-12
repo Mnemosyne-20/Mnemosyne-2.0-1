@@ -46,7 +46,7 @@ namespace Mnemosyne_Of_Mine
                     bUseOAuth = true;
                 }
                 writer.WriteStartElement("UseOAuth");
-                writer.WriteString(bUseOAuth.ToString());
+                writer.WriteString(bUseOAuth.ToString().ToLower());
                 writer.WriteEndElement();
                 if (bUseOAuth)
                 {
@@ -78,6 +78,7 @@ namespace Mnemosyne_Of_Mine
                 writer.WriteEndElement();
                 Console.WriteLine("You have to add flavortext manually after the fact, go into the config file and seperate each flavor text with a \"");
                 writer.WriteStartElement("flavortext");
+                writer.WriteString("");
                 writer.WriteEndElement();
                 writer.WriteEndElement();
                 writer.WriteEndDocument();

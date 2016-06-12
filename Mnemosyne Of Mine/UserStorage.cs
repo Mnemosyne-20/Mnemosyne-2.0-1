@@ -9,11 +9,6 @@ namespace Mnemosyne_Of_Mine
         /// This is the userdata, stored in an object, this helps lol
         /// </summary>
         /// <param name="path">the path to the config file</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.Int32.Parse(System.String)")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.Int32.Parse(System.String,System.Globalization.NumberStyles)")]
         public UserData(string path)
         {
             var readers = new StringReader(File.ReadAllText(path));
@@ -27,7 +22,7 @@ namespace Mnemosyne_Of_Mine
                 reader.ReadToFollowing("SleepTime");
                 SleepTime = reader.ReadElementContentAsInt();
                 reader.ReadToFollowing("UseOAuth");
-                bUseOAuth = Convert.ToBoolean(reader.ReadElementContentAsString());
+                bUseOAuth = reader.ReadElementContentAsBoolean();
                 if (bUseOAuth)
                 {
                     reader.ReadToFollowing("OAuthClientID");
@@ -39,17 +34,17 @@ namespace Mnemosyne_Of_Mine
                 }
                 reader.ReadToFollowing("Username");
                 Username = reader.ReadElementContentAsString();
-                reader.ReadToFollowing("Password");
-                Password = reader.ReadElementContentAsString();
-                reader.ReadToFollowing("flavortext");
-                FlavorText = reader.ReadElementContentAsString().Split('\"'); // split by a " because commas
                 try
-                {
+                { 
+                    reader.ReadToFollowing("Password");
+                    Password = reader.ReadElementContentAsString();
+                    reader.ReadToFollowing("flavortext");
+                    FlavorText = reader.ReadElementContentAsString().Split('\"'); // split by a " because commas
                     reader.ReadToFollowing("Repost");
                     Repost = reader.ReadElementContentAsString();
                 }
 #pragma warning disable CS0168 // Variable is declared but never used
-                catch (System.Exception e)
+                catch (Exception e)
 #pragma warning restore CS0168 // Variable is declared but never used
                 {
                     
@@ -57,7 +52,6 @@ namespace Mnemosyne_Of_Mine
             }
         }
         public string Password { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public string OAuth { get; private set; }
         public string[] FlavorText { get; private set; }
         public string Username { get; private set; }
