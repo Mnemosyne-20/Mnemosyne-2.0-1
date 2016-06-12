@@ -34,8 +34,8 @@ namespace Mnemosyne_Of_Mine
             Console.Title = "Mnemosyne by chugga_fan, Archive AWAY!";
             #region constants
             var exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be)");
-            string d_head = "Archive links for this discussion: \n\n";
-            string p_head = "Archive links for this post: \n\n";
+            string d_head = "Archive for this discussion: \n\n";
+            string p_head = "Archive for this post: \n\n";
             string footer = "----\n\nI am Mnemosyne 2.0, ";
             string botsrights = "^^^^/r/botsrights";
             #endregion
@@ -85,7 +85,7 @@ namespace Mnemosyne_Of_Mine
                 Console.WriteLine("User authentication failed");
             }
             createFiles();
-            Subreddit sub = reddit.GetSubreddit(ReleventInfo.SubReddit);
+            Subreddit sub = reddit.GetSubreddit(ReleventInfo.SubReddit); // TODO: handle exceptions when reddit is under heavy load and fecal matter hits the rotary impeller
             Subreddit repostSub;
             if (ReleventInfo.Repost != null && ReleventInfo.Repost != "")
             {
@@ -149,7 +149,7 @@ namespace Mnemosyne_Of_Mine
                     {
                         if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
                         {
-                            ArchiveCommentLinks(ReleventInfo, ReplyDict, comment, exclude, commentsSeenList);
+                            ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, exclude, commentsSeenList);
                         }
                         File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray()); // may be better to write this after the loop?
                     }
@@ -293,7 +293,7 @@ namespace Mnemosyne_Of_Mine
         }
 
         // this isn't anywhere near complete, usable, ready, or sanitary. do not ingest.
-        static void ArchiveCommentLinks(UserData config, Dictionary<string,string> ReplyDict, Comment comment, Regex exclusions, List<string> commentsSeenList)
+        static void ArchiveCommentLinks(UserData config, Dictionary<string,string> ReplyDict, Reddit reddit, Comment comment, Regex exclusions, List<string> commentsSeenList)
         {
             List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
             List<string> ArchivedLinks = new List<string>();
@@ -316,6 +316,13 @@ namespace Mnemosyne_Of_Mine
                                 string hostname = new Uri(link).Host;
                                 ArchivedLinks.Add($"Placeholder Text: ({hostname}): {archiveURL}\n");
                             }*/
+                            string hostname = new Uri(link).Host.Replace("www.", "");
+                            ArchivedLinks.Add($"* **By [{comment.Author}]({comment.Shortlink})** ([{hostname}]({link})): *soon.*\n");
+                            Console.WriteLine($"Getting comment {ReplyDict[actualLinkID]} in post {actualLinkID} from sub {config.SubReddit}");
+                            //Comment botComment = reddit.GetComment(config.SubReddit, actualLinkID, ReplyDict[actualLinkID]);
+                            string botCommentThingID = "t1_" + ReplyDict[actualLinkID]; // thanks redditsharp for having broken GetComment methods
+                            Comment botComment = (Comment)reddit.GetThingByFullname(botCommentThingID);
+                            EditArchiveListComment(botComment, ArchivedLinks);
                         }
                     }
                 }
@@ -346,17 +353,21 @@ namespace Mnemosyne_Of_Mine
         {
             if (ArchivesToInsert.Count > 0)
             {
+                Console.WriteLine($"Editing comment {targetComment.Id}");
                 bool bEditGood = false;
                 string newCommentText = "";
                 string[] oldCommentLines = targetComment.Body.Split(new string[] { "\n" }, StringSplitOptions.None);
                 if (oldCommentLines != null && oldCommentLines.Length >= 1)
                 {
-                    string[] head = oldCommentLines.Take(oldCommentLines.Length - 8).ToArray();
-                    string[] tail = oldCommentLines.Skip(oldCommentLines.Length - 8).ToArray(); // may need to be 7?
-                    for (int i = 0; i < head.Length; i++)
-                    {
-                        newCommentText += head[i];
-                    }
+                    string[] head = oldCommentLines.Take(oldCommentLines.Length - 6).ToArray();
+                    //Console.WriteLine("================");
+                    //Console.WriteLine(String.Join("\n", head));
+                    //Console.WriteLine("================");
+                    string[] tail = oldCommentLines.Skip(oldCommentLines.Length - 6).ToArray();
+                    //Console.WriteLine(String.Join("\n", tail));
+                    //Console.WriteLine("================");
+
+                    newCommentText += String.Join("\n", head);
                     if (head.Length >= 1)
                     {
                         if (head[head.Length - 1].StartsWith("* **By"))
@@ -366,30 +377,21 @@ namespace Mnemosyne_Of_Mine
                                 newCommentText += str;
                             }
                             bEditGood = true;
-                            // just start adding the new archive lines here
-                            // * **By [{username}]({commentLink})** ([{hostname}]({link})): {archiveURL}\n
                         }
                         else if (head[head.Length - 1].StartsWith("* **Link"))
                         {
-                            newCommentText += "Archive links for links in comments: \n\n";
+                            newCommentText += "\n\n----\nArchives for links in comments: \n\n";
                             foreach(string str in ArchivesToInsert)
                             {
                                 newCommentText += str;
                             }
                             bEditGood = true;
-                            // add archive links for comments header
-                            // then start adding archive lines
-                            // Archive links for links in comments: \n\n
-                            // * **By [{username}]({commentLink})** ([{hostname}]({link})): {archiveURL}\n
                         }
                         else
                         {
                             Console.WriteLine("Good job you can't even count right");
                         }
-                        for(int i = 0; i < tail.Length; i++)
-                        {
-                            newCommentText += tail;
-                        }
+                        newCommentText += String.Join("\n", tail);
                     }
                     else
                     {
@@ -400,10 +402,11 @@ namespace Mnemosyne_Of_Mine
                 {
                     Console.WriteLine("You can't even split the comment right what the shit");
                 }
-                /*if(bEditGood)
+                if(bEditGood)
                 {
-                    targetComment.EditText(NewCommentText);
-                }*/
+                    targetComment.EditText(newCommentText);
+                    Console.WriteLine(newCommentText);
+                }
             }
             else
             {
