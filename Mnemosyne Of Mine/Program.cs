@@ -342,9 +342,40 @@ namespace Mnemosyne_Of_Mine
             Console.WriteLine(c);
         }
 
-        static void EditArchiveListComment()
+        static void EditArchiveListComment(Comment targetComment)
         {
+            string[] oldCommentLines = targetComment.Body.Split(new string[]{"\n"}, StringSplitOptions.None);
+            if (oldCommentLines != null && oldCommentLines.Length > 1)
+            {
+                int editIndex = (oldCommentLines.Length - 1) - 7;
+                if(editIndex > 1)
+                {
+                    if (oldCommentLines[editIndex - 1].StartsWith("* **By"))
+                    {
+                        // just start adding the new archive lines here
+                        // * **By [{username}]({commentLink})** ([{hostname}]({link})): {archiveURL}\n
+                    }
+                    else if(oldCommentLines[editIndex - 1].StartsWith("* **Link"))
+                    {
+                        // add archive links for comments header
+                        // then start adding archive lines
+                        // Archive links for links in comments: \n\n
+                        // * **By [{username}]({commentLink})** ([{hostname}]({link})): {archiveURL}\n
+                    }
+                    else
+                    {
+                        // wait what the fuck
+                        // how
+                    }
+                }
+                else
+                {
+                    // definitely shouldn't happen but I wouldn't be surprised if it does
+                }
+            }
 
+            //string NewCommentText = "";
+            //targetComment.EditText(NewCommentText);
         }
 
         static Dictionary<string,string> ReadReplyTrackingFile(string file)
