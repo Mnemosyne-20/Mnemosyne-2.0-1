@@ -111,9 +111,13 @@ namespace Mnemosyne_Of_Mine
                             }
                             System.Threading.Thread.Sleep(2000);
                         }
-                        if (isMnemosyneThereAlready || !post.IsSelfPost)
+                        if (isMnemosyneThereAlready)
                         {
                             break;
+                        }
+                        if(!post.IsSelfPost)
+                        {
+                            continue;
                         }
                         List<string> ArchiveLinks = new List<string>();
                         List<string> LinksToArchive = LinkFinder.FindLinks(post.SelfTextHtml);
