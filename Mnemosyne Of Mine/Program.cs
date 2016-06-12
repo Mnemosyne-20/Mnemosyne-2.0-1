@@ -21,6 +21,12 @@ namespace Mnemosyne_Of_Mine
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "botsrights")]
 
         static Random random = new Random();
+        static List<string> ArchiveBots = new List<string>()
+        {
+            "mnemosyne-0001",
+            "mnemosyne-0002",
+            "SpootsTestBot" // hey I know you!
+        };
 
         static void Main(string[] args)
         {
@@ -107,7 +113,7 @@ namespace Mnemosyne_Of_Mine
                         }
                         foreach (var comment in post.Comments)
                         {
-                            if (comment.Author == "mnemosyne-0001") // don't need to check for self, that's what the already-replied list is for
+                            if (ArchiveBots.Contains(comment.Author))
                             {
                                 isMnemosyneThereAlready = true; // check for the other bot, will add option for more later TODO: check other bots, inc, self
                                 break;
@@ -142,7 +148,10 @@ namespace Mnemosyne_Of_Mine
                     }
                     foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit)) // not entirely happy on this
                     {
-                        ArchiveCommentLinks(ReleventInfo, comment, exclude, commentsSeenList);
+                        if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
+                        {
+                            ArchiveCommentLinks(ReleventInfo, comment, exclude, commentsSeenList);
+                        }
                         File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray()); // may be better to write this after the loop?
                     }
                     Console.Title = $"waiting for next batch from {sub.Name}";
@@ -172,7 +181,7 @@ namespace Mnemosyne_Of_Mine
                     }
 #endif
                 }
-                catch (System.Net.WebException)
+                catch (System.Net.WebException) // I would prefer to find *why* this is even throwing at all
                 {
                     OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI);
                     OAuthToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
