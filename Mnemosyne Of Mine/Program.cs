@@ -196,7 +196,17 @@ namespace Mnemosyne_Of_Mine
                 catch (System.Net.WebException)
                 {
                     OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI);
-                    OAuthToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
+                    redo:
+                    try
+                    {
+
+                        OAuthToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
+                    }
+                    catch
+                    {
+                        goto redo;
+                    }
+                    ;
                     reddit = new Reddit(OAuthToken);
                     reddit.InitOrUpdateUser();
                 }
