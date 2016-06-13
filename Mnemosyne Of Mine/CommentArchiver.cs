@@ -20,39 +20,41 @@ namespace Mnemosyne_Of_Mine
         /// <param name="ReplyDict"></param>
         /// <param name="reddit"></param>
         /// <param name="comment"></param>
-        /// <param name="exclusions"></param>
         /// <param name="FoundLinks"></param>
         /// <param name="commentsSeenList"></param>
-        /// <param name="footer"></param>
-        /// <param name="botsrights"></param>
-        internal static void ArchiveCommentLinks(UserData config, Dictionary<string, string> ReplyDict, Reddit reddit, Comment comment, Regex exclusions, List<string> FoundLinks, List<string> commentsSeenList, string footer = "I am Mnemosyne 2.0, ", string botsrights = "^^^^/r/botsrights") // this is too much
+        internal static void ArchiveCommentLinks(UserData config, Dictionary<string, string> ReplyDict, Reddit reddit, Comment comment, List<string> FoundLinks, List<string> commentsSeenList) // not as bad now
         {            
             List<string> ArchivedLinks = new List<string>();
             string commentID = comment.Id;
+            string postID = comment.LinkId.Substring(3);
             foreach (string link in FoundLinks)
             {
                 // foreach already handles empty collection case
-                if (!exclusions.IsMatch(link))
+                if (!Program.exclude.IsMatch(link))
                 {
                     Console.WriteLine($"Found {link} in comment {commentID}");
                     string hostname = new Uri(link).Host.Replace("www.", "");
-                    ArchivedLinks.Add($"* **By [{comment.Author}]({comment.Shortlink})** ([{hostname}]({link})): Placeholder Text.\n"); //FIXME: comment.Shortlink is wrong
+                    string commentLink = $"https://www.reddit.com/comments/{postID}/_/{comment.Id}"; // ugly way to get comment link
+                    string archiveURL = Archiving.Archive(@"archive.is", link);
+                    if (Archiving.VerifyArchiveResult(link, archiveURL))
+                    {
+                        ArchivedLinks.Add($"* **By [{comment.Author}]({commentLink})** ([{hostname}]({link})): {archiveURL}\n");
+                    }                    
                 }
             }
-            string actualLinkID = comment.LinkId.Substring(3); // because apparently the link id starting with t3_ is intended for reasons but it's useless here
-            bool bHasPostITT = ReplyDict.ContainsKey(actualLinkID);
+            bool bHasPostITT = ReplyDict.ContainsKey(postID);
             if (bHasPostITT)
             {
-                Console.WriteLine($"Already have post in {actualLinkID}, getting comment {ReplyDict[actualLinkID]}");
-                string botCommentThingID = "t1_" + ReplyDict[actualLinkID];
+                Console.WriteLine($"Already have post in {postID}, getting comment {ReplyDict[postID]}");
+                string botCommentThingID = "t1_" + ReplyDict[postID];
                 Comment botComment = (Comment)reddit.GetThingByFullname(botCommentThingID);
                 EditArchiveListComment(botComment, ArchivedLinks);
             }
             else
             {
-                Console.WriteLine($"No comment in {actualLinkID} to edit, making new one");
+                Console.WriteLine($"No comment in {postID} to edit, making new one");
                 Post post = (Post)reddit.GetThingByFullname(comment.LinkId);
-                PostArchiveLinks(config, ReplyDict, "Archives for links in comments:\n\n", "Archives for links in comments:\n\n", footer, botsrights, post, ArchivedLinks); // TODO: ugly
+                PostArchiveLinks(config, ReplyDict, Program.c_head, post, ArchivedLinks); // TODO: ugly
             }
             commentsSeenList.Add(commentID);
         }
@@ -61,16 +63,13 @@ namespace Mnemosyne_Of_Mine
         /// </summary>
         /// <param name="config"></param>
         /// <param name="ReplyDict"></param>
-        /// <param name="d_head"></param>
-        /// <param name="p_head"></param>
-        /// <param name="footer"></param>
-        /// <param name="botsrights"></param>
+        /// <param name="head"></param>
         /// <param name="post"></param>
         /// <param name="ArchiveLinks"></param>
         /// <returns>dictoinary of replied to list, so that it updates</returns>
-        internal static Dictionary<string, string> PostArchiveLinks(UserData config, Dictionary<string, string> ReplyDict, string d_head, string p_head, string footer, string botsrights, Post post, List<string> ArchiveLinks) // need to make these params optional, most of them anyways, so that we don't have to call this rediculous thing
+        internal static Dictionary<string, string> PostArchiveLinks(UserData config, Dictionary<string, string> ReplyDict, string head, Post post, List<string> ArchiveLinks)
         {
-            string head = post.IsSelfPost ? d_head : p_head;
+            //string head = post.IsSelfPost ? Program.d_head : Program.p_head;
             string LinksListBody = "";
             foreach (string str in ArchiveLinks)
             {
@@ -78,9 +77,9 @@ namespace Mnemosyne_Of_Mine
             }
             string c = head
                 + LinksListBody
-                + "\n" + footer
+                + "\n" + Program.footer
                 + config.FlavorText[random.Next(0, config.FlavorText.Length - 1)]
-                + botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
+                + Program.botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
             Comment botComment = post.Comment(c);
             ReplyDict.Add(post.Id, botComment.Id);

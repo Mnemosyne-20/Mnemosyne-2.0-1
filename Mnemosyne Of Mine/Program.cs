@@ -21,11 +21,12 @@ namespace Mnemosyne_Of_Mine
             "SpootsTestBot" // hey I know you!
         };
         #region constants
-        static Regex exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be)");
-        static string d_head = "Archives for links in this post: \n\n";
-        static string p_head = "Archive for this post: \n\n";
-        static string footer = "----\nI am Mnemosyne 2.0, ";
-        static string botsrights = "^^^^/r/botsrights";
+        internal static Regex exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be)");
+        internal static string d_head = "Archives for links in this post: \n\n";
+        internal static string p_head = "Archive for this post: \n\n";
+        internal static string c_head = "Archives for links in comments: \n\n";
+        internal static string footer = "----\nI am Mnemosyne 2.0, ";
+        internal static string botsrights = "^^^^/r/botsrights";
         #endregion
         static void Main(string[] args)
         {
@@ -134,7 +135,7 @@ namespace Mnemosyne_Of_Mine
                             }
                             if (ArchiveLinks.Count >= 1)
                             {
-                                ReplyDict = CommentArchiver.PostArchiveLinks(ReleventInfo, ReplyDict, d_head, p_head, footer, botsrights, post, ArchiveLinks);
+                                ReplyDict = CommentArchiver.PostArchiveLinks(ReleventInfo, ReplyDict, d_head, post, ArchiveLinks);
                                 CommentArchiver.WriteReplyTrackingFile(ReplyDict); // this should probably be done elsewhere
                             }
                         }
@@ -150,7 +151,7 @@ namespace Mnemosyne_Of_Mine
                         List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
                         if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
                         {
-                            CommentArchiver.ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, exclude, FoundLinks, commentsSeenList, footer, botsrights);
+                            CommentArchiver.ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, FoundLinks, commentsSeenList);
                         }
                         File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray());
                         CommentArchiver.WriteReplyTrackingFile(ReplyDict);
@@ -287,16 +288,14 @@ namespace Mnemosyne_Of_Mine
             {
                 if (!exclusions.IsMatch(link))
                 {
-                    //string archiveURL = Archiving.Archive(@"archive.is", link);
-                    //if (Archiving.VerifyArchiveResult(link, archiveURL))
-                    //{
+                    string archiveURL = Archiving.Archive(@"archive.is", link);
+                    if (Archiving.VerifyArchiveResult(link, archiveURL))
+                    {
                         string hostname = new Uri(link).Host.Replace("www.","");
-                        string archiveURL = "Placeholder Text";
                         ArchiveLinks.Add($"* **Link: {counter.ToString()}** ([{hostname}]({link})): {archiveURL}\n");
-                    //}
+                    }
                 }
                 ++counter;
-                // putting counter increment here would fix the "Link X isn't the Xth link" situation when posts also have links that are excluded from archiving
             }
             return ArchiveLinks;            
         }
