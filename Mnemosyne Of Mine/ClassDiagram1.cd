@@ -1,25 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="NameAndType">
   <Class Name="Mnemosyne_Of_Mine.ImageComparer" Collapsed="true">
-    <Position X="4.75" Y="0.5" Width="1.5" />
+    <Position X="7" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAQAAAAAAAAAAAAAAAAAEAAAIAAAAAAAAAAEAIAAA=</HashCode>
       <FileName>ImageComparison.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Mnemosyne_Of_Mine.Program" Collapsed="true">
-    <Position X="3" Y="1.5" Width="1.5" />
+    <Position X="5.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AgAQAAAAAAAAABAAAAAAAAAAAAAIAAAAAAAABAAAAAA=</HashCode>
+      <HashCode>AgEQAAQAAAAAABAAAAgAAACAABAIAAAAAAABBAAAgAA=</HashCode>
       <FileName>Program.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="System.Object" Collapsed="true">
-    <Position X="0.5" Y="0.5" Width="1.5" />
+    <Position X="1.75" Y="0.5" Width="1.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="Mnemosyne_Of_Mine.ConfigWriter" Collapsed="true">
-    <Position X="3" Y="0.5" Width="1.5" />
+    <Position X="5.25" Y="0.5" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -29,7 +29,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Mnemosyne_Of_Mine.Sql" Collapsed="true">
-    <Position X="4.75" Y="1.5" Width="1.5" />
+    <Position X="7" Y="1.5" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -50,10 +50,17 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Mnemosyne_Of_Mine.LinkFinder" Collapsed="true">
-    <Position X="6.5" Y="0.5" Width="1.5" />
+    <Position X="8.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
       <FileName>LinkFinder.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mnemosyne_Of_Mine.CommentArchiver" Collapsed="true">
+    <Position X="2.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAIAAAAAEAAAIQAAAQAAAA=</HashCode>
+      <FileName>CommentArchiver.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />
