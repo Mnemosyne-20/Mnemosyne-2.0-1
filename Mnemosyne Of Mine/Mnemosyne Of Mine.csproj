@@ -105,6 +105,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommentArchiver.cs" />
     <Compile Include="LinkFinder.cs" />
     <Compile Include="UserStorage.cs" />
     <Compile Include="ImageComparison.cs" />
