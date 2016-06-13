@@ -7,14 +7,21 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Mnemosyne_Of_Mine
 {
     class CommentArchiver
     {
         static Random random = new Random();
-        // this is possibly fine now
+        /// <summary>
+        /// Archives comments that contain links
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="ReplyDict"></param>
+        /// <param name="reddit"></param>
+        /// <param name="comment"></param>
+        /// <param name="FoundLinks"></param>
+        /// <param name="commentsSeenList"></param>
         internal static void ArchiveCommentLinks(UserData config, Dictionary<string, string> ReplyDict, Reddit reddit, Comment comment, List<string> FoundLinks, List<string> commentsSeenList) // not as bad now
         {            
             List<string> ArchivedLinks = new List<string>();
@@ -59,6 +66,7 @@ namespace Mnemosyne_Of_Mine
         /// <param name="head"></param>
         /// <param name="post"></param>
         /// <param name="ArchiveLinks"></param>
+        /// <returns>dictoinary of replied to list, so that it updates</returns>
         internal static Dictionary<string, string> PostArchiveLinks(UserData config, Dictionary<string, string> ReplyDict, string head, Post post, List<string> ArchiveLinks)
         {
             //string head = post.IsSelfPost ? Program.d_head : Program.p_head;
@@ -136,7 +144,11 @@ namespace Mnemosyne_Of_Mine
                 Console.WriteLine("Called to edit comment but got empty insertion list");
             }
         }
-
+        /// <summary>
+        /// Reads the file where we track who we reply to
+        /// </summary>
+        /// <param name="file">file that we're using</param>
+        /// <returns>dictionary of replys and comment ids</returns>
         internal static Dictionary<string, string> ReadReplyTrackingFile(string file)
         {
             Dictionary<string, string> replyDict = new Dictionary<string, string>();
