@@ -135,9 +135,10 @@ namespace Mnemosyne_Of_Mine
                     {
                         foreach (Comment comment in post.Comments) // It throttles on its own, but it will take ALL comments on the thread this way
                         {
+                            List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
                             if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
                             {
-                                CommentArchiver.ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, exclude, commentsSeenList);
+                                CommentArchiver.ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, exclude, FoundLinks, commentsSeenList, footer, botsrights);
                             }
                         }
                         File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray());
@@ -281,7 +282,5 @@ namespace Mnemosyne_Of_Mine
             }
             return ArchiveLinks;            
         }
-
-
     }
 }
