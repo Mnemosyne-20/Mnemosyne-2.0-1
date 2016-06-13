@@ -145,16 +145,12 @@ namespace Mnemosyne_Of_Mine
                             }
                         }
                     }
-
+                    //FIXME: this being so close to post link archiving could potentially cause double comments and bot may hurt itself in its confusion
                     foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit)) // not entirely happy on this, hopefully redditsharp throttles things on its own if needed
                     {
                         if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
                         {
-                            List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
-                            if (FoundLinks.Count >= 1)
-                            {
-                                ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, FoundLinks, exclude, commentsSeenList, footer, botsrights);
-                            }
+                            ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, exclude, commentsSeenList);
                         }
                         File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray()); // may be better to write this after the loop?
                     }
@@ -298,9 +294,10 @@ namespace Mnemosyne_Of_Mine
             return ArchiveLinks;            
         }
 
-        // might be safe now
-        static void ArchiveCommentLinks(UserData config, Dictionary<string,string> ReplyDict, Reddit reddit, Comment comment, List<string> FoundLinks, Regex exclusions, List<string> commentsSeenList, string footer, string botsrights) // this is too much
+        // this isn't anywhere near complete, usable, ready, or sanitary. do not ingest.
+        static void ArchiveCommentLinks(UserData config, Dictionary<string,string> ReplyDict, Reddit reddit, Comment comment, Regex exclusions, List<string> commentsSeenList)
         {
+            List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
             List<string> ArchivedLinks = new List<string>();
             string commentID = comment.Id;
             foreach (string link in FoundLinks)
@@ -319,20 +316,20 @@ namespace Mnemosyne_Of_Mine
                     ArchivedLinks.Add($"* **By [{comment.Author}]({comment.Shortlink})** ([{hostname}]({link})): Placeholder Text.\n"); //FIXME: comment.Shortlink is wrong
                 }
             }
-            string actualLinkID = comment.LinkId.Substring(3);
+            string actualLinkID = comment.LinkId.Substring(3); // because apparently the link id starting with t3_ is intended for reasons but it's useless here
             bool bHasPostITT = ReplyDict.ContainsKey(actualLinkID);
             if (bHasPostITT)
             {
                 Console.WriteLine($"Already have post in {actualLinkID}, getting comment {ReplyDict[actualLinkID]}");
-                string botCommentThingID = "t1_" + ReplyDict[actualLinkID];
+                //Comment botComment = reddit.GetComment(config.SubReddit, actualLinkID, ReplyDict[actualLinkID]);
+                string botCommentThingID = "t1_" + ReplyDict[actualLinkID]; // thanks redditsharp for having broken GetComment methods
                 Comment botComment = (Comment)reddit.GetThingByFullname(botCommentThingID);
                 EditArchiveListComment(botComment, ArchivedLinks);
             }
             else
             {
                 Console.WriteLine($"No comment in {actualLinkID} to edit, making new one");
-                Post post = (Post)reddit.GetThingByFullname(comment.LinkId);
-                PostArchiveLinks(config, ReplyDict, "Archives for links in comments:\n\n", "Archives for links in comments:\n\n", footer, botsrights, post, ArchivedLinks); //TODO: ugly
+                //PostArchiveLinks(config, ReplyDict, "Archives for links in comments:\n\n", "Archives for links in comments:\n\n", "", "", null, ArchivedLinks); // TODO: get post object from actualLinkID
             }
             commentsSeenList.Add(commentID);
         }
@@ -367,13 +364,19 @@ namespace Mnemosyne_Of_Mine
                 if (oldCommentLines != null && oldCommentLines.Length >= 1)
                 {
                     string[] head = oldCommentLines.Take(oldCommentLines.Length - 3).ToArray();
+                    Console.WriteLine("=====HEAD=====");
+                    Console.WriteLine(String.Join("\n", head));
+                    Console.WriteLine("=====TAIL=====");
                     string[] tail = oldCommentLines.Skip(oldCommentLines.Length - 3).ToArray();
+                    Console.WriteLine(String.Join("\n", tail));
+                    Console.WriteLine("==============");
 
                     newCommentText += String.Join("\n", head);
                     if (head.Length >= 1)
                     {
                         if (head[head.Length - 1].StartsWith("* **By"))
                         {
+                            Console.WriteLine("Adding to comment archive list");
                             foreach (string str in ArchivesToInsert)
                             {
                                 newCommentText += "\n" + str;
@@ -382,6 +385,7 @@ namespace Mnemosyne_Of_Mine
                         }
                         else if (head[head.Length - 1].StartsWith("* **Link"))
                         {
+                            Console.WriteLine("No existing comment archive list to add to, starting one");
                             newCommentText += "\n\n----\nArchives for links in comments: \n\n";
                             foreach(string str in ArchivesToInsert)
                             {
@@ -391,26 +395,23 @@ namespace Mnemosyne_Of_Mine
                         }
                         else
                         {
-                            Console.WriteLine($"Unexpected end of head: {head[head.Length - 1]}");
+                            Console.WriteLine("Good job you can't even count right");
                         }
                         newCommentText += String.Join("\n", tail);
                     }
                     else
                     {
-                        Console.WriteLine("Comment head was empty");
+                        Console.WriteLine("Comment head somehow empty, ya blew it");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Failed to split old comment");
+                    Console.WriteLine("You can't even split the comment right what the shit");
                 }
                 if(bEditGood)
                 {
                     targetComment.EditText(newCommentText);
-                }
-                else
-                {
-                    Console.WriteLine("Failed to build edited text");
+                    Console.WriteLine(newCommentText);
                 }
             }
             else
