@@ -136,16 +136,18 @@ namespace Mnemosyne_Of_Mine
                             }
                         }
                     }
-                    //FIXME: this being so close to post link archiving could potentially cause double comments and bot may hurt itself in its confusion
-                    foreach (Comment comment in sub.Comments) // It throttles on its own, but it will take ALL comments on the thread this way
+                    foreach (var post in sub.Posts.Take(ReleventInfo.ReqLimit))
                     {
-                        List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
-                        if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
+                        foreach (Comment comment in post.Comments) // It throttles on its own, but it will take ALL comments on the thread this way
                         {
-                            CommentArchiver.ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, exclude, FoundLinks, commentsSeenList, footer, botsrights);
+                            List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
+                            if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
+                            {
+                                CommentArchiver.ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, exclude, FoundLinks, commentsSeenList, footer, botsrights);
+                            }
                         }
+                        File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray());
                     }
-                    File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray());
                     Console.Title = $"waiting for next batch from {sub.Name}";
 #if REPOSTCHECK
                     if(repostSub != null)
