@@ -6,11 +6,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Mnemosyne_Of_Mine
 {
-    class CommentArchiver
+    static class CommentArchiver
     {
         static Random random = new Random();
         /// <summary>

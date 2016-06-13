@@ -216,7 +216,7 @@ namespace Mnemosyne_Of_Mine
             {
                 File.Create(@".\Failed.txt").Dispose();
             }
-            if (!File.Exists(@".\Comments_Seen.txt")) // this might end up being an absolutely terrible idea.
+            if (!File.Exists(@".\Comments_Seen.txt")) // this might end up being an absolutely terrible idea. //  I've got 300 gbs of storage space and can get a lot of decomissioned but not degaussed hardrives, it's fine
             {
                 File.Create(@".\Comments_Seen.txt").Dispose();
             }
