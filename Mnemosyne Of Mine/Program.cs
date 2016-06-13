@@ -279,16 +279,14 @@ namespace Mnemosyne_Of_Mine
             {
                 if (!exclusions.IsMatch(link))
                 {
-                    //string archiveURL = Archiving.Archive(@"archive.is", link);
-                    //if (Archiving.VerifyArchiveResult(link, archiveURL))
-                    //{
+                    string archiveURL = Archiving.Archive(@"archive.is", link);
+                    if (Archiving.VerifyArchiveResult(link, archiveURL))
+                    {
                         string hostname = new Uri(link).Host.Replace("www.","");
-                        string archiveURL = "Placeholder Text";
                         ArchiveLinks.Add($"* **Link: {counter.ToString()}** ([{hostname}]({link})): {archiveURL}\n");
-                    //}
+                    }
                 }
                 ++counter;
-                // putting counter increment here would fix the "Link X isn't the Xth link" situation when posts also have links that are excluded from archiving
             }
             return ArchiveLinks;            
         }

@@ -28,7 +28,11 @@ namespace Mnemosyne_Of_Mine
                     Console.WriteLine($"Found {link} in comment {commentID}");
                     string hostname = new Uri(link).Host.Replace("www.", "");
                     string commentLink = $"https://www.reddit.com/comments/{postID}/_/{comment.Id}"; // ugly way to get comment link
-                    ArchivedLinks.Add($"* **By [{comment.Author}]({commentLink})** ([{hostname}]({link})): Placeholder Text.\n");
+                    string archiveURL = Archiving.Archive(@"archive.is", link);
+                    if (Archiving.VerifyArchiveResult(link, archiveURL))
+                    {
+                        ArchivedLinks.Add($"* **By [{comment.Author}]({commentLink})** ([{hostname}]({link})): {archiveURL}\n");
+                    }                    
                 }
             }
             bool bHasPostITT = ReplyDict.ContainsKey(postID);
