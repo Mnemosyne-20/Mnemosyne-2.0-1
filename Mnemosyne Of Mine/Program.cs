@@ -17,7 +17,7 @@ namespace Mnemosyne_Of_Mine
         static List<string> ArchiveBots = new List<string>()
         {
             "mnemosyne-0001",
-            "mnemosyne-0002",
+            "mnemosyne-0002",// I've seen you!
             "SpootsTestBot" // hey I know you!
         };
         #region constants
@@ -46,6 +46,7 @@ namespace Mnemosyne_Of_Mine
             AuthProvider OAuthProvider;
             string OAuthToken = "";
             bool bAuthenticated = false;
+            #region password and OAuth
             if (ReleventInfo.Password == "Y")
             {
                 Console.WriteLine("Type in your password");
@@ -69,14 +70,15 @@ namespace Mnemosyne_Of_Mine
             {
                 Console.WriteLine("User authentication failed");
             }
+            #endregion
             createFiles();
             Subreddit sub = reddit.GetSubreddit(ReleventInfo.SubReddit); // TODO: handle exceptions when reddit is under heavy load and fecal matter hits the rotary impeller
-            Subreddit repostSub;
+            Subreddit repostSub;                                         // LOL AT THIS ^
             if (ReleventInfo.Repost != null && ReleventInfo.Repost != "")
             {
                 repostSub = reddit.GetSubreddit(ReleventInfo.Repost);
             }
-            bool isMnemosyneThereAlready = false;
+            bool isMnemosyneThereAlready = false; // ignore visual studio complaining about this
             Dictionary<string, string> ReplyDict = CommentArchiver.ReadReplyTrackingFile(@".\ReplyTracker.txt");
             string[] commentsSeen = File.ReadAllLines(@".\Comments_Seen.txt");
             List<string> commentsSeenList = commentsSeen.ToList();
@@ -113,6 +115,9 @@ namespace Mnemosyne_Of_Mine
                         if (post.IsSelfPost)
                         {
                             List<string> ArchiveLinks = new List<string>();
+                            ///<summary>
+                            ///This checks if we should archive or not based on ITSigno yelling at me
+                            /// </summary>
                             if(bDoPostArchiving)
                             {
                                 string archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString());
@@ -136,6 +141,9 @@ namespace Mnemosyne_Of_Mine
                     }
                     // need to check new comments on entire sub, not just comments on new posts, otherwise new comments on old posts would be missed
                     // this also gets comments in a flat stream so child comments are handled
+                    ///<summary>
+                    ///grabs new comments, may need to see if we need to do changes to the ReqLimit to be able to do this, as i currently have a low one of 30
+                    ///</summary>
                     foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit))
                     {
                         

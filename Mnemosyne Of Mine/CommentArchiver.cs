@@ -7,15 +7,25 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Mnemosyne_Of_Mine
 {
     class CommentArchiver
     {
         static Random random = new Random();
-        // this is possibly fine now
-        internal static void ArchiveCommentLinks(UserData config, Dictionary<string, string> ReplyDict, Reddit reddit, Comment comment, Regex exclusions, List<string> FoundLinks, List<string> commentsSeenList, string footer, string botsrights) // this is too much
+        /// <summary>
+        /// Archives comments that contain links
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="ReplyDict"></param>
+        /// <param name="reddit"></param>
+        /// <param name="comment"></param>
+        /// <param name="exclusions"></param>
+        /// <param name="FoundLinks"></param>
+        /// <param name="commentsSeenList"></param>
+        /// <param name="footer"></param>
+        /// <param name="botsrights"></param>
+        internal static void ArchiveCommentLinks(UserData config, Dictionary<string, string> ReplyDict, Reddit reddit, Comment comment, Regex exclusions, List<string> FoundLinks, List<string> commentsSeenList, string footer = "I am Mnemosyne 2.0, ", string botsrights = "^^^^/r/botsrights") // this is too much
         {            
             List<string> ArchivedLinks = new List<string>();
             string commentID = comment.Id;
@@ -57,7 +67,8 @@ namespace Mnemosyne_Of_Mine
         /// <param name="botsrights"></param>
         /// <param name="post"></param>
         /// <param name="ArchiveLinks"></param>
-        internal static Dictionary<string, string> PostArchiveLinks(UserData config, Dictionary<string, string> ReplyDict, string d_head, string p_head, string footer, string botsrights, Post post, List<string> ArchiveLinks) // not a fan of the params
+        /// <returns>dictoinary of replied to list, so that it updates</returns>
+        internal static Dictionary<string, string> PostArchiveLinks(UserData config, Dictionary<string, string> ReplyDict, string d_head, string p_head, string footer, string botsrights, Post post, List<string> ArchiveLinks) // need to make these params optional, most of them anyways, so that we don't have to call this rediculous thing
         {
             string head = post.IsSelfPost ? d_head : p_head;
             string LinksListBody = "";
@@ -134,7 +145,11 @@ namespace Mnemosyne_Of_Mine
                 Console.WriteLine("Called to edit comment but got empty insertion list");
             }
         }
-
+        /// <summary>
+        /// Reads the file where we track who we reply to
+        /// </summary>
+        /// <param name="file">file that we're using</param>
+        /// <returns>dictionary of replys and comment ids</returns>
         internal static Dictionary<string, string> ReadReplyTrackingFile(string file)
         {
             Dictionary<string, string> replyDict = new Dictionary<string, string>();
