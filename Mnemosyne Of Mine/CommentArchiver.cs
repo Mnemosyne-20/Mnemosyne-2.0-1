@@ -22,6 +22,7 @@ namespace Mnemosyne_Of_Mine
         /// <param name="comment"></param>
         /// <param name="FoundLinks"></param>
         /// <param name="commentsSeenList"></param>
+        /// <!--What the hell is the point of this, i'm adding this line just because-->
         internal static void ArchiveCommentLinks(UserData config, Dictionary<string, string> ReplyDict, Reddit reddit, Comment comment, List<string> FoundLinks, List<string> commentsSeenList) // not as bad now
         {            
             List<string> ArchivedLinks = new List<string>();
@@ -61,10 +62,10 @@ namespace Mnemosyne_Of_Mine
         /// <summary>
         /// posts everything, all the params shan't be described due to obviousness
         /// </summary>
-        /// <param name="config"></param>
+        /// <param name="config">configuration for flavortext</param>
         /// <param name="ReplyDict"></param>
-        /// <param name="head"></param>
-        /// <param name="post"></param>
+        /// <param name="head">header</param>
+        /// <param name="post">post to edit</param>
         /// <param name="ArchiveLinks"></param>
         /// <returns>dictoinary of replied to list, so that it updates</returns>
         internal static Dictionary<string, string> PostArchiveLinks(UserData config, Dictionary<string, string> ReplyDict, string head, Post post, List<string> ArchiveLinks)
@@ -121,27 +122,15 @@ namespace Mnemosyne_Of_Mine
                         }
                         else
                         {
-                            Console.WriteLine($"Unexpected end of head: {head[head.Length - 1]}");
+                            throw new Exception($"Unexpected end of head: {head[head.Length - 1]}"); // more appropriate, as that's not supposed to happen
                         }
                         newCommentText += string.Join("\n", tail);
                     }
-                    else
-                    {
-                        Console.WriteLine("Comment head was empty");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Failed to split old comment"); // most of this is probably unnecessary
                 }
                 if (bEditGood)
                 {
                     targetComment.EditText(newCommentText);
                 }
-            }
-            else
-            {
-                Console.WriteLine("Called to edit comment but got empty insertion list");
             }
         }
         /// <summary>
