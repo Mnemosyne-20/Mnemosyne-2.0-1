@@ -140,14 +140,11 @@ namespace Mnemosyne_Of_Mine
                             }
                         }
                     }
-                    // need to check new comments on entire sub, not just comments on new posts, otherwise new comments on old posts would be missed
-                    // this also gets comments in a flat stream so child comments are handled
                     ///<summary>
                     ///grabs new comments, may need to see if we need to do changes to the ReqLimit to be able to do this, as i currently have a low one of 30
                     ///</summary>
                     foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit))
                     {
-                        
                         List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
                         if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
                         {
