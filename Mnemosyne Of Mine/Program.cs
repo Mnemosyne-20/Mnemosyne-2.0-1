@@ -136,6 +136,7 @@ namespace Mnemosyne_Of_Mine
                             }
                         }
                     }
+                    //FIXME: this being so close to post link archiving could potentially cause double comments and bot may hurt itself in its confusion
                     foreach (var post in sub.Posts.Take(ReleventInfo.ReqLimit))
                     {
                         foreach (Comment comment in post.Comments) // It throttles on its own, but it will take ALL comments on the thread this way
