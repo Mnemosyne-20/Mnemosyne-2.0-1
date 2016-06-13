@@ -13,32 +13,23 @@ namespace Mnemosyne_Of_Mine
 {
     static class Program
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String)")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.Write(System.String)")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "RedditSharp.Things.Post.Comment(System.String)")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object)")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "chuggafan")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "botsrights")]
 
-        static Random random = new Random();
         static List<string> ArchiveBots = new List<string>()
         {
             "mnemosyne-0001",
             "mnemosyne-0002",
             "SpootsTestBot" // hey I know you!
         };
-
+        #region constants
+        static Regex exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be)");
+        static string d_head = "Archives for links in this post: \n\n";
+        static string p_head = "Archive for this post: \n\n";
+        static string footer = "----\nI am Mnemosyne 2.0, ";
+        static string botsrights = "^^^^/r/botsrights";
+        #endregion
         static void Main(string[] args)
         {
-            Console.Title = "Mnemosyne by chugga_fan, Archive AWAY!";
-            #region constants
-            var exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be)");
-            string d_head = "Archives for links in this post: \n\n";
-            string p_head = "Archive for this post: \n\n";
-            string footer = "----\nI am Mnemosyne 2.0, ";
-            string botsrights = "^^^^/r/botsrights";
-            #endregion
+            Console.Title = "Mnemosyne by chugga_fan and Lord_Spoot, Archive AWAY!";
             if (!File.Exists(@".\config.xml"))
             {
                 Console.WriteLine("File doesn't exist, let's setup a config file");
@@ -92,7 +83,7 @@ namespace Mnemosyne_Of_Mine
                 repostSub = reddit.GetSubreddit(ReleventInfo.Repost);
             }
             bool isMnemosyneThereAlready = false;
-            Dictionary<string, string> ReplyDict = ReadReplyTrackingFile(@".\ReplyTracker.txt");
+            Dictionary<string, string> ReplyDict = CommentArchiver.ReadReplyTrackingFile(@".\ReplyTracker.txt");
             string[] commentsSeen = File.ReadAllLines(@".\Comments_Seen.txt");
             List<string> commentsSeenList = commentsSeen.ToList();
 #region postChecking
@@ -140,20 +131,20 @@ namespace Mnemosyne_Of_Mine
                             }
                             if (ArchiveLinks.Count >= 1)
                             {
-                                PostArchiveLinks(ReleventInfo, ReplyDict, d_head, p_head, footer, botsrights, post, ArchiveLinks);
-                                WriteReplyTrackingFile(ReplyDict); // this should probably be done elsewhere
+                                CommentArchiver.PostArchiveLinks(ReleventInfo, ReplyDict, d_head, p_head, footer, botsrights, post, ArchiveLinks);
+                                CommentArchiver.WriteReplyTrackingFile(ReplyDict); // this should probably be done elsewhere
                             }
                         }
                     }
                     //FIXME: this being so close to post link archiving could potentially cause double comments and bot may hurt itself in its confusion
-                    foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit)) // not entirely happy on this, hopefully redditsharp throttles things on its own if needed
+                    foreach (Comment comment in sub.Comments) // It throttles on its own, but it will take ALL comments on the thread this way
                     {
                         if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
                         {
-                            ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, exclude, commentsSeenList);
+                            CommentArchiver.ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, exclude, commentsSeenList);
                         }
-                        File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray()); // may be better to write this after the loop?
                     }
+                    File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray());
                     Console.Title = $"waiting for next batch from {sub.Name}";
 #if REPOSTCHECK
                     if(repostSub != null)
@@ -181,7 +172,7 @@ namespace Mnemosyne_Of_Mine
                     }
 #endif
                 }
-                catch (System.Net.WebException) // I would prefer to find *why* this is even throwing at all
+                catch (System.Net.WebException) // I would prefer to find *why* this is even throwing at all // known reason it's throwing, i failed to verify account, besides, this also works to get a new token when token fails
                 {
                     OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI);
                     OAuthToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
@@ -294,159 +285,6 @@ namespace Mnemosyne_Of_Mine
             return ArchiveLinks;            
         }
 
-        // this isn't anywhere near complete, usable, ready, or sanitary. do not ingest.
-        static void ArchiveCommentLinks(UserData config, Dictionary<string,string> ReplyDict, Reddit reddit, Comment comment, Regex exclusions, List<string> commentsSeenList)
-        {
-            List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
-            List<string> ArchivedLinks = new List<string>();
-            string commentID = comment.Id;
-            foreach (string link in FoundLinks)
-            {
-                // foreach already handles empty collection case
-                if (!exclusions.IsMatch(link))
-                {
-                    Console.WriteLine($"Found {link} in comment {commentID}");
-                    /*string archiveURL = Archiving.Archive(@"archive.is", link);
-                    if (Archiving.VerifyArchiveResult(link, archiveURL))
-                    {
-                        string hostname = new Uri(link).Host;
-                        ArchivedLinks.Add($"Placeholder Text: ({hostname}): {archiveURL}\n");
-                    }*/
-                    string hostname = new Uri(link).Host.Replace("www.", "");
-                    ArchivedLinks.Add($"* **By [{comment.Author}]({comment.Shortlink})** ([{hostname}]({link})): Placeholder Text.\n"); //FIXME: comment.Shortlink is wrong
-                }
-            }
-            string actualLinkID = comment.LinkId.Substring(3); // because apparently the link id starting with t3_ is intended for reasons but it's useless here
-            bool bHasPostITT = ReplyDict.ContainsKey(actualLinkID);
-            if (bHasPostITT)
-            {
-                Console.WriteLine($"Already have post in {actualLinkID}, getting comment {ReplyDict[actualLinkID]}");
-                //Comment botComment = reddit.GetComment(config.SubReddit, actualLinkID, ReplyDict[actualLinkID]);
-                string botCommentThingID = "t1_" + ReplyDict[actualLinkID]; // thanks redditsharp for having broken GetComment methods
-                Comment botComment = (Comment)reddit.GetThingByFullname(botCommentThingID);
-                EditArchiveListComment(botComment, ArchivedLinks);
-            }
-            else
-            {
-                Console.WriteLine($"No comment in {actualLinkID} to edit, making new one");
-                //PostArchiveLinks(config, ReplyDict, "Archives for links in comments:\n\n", "Archives for links in comments:\n\n", "", "", null, ArchivedLinks); // TODO: get post object from actualLinkID
-            }
-            commentsSeenList.Add(commentID);
-        }
 
-        static void PostArchiveLinks(UserData config, Dictionary<string, string> ReplyDict, string d_head, string p_head, string footer, string botsrights, Post post, List<string> ArchiveLinks) // not a fan of the params
-        {
-            string head = post.IsSelfPost ? d_head : p_head;
-            string LinksListBody = "";
-            foreach (string str in ArchiveLinks)
-            {
-                LinksListBody += str;
-            }
-            string c = head
-                + LinksListBody
-                + "\n" + footer
-                + config.FlavorText[random.Next(0, config.FlavorText.Length - 1)]
-                + botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
-            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
-            Comment botComment = post.Comment(c);
-            ReplyDict.Add(post.Id, botComment.Id);
-            Console.WriteLine(c);
-        }
-
-        static void EditArchiveListComment(Comment targetComment, List<string> ArchivesToInsert)
-        {
-            if (ArchivesToInsert.Count > 0)
-            {
-                Console.WriteLine($"Editing comment {targetComment.Id}");
-                bool bEditGood = false;
-                string newCommentText = "";
-                string[] oldCommentLines = targetComment.Body.Split(new string[] { "\n" }, StringSplitOptions.None);
-                if (oldCommentLines != null && oldCommentLines.Length >= 1)
-                {
-                    string[] head = oldCommentLines.Take(oldCommentLines.Length - 3).ToArray();
-                    Console.WriteLine("=====HEAD=====");
-                    Console.WriteLine(String.Join("\n", head));
-                    Console.WriteLine("=====TAIL=====");
-                    string[] tail = oldCommentLines.Skip(oldCommentLines.Length - 3).ToArray();
-                    Console.WriteLine(String.Join("\n", tail));
-                    Console.WriteLine("==============");
-
-                    newCommentText += String.Join("\n", head);
-                    if (head.Length >= 1)
-                    {
-                        if (head[head.Length - 1].StartsWith("* **By"))
-                        {
-                            Console.WriteLine("Adding to comment archive list");
-                            foreach (string str in ArchivesToInsert)
-                            {
-                                newCommentText += "\n" + str;
-                            }
-                            bEditGood = true;
-                        }
-                        else if (head[head.Length - 1].StartsWith("* **Link"))
-                        {
-                            Console.WriteLine("No existing comment archive list to add to, starting one");
-                            newCommentText += "\n\n----\nArchives for links in comments: \n\n";
-                            foreach(string str in ArchivesToInsert)
-                            {
-                                newCommentText += str;
-                            }
-                            bEditGood = true;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Good job you can't even count right");
-                        }
-                        newCommentText += String.Join("\n", tail);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Comment head somehow empty, ya blew it");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("You can't even split the comment right what the shit");
-                }
-                if(bEditGood)
-                {
-                    targetComment.EditText(newCommentText);
-                    Console.WriteLine(newCommentText);
-                }
-            }
-            else
-            {
-                Console.WriteLine("Called to edit comment but got empty insertion list");
-            }
-        }
-
-        static Dictionary<string,string> ReadReplyTrackingFile(string file)
-        {
-            Dictionary<string, string> replyDict = new Dictionary<string, string>();
-            string fileIn = File.ReadAllText(file);
-            string[] elements = fileIn.Split(new char[]{':',','}, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < elements.Length; i += 2)
-            {
-                string postID = elements[i];
-                string botCommentID = elements[i + 1];
-                replyDict.Add(postID, botCommentID);                
-            }
-
-            return replyDict;
-        }
-
-        static void WriteReplyTrackingFile(Dictionary<string,string> replyDict)
-        {
-            StringBuilder builder = new StringBuilder();
-            foreach (KeyValuePair<string,string> reply in replyDict)
-            {
-                builder.Append(reply.Key);
-                builder.Append(':');
-                builder.Append(reply.Value);
-                builder.Append(',');
-            }
-
-            File.WriteAllText(@".\ReplyTracker.txt", builder.ToString(0, builder.Length - 1));
-        }
     }
 }
