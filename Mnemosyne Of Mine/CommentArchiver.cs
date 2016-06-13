@@ -46,7 +46,8 @@ namespace Mnemosyne_Of_Mine
             else
             {
                 Console.WriteLine($"No comment in {actualLinkID} to edit, making new one");
-                PostArchiveLinks(config, ReplyDict, "Archives for links in comments:\n\n", "Archives for links in comments:\n\n", footer, botsrights, null, ArchivedLinks); // TODO: ugly
+                Post post = (Post)reddit.GetThingByFullname(comment.LinkId);
+                PostArchiveLinks(config, ReplyDict, "Archives for links in comments:\n\n", "Archives for links in comments:\n\n", footer, botsrights, post, ArchivedLinks); // TODO: ugly
             }
             commentsSeenList.Add(commentID);
         }
