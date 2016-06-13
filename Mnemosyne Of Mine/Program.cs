@@ -138,6 +138,7 @@ namespace Mnemosyne_Of_Mine
                     // this also gets comments in a flat stream so child comments are handled
                     foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit))
                     {
+                        
                         List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
                         if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
                         {
