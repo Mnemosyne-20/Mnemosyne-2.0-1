@@ -134,16 +134,14 @@ namespace Mnemosyne_Of_Mine
                             }
                         }
                     }
-                    //FIXME: this being so close to post link archiving could potentially cause double comments and bot may hurt itself in its confusion
-                    foreach (var post in sub.Posts.Take(ReleventInfo.ReqLimit))
+                    // need to check new comments on entire sub, not just comments on new posts, otherwise new comments on old posts would be missed
+                    // this also gets comments in a flat stream so child comments are handled
+                    foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit))
                     {
-                        foreach (Comment comment in post.Comments) // It throttles on its own, but it will take ALL comments on the thread this way
+                        List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
+                        if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
                         {
-                            List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
-                            if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
-                            {
-                                CommentArchiver.ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, exclude, FoundLinks, commentsSeenList, footer, botsrights);
-                            }
+                            CommentArchiver.ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, exclude, FoundLinks, commentsSeenList, footer, botsrights);
                         }
                         File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray());
                     }
