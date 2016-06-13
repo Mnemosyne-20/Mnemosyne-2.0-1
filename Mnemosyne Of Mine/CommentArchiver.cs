@@ -19,6 +19,7 @@ namespace Mnemosyne_Of_Mine
         {            
             List<string> ArchivedLinks = new List<string>();
             string commentID = comment.Id;
+            string postID = comment.LinkId.Substring(3);
             foreach (string link in FoundLinks)
             {
                 // foreach already handles empty collection case
@@ -26,21 +27,21 @@ namespace Mnemosyne_Of_Mine
                 {
                     Console.WriteLine($"Found {link} in comment {commentID}");
                     string hostname = new Uri(link).Host.Replace("www.", "");
-                    ArchivedLinks.Add($"* **By [{comment.Author}]({comment.Shortlink})** ([{hostname}]({link})): Placeholder Text.\n"); //FIXME: comment.Shortlink is wrong
+                    string commentLink = $"https://www.reddit.com/comments/{postID}/_/{comment.Id}"; // ugly way to get comment link
+                    ArchivedLinks.Add($"* **By [{comment.Author}]({commentLink})** ([{hostname}]({link})): Placeholder Text.\n");
                 }
             }
-            string actualLinkID = comment.LinkId.Substring(3); // because apparently the link id starting with t3_ is intended for reasons but it's useless here
-            bool bHasPostITT = ReplyDict.ContainsKey(actualLinkID);
+            bool bHasPostITT = ReplyDict.ContainsKey(postID);
             if (bHasPostITT)
             {
-                Console.WriteLine($"Already have post in {actualLinkID}, getting comment {ReplyDict[actualLinkID]}");
-                string botCommentThingID = "t1_" + ReplyDict[actualLinkID];
+                Console.WriteLine($"Already have post in {postID}, getting comment {ReplyDict[postID]}");
+                string botCommentThingID = "t1_" + ReplyDict[postID];
                 Comment botComment = (Comment)reddit.GetThingByFullname(botCommentThingID);
                 EditArchiveListComment(botComment, ArchivedLinks);
             }
             else
             {
-                Console.WriteLine($"No comment in {actualLinkID} to edit, making new one");
+                Console.WriteLine($"No comment in {postID} to edit, making new one");
                 Post post = (Post)reddit.GetThingByFullname(comment.LinkId);
                 PostArchiveLinks(config, ReplyDict, "Archives for links in comments:\n\n", "Archives for links in comments:\n\n", footer, botsrights, post, ArchivedLinks); // TODO: ugly
             }
