@@ -140,6 +140,7 @@ namespace Mnemosyne_Of_Mine
                             CommentArchiver.ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, exclude, FoundLinks, commentsSeenList, footer, botsrights);
                         }
                         File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray());
+                        CommentArchiver.WriteReplyTrackingFile(ReplyDict);
                     }
                     Console.Title = $"waiting for next batch from {sub.Name}";
 #if REPOSTCHECK
