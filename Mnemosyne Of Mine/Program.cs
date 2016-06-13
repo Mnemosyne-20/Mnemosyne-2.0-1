@@ -46,26 +46,20 @@ namespace Mnemosyne_Of_Mine
             AuthProvider OAuthProvider;
             string OAuthToken = "";
             bool bAuthenticated = false;
+            if (ReleventInfo.Password == "Y")
+            {
+                Console.WriteLine("Type in your password");
+                ReleventInfo.Password = Console.ReadLine();
+                Console.Clear();
+            }
             if (ReleventInfo.bUseOAuth)
             {
                 OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI);
-                if (ReleventInfo.Password == "Y")
-                {
-                    Console.WriteLine("Type in your password");
-                    ReleventInfo.Password = Console.ReadLine();
-                    Console.Clear();
-                }
                 OAuthToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
                 reddit = new Reddit(OAuthToken);
             }
             else
             {
-                if (ReleventInfo.Password == "Y")
-                {
-                    Console.WriteLine("Type in your password");
-                    ReleventInfo.Password = Console.ReadLine();
-                    Console.Clear();
-                }
                 reddit = new Reddit(WebAgent.RateLimitMode.Pace);
                 reddit.logIn(ReleventInfo);
                 reddit.InitOrUpdateUser();
@@ -104,7 +98,7 @@ namespace Mnemosyne_Of_Mine
                         }
                         foreach (var comment in post.Comments)
                         {
-                            if (ArchiveBots.Contains(comment.Author))
+                            if (ArchiveBots.Contains(comment.Author) && !post.IsSelfPost)
                             {
                                 isMnemosyneThereAlready = true; // check for the other bot, will add option for more later TODO: check other bots, inc, self
                                 break;
