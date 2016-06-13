@@ -80,7 +80,8 @@ namespace Mnemosyne_Of_Mine
             Dictionary<string, string> ReplyDict = CommentArchiver.ReadReplyTrackingFile(@".\ReplyTracker.txt");
             string[] commentsSeen = File.ReadAllLines(@".\Comments_Seen.txt");
             List<string> commentsSeenList = commentsSeen.ToList();
-#region postChecking
+            bool bDoPostArchiving = false; // temp off switch for archiving self posts themselves
+            #region postChecking
             while (true)
             {
                 Console.Title = "Checking sub: " + sub.Name;
@@ -98,6 +99,10 @@ namespace Mnemosyne_Of_Mine
                         }
                         foreach (var comment in post.Comments)
                         {
+                            if(!bDoPostArchiving)
+                            {
+                                break;
+                            }
                             if (ArchiveBots.Contains(comment.Author) && !post.IsSelfPost)
                             {
                                 isMnemosyneThereAlready = true; // check for the other bot, will add option for more later TODO: check other bots, inc, self
@@ -105,10 +110,9 @@ namespace Mnemosyne_Of_Mine
                             }
                             System.Threading.Thread.Sleep(2000);
                         }
-                        if (!isMnemosyneThereAlready || post.IsSelfPost)
+                        if (post.IsSelfPost)
                         {
                             List<string> ArchiveLinks = new List<string>();
-                            bool bDoPostArchiving = false; // temp off switch for archiving self posts themselves
                             if(bDoPostArchiving)
                             {
                                 string archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString());
@@ -125,7 +129,7 @@ namespace Mnemosyne_Of_Mine
                             }
                             if (ArchiveLinks.Count >= 1)
                             {
-                                CommentArchiver.PostArchiveLinks(ReleventInfo, ReplyDict, d_head, p_head, footer, botsrights, post, ArchiveLinks);
+                                ReplyDict = CommentArchiver.PostArchiveLinks(ReleventInfo, ReplyDict, d_head, p_head, footer, botsrights, post, ArchiveLinks);
                                 CommentArchiver.WriteReplyTrackingFile(ReplyDict); // this should probably be done elsewhere
                             }
                         }
@@ -260,7 +264,13 @@ namespace Mnemosyne_Of_Mine
             }
             return (post.Title.Split(' ').Length / perMatch) / 10;
         }
-
+        /// <summary>
+        /// Archives all links in a post
+        /// </summary>
+        /// <param name="config">userconfig</param>
+        /// <param name="FoundLinks">links found by the linkfinder</param>
+        /// <param name="exclusions">exclusions from archiving</param>
+        /// <returns>archives</returns>
         static List<string> ArchivePostLinks(UserData config, List<string> FoundLinks, Regex exclusions)
         {
             List<string> ArchiveLinks = new List<string>();            
@@ -275,9 +285,9 @@ namespace Mnemosyne_Of_Mine
                         string hostname = new Uri(link).Host.Replace("www.","");
                         string archiveURL = "Placeholder Text";
                         ArchiveLinks.Add($"* **Link: {counter.ToString()}** ([{hostname}]({link})): {archiveURL}\n");
-                        ++counter;
                     //}
                 }
+                ++counter;
                 // putting counter increment here would fix the "Link X isn't the Xth link" situation when posts also have links that are excluded from archiving
             }
             return ArchiveLinks;            

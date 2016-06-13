@@ -1,4 +1,5 @@
-﻿using RedditSharp;
+﻿using ArchiveLibrary;
+using RedditSharp;
 using RedditSharp.Things;
 using System;
 using System.Collections.Generic;
@@ -24,12 +25,6 @@ namespace Mnemosyne_Of_Mine
                 if (!exclusions.IsMatch(link))
                 {
                     Console.WriteLine($"Found {link} in comment {commentID}");
-                    /*string archiveURL = Archiving.Archive(@"archive.is", link);
-                    if (Archiving.VerifyArchiveResult(link, archiveURL))
-                    {
-                        string hostname = new Uri(link).Host;
-                        ArchivedLinks.Add($"Placeholder Text: ({hostname}): {archiveURL}\n");
-                    }*/
                     string hostname = new Uri(link).Host.Replace("www.", "");
                     ArchivedLinks.Add($"* **By [{comment.Author}]({comment.Shortlink})** ([{hostname}]({link})): Placeholder Text.\n"); //FIXME: comment.Shortlink is wrong
                 }
@@ -50,8 +45,18 @@ namespace Mnemosyne_Of_Mine
             }
             commentsSeenList.Add(commentID);
         }
-
-        internal static void PostArchiveLinks(UserData config, Dictionary<string, string> ReplyDict, string d_head, string p_head, string footer, string botsrights, Post post, List<string> ArchiveLinks) // not a fan of the params
+        /// <summary>
+        /// posts everything, all the params shan't be described due to obviousness
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="ReplyDict"></param>
+        /// <param name="d_head"></param>
+        /// <param name="p_head"></param>
+        /// <param name="footer"></param>
+        /// <param name="botsrights"></param>
+        /// <param name="post"></param>
+        /// <param name="ArchiveLinks"></param>
+        internal static Dictionary<string, string> PostArchiveLinks(UserData config, Dictionary<string, string> ReplyDict, string d_head, string p_head, string footer, string botsrights, Post post, List<string> ArchiveLinks) // not a fan of the params
         {
             string head = post.IsSelfPost ? d_head : p_head;
             string LinksListBody = "";
@@ -68,6 +73,7 @@ namespace Mnemosyne_Of_Mine
             Comment botComment = post.Comment(c);
             ReplyDict.Add(post.Id, botComment.Id);
             Console.WriteLine(c);
+            return ReplyDict;
         }
 
         internal static void EditArchiveListComment(Comment targetComment, List<string> ArchivesToInsert)
