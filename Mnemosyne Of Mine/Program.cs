@@ -146,12 +146,15 @@ namespace Mnemosyne_Of_Mine
                     foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit))
                     {
                         List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
-                        if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
+                        if (FoundLinks.Count >= 1) // should fix empty comments bug
                         {
-                            CommentArchiver.ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, FoundLinks, commentsSeenList);
-                        }
-                        File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray());
-                        CommentArchiver.WriteReplyTrackingFile(ReplyDict);
+                            if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
+                            {
+                                CommentArchiver.ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, FoundLinks, commentsSeenList);
+                                File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray());
+                                CommentArchiver.WriteReplyTrackingFile(ReplyDict);
+                            }
+                        }                                              
                     }
                     Console.Title = $"waiting for next batch from {sub.Name}";
 #if REPOSTCHECK

@@ -21,7 +21,7 @@ namespace Mnemosyne_Of_Mine
         /// <param name="comment"></param>
         /// <param name="FoundLinks"></param>
         /// <param name="commentsSeenList"></param>
-        /// <!--What the hell is the point of this, i'm adding this line just because-->
+        /// <!--What the hell is the point of this, i'm adding this line just because--> // point of what?
         internal static void ArchiveCommentLinks(UserData config, Dictionary<string, string> ReplyDict, Reddit reddit, Comment comment, List<string> FoundLinks, List<string> commentsSeenList) // not as bad now
         {            
             List<string> ArchivedLinks = new List<string>();
@@ -42,21 +42,24 @@ namespace Mnemosyne_Of_Mine
                     }                    
                 }
             }
-            bool bHasPostITT = ReplyDict.ContainsKey(postID);
-            if (bHasPostITT)
+            if (ArchivedLinks.Count >= 1) // ensure bot does not post if list is empty (ex. archiving failed)
             {
-                Console.WriteLine($"Already have post in {postID}, getting comment {ReplyDict[postID]}");
-                string botCommentThingID = "t1_" + ReplyDict[postID];
-                Comment botComment = (Comment)reddit.GetThingByFullname(botCommentThingID);
-                EditArchiveListComment(botComment, ArchivedLinks);
+                bool bHasPostITT = ReplyDict.ContainsKey(postID);
+                if (bHasPostITT)
+                {
+                    Console.WriteLine($"Already have post in {postID}, getting comment {ReplyDict[postID]}");
+                    string botCommentThingID = "t1_" + ReplyDict[postID];
+                    Comment botComment = (Comment)reddit.GetThingByFullname(botCommentThingID);
+                    EditArchiveListComment(botComment, ArchivedLinks);
+                }
+                else
+                {
+                    Console.WriteLine($"No comment in {postID} to edit, making new one");
+                    Post post = (Post)reddit.GetThingByFullname(comment.LinkId);
+                    PostArchiveLinks(config, ReplyDict, Program.c_head, post, ArchivedLinks);
+                }
+                commentsSeenList.Add(commentID);
             }
-            else
-            {
-                Console.WriteLine($"No comment in {postID} to edit, making new one");
-                Post post = (Post)reddit.GetThingByFullname(comment.LinkId);
-                PostArchiveLinks(config, ReplyDict, Program.c_head, post, ArchivedLinks); // TODO: ugly
-            }
-            commentsSeenList.Add(commentID);
         }
         /// <summary>
         /// posts everything, all the params shan't be described due to obviousness
