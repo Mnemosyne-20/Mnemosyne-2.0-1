@@ -1,0 +1,6 @@
+{
+  "name": "Mnemosyne-2.0-1",
+  "tagline": "Archive bot for WHATEVER",
+  "body": "Needs RedditSharp to work, get it from the nuget package manager will implement my own classes and extensions for it eventually, AForge is required aswell due to the need for image processing when talking about reposting false imgur links",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
