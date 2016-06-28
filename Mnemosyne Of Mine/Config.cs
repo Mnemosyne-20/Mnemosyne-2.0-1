@@ -1,5 +1,4 @@
-﻿using System;
-using System.Xml;
+﻿using System.Xml;
 
 namespace Mnemosyne_Of_Mine
 {
@@ -14,7 +13,7 @@ namespace Mnemosyne_Of_Mine
         /// <param name="location">guess</param>
         public static void ConvertOldToNewData(string location)
         {
-            UserData data = new UserData(location, true);
+            UserData data = new UserData(location);
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.IndentChars = "\t";
@@ -24,19 +23,19 @@ namespace Mnemosyne_Of_Mine
                 writer.WriteStartDocument();
                 writer.WriteStartElement("settings");
                 writer.WriteElementString("Username", data.Username);
-                writer.WriteAttributeString("Password",data.Password);
+                writer.WriteAttributeString("Password", data.Password);
                 writer.WriteFullEndElement();
-                writer.WriteElementString("OAuth",data.bUseOAuth.ToString().ToLower());
-                writer.WriteAttributeString("Secret",data.OAuthClientSecret);
-                writer.WriteAttributeString("ID",data.OAuthClientID);
-                writer.WriteAttributeString("RedirURI",data.RedirectURI);
+                writer.WriteElementString("OAuth", data.bUseOAuth.ToString().ToLower());
+                writer.WriteAttributeString("Secret", data.OAuthClientSecret);
+                writer.WriteAttributeString("ID", data.OAuthClientID);
+                writer.WriteAttributeString("RedirURI", data.RedirectURI);
                 writer.WriteFullEndElement();
-                writer.WriteElementString("Subreddit",data.SubReddit);
+                writer.WriteElementString("Subreddit", data.SubReddit);
                 writer.WriteFullEndElement();
                 writer.WriteElementString("ReqLimit", data.ReqLimit.ToString());
                 writer.WriteAttributeString("SleepTime", data.SleepTime.ToString());
                 writer.WriteStartElement("flavortext");
-                foreach(var text in data.FlavorText)
+                foreach (var text in data.FlavorText)
                 {
                     writer.WriteString(text + "\n");
                 }

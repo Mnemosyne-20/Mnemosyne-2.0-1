@@ -39,7 +39,7 @@ namespace Mnemosyne_Of_Mine
                 Console.WriteLine("File doesn't exist, let's setup a config file");
                 createNewConfig();
             }
-            UserData ReleventInfo = new UserData(@".\config.xml", true);
+            UserData ReleventInfo = new UserData(@".\config.xml");
 #if SQL
             if (!File.Exists(@".\RepliedToList.mdf")) //TODO: ADD THIS
             {

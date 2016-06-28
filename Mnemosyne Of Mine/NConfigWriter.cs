@@ -27,7 +27,7 @@ namespace Mnemosyne_Of_Mine
                 string secret = null;
                 string id = null;
                 string redirectURI = null;
-                if(useOAuth)
+                if (useOAuth)
                 {
                     Console.WriteLine("What is the client secret?");
                     secret = Console.ReadLine();
@@ -41,7 +41,7 @@ namespace Mnemosyne_Of_Mine
                 writer.WriteAttributeString("RedirURI", redirectURI);
                 writer.WriteFullEndElement();
                 Console.WriteLine("What subreddit will this be checking?");
-                writer.WriteElementString("Subreddit",Console.ReadLine());
+                writer.WriteElementString("Subreddit", Console.ReadLine());
                 writer.WriteFullEndElement();
                 Console.WriteLine("What is your perferred request limit?");
                 writer.WriteElementString("ReqLimit", Console.ReadLine());

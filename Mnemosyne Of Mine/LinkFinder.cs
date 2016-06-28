@@ -14,7 +14,7 @@ namespace Mnemosyne_Of_Mine
         {
             List<string> LinksList = new List<string>();
             var match = Regex.Match(PostBody, @"""(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?""");
-            while(match.Success)
+            while (match.Success)
             {
                 string foundlink = match.Value.TrimStart('"').TrimEnd('"');
                 if (!LinksList.Contains(foundlink))

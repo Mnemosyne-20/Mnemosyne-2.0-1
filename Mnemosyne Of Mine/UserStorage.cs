@@ -5,21 +5,25 @@ namespace Mnemosyne_Of_Mine
 {
     internal class UserData
     {
-        public UserData(string path)
-        {
-
-        }
         /// <summary>
         /// This is the userdata, stored in an object, this helps lol
         /// </summary>
         /// <param name="path">the path to the config file</param>
         /// <param name="helper">There to allow you to convert</param>
-        public UserData(string path, bool helper)
+        public UserData(string path)
         {
             var readers = new StringReader(File.ReadAllText(path));
             using (XmlReader reader = XmlReader.Create(readers))
             {
                 reader.ReadToFollowing("Settings");
+                try
+                {
+
+                }
+                catch
+                {
+
+                }
                 reader.ReadToFollowing("subreddit");
                 SubReddit = reader.ReadElementContentAsString();
                 reader.ReadToFollowing("ReqLimit");
@@ -55,6 +59,10 @@ namespace Mnemosyne_Of_Mine
                     
                 }
             }
+        }
+        private static void ReadNewData(XmlReader reader)
+        {
+
         }
         public string Password { get; set; }
         public string OAuth { get; private set; }
