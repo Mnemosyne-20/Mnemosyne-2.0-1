@@ -116,6 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommentArchiver.cs" />
+    <Compile Include="NConfigWriter.cs" />
     <Compile Include="LinkFinder.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="UserStorage.cs" />
