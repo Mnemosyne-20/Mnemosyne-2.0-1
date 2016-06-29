@@ -148,6 +148,10 @@
       <Project>{1c8ea747-89c2-4f4b-a3b5-d65041ecf3fc}</Project>
       <Name>ArchiveLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ConfigurationConversion\ConfigurationConversion.csproj">
+      <Project>{7c5d17df-ce3e-4f46-9063-1958012b9636}</Project>
+      <Name>ConfigurationConversion</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
