@@ -22,11 +22,11 @@ namespace Mnemosyne_Of_Mine
         /// <param name="FoundLinks">links found in the stuff lol</param>
         /// <param name="commentsSeenList">list of seen comments</param>
         /// <!--What the hell is the point of this, i'm adding this line just because, this is a fucking comment for no real reason-->
-        internal static Tuple<Dictionary<string,string>,List<string>> ArchiveCommentLinks(UserData config, Dictionary<string, string> ReplyDict, Reddit reddit, Comment comment, List<string> FoundLinks, List<string> commentsSeenList) // not as bad now
-        {            
+        internal static Tuple<Dictionary<string, string>, List<string>> ArchiveCommentLinks(UserData config, Dictionary<string, string> ReplyDict, Reddit reddit, Comment comment, List<string> FoundLinks, List<string> commentsSeenList) // not as bad now
+        {
             List<string> ArchivedLinks = new List<string>();
             string commentID = comment.Id;
-            if(comment.Id.Contains("t1_") || comment.LinkId.Contains("t1_"))
+            if (comment.Id.Contains("t1_") || comment.LinkId.Contains("t1_"))
             {
                 Console.WriteLine(comment.Id);
                 Console.WriteLine(comment.LinkId);
@@ -51,7 +51,7 @@ namespace Mnemosyne_Of_Mine
                     if (Archiving.VerifyArchiveResult(link, archiveURL))
                     {
                         ArchivedLinks.Add($"* **By [{comment.Author}]({commentLink})** ([{hostname}]({link})): {archiveURL}\n");
-                    }                    
+                    }
                 }
             }
             if (ArchivedLinks.Count >= 1) // ensure bot does not post if list is empty (ex. archiving failed)
@@ -72,7 +72,7 @@ namespace Mnemosyne_Of_Mine
                 }
                 commentsSeenList.Add(commentID);
             }
-            return new Tuple<Dictionary<string,string>, List<string>>(ReplyDict,commentsSeenList);
+            return new Tuple<Dictionary<string, string>, List<string>>(ReplyDict, commentsSeenList);
         }
         /// <summary>
         /// posts everything
@@ -98,7 +98,7 @@ namespace Mnemosyne_Of_Mine
                 + Program.botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
             Comment botComment = post.Comment(c);
-            if(botComment.Id.Contains("t1_"))
+            if (botComment.Id.Contains("t1_"))
             {
                 botComment.Id = botComment.Id.Substring(3);
             }

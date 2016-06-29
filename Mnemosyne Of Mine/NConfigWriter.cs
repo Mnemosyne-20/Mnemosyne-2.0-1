@@ -5,12 +5,17 @@ namespace Mnemosyne_Of_Mine
 {
     internal partial class Config
     {
-        static void WriteNewData(string location)
+        /// <summary>
+        /// Writes the new data
+        /// </summary>
+        /// <param name="location">location to save the file</param>
+        public static void WriteNewData(string location)
         {
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.IndentChars = "\t";
             settings.WriteEndDocumentOnClose = true;
+            #region writer
             using (XmlWriter writer = XmlWriter.Create(location, settings))
             {
                 writer.WriteStartDocument();
@@ -49,10 +54,11 @@ namespace Mnemosyne_Of_Mine
                 writer.WriteAttributeString("SleepTime", Console.ReadLine());
                 writer.WriteStartElement("flavortext");
                 writer.WriteEndElement();
-                Console.WriteLine("Manually enter the flavortext, as that is too much to do here, delimited with a \\n");
+                Console.WriteLine("Manually enter the flavortext, as that is too much to do here, delimited with a new line");
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
             }
+            #endregion
         }
     }
 }

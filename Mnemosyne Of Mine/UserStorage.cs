@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Xml;
 namespace Mnemosyne_Of_Mine
 {
@@ -16,13 +15,9 @@ namespace Mnemosyne_Of_Mine
             using (XmlReader reader = XmlReader.Create(readers))
             {
                 reader.ReadToFollowing("Settings");
-                try
+                if (reader.HasAttributes)
                 {
-
-                }
-                catch
-                {
-
+                    ReadNewData(reader);
                 }
                 reader.ReadToFollowing("subreddit");
                 SubReddit = reader.ReadElementContentAsString();
@@ -52,17 +47,21 @@ namespace Mnemosyne_Of_Mine
                     reader.ReadToFollowing("Repost");
                     Repost = reader.ReadElementContentAsString();
                 }
-#pragma warning disable CS0168 // Variable is declared but never used
-                catch (Exception e)
-#pragma warning restore CS0168 // Variable is declared but never used
+                catch
                 {
                     
                 }
             }
         }
-        private static void ReadNewData(XmlReader reader)
+        /// <summary>
+        /// Will read the new data
+        /// </summary>
+        /// <param name="reader">reader from the method right above us</param>
+        /// <remarks>This really needs work done on it so it can go "production"</remarks>
+        private void ReadNewData(XmlReader reader)
         {
-
+            reader.ReadToFollowing("Username");
+            Username = reader.ReadElementContentAsString();
         }
         public string Password { get; set; }
         public string OAuth { get; private set; }
