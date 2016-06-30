@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="NameAndType">
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
   <Class Name="Mnemosyne_Of_Mine.ImageComparer" Collapsed="true">
     <Position X="12" Y="0.5" Width="1.5" />
     <TypeIdentifier>
