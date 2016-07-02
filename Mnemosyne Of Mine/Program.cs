@@ -20,7 +20,8 @@ namespace Mnemosyne_Of_Mine
             "SpootsTestBot", // hey I know you!
             "Mentioned_Videos",
             "AutoModerator",
-            "TotesMessenger"
+            "TotesMessenger",
+            "TweetPoster"
         };
         #region constants
         internal static Regex exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be|wiki/rules|politics_feedback_results_and_where_it_goes_from)");
