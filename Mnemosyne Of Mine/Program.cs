@@ -224,13 +224,21 @@ namespace Mnemosyne_Of_Mine
                 }
                 catch (System.Net.WebException) // I would prefer to find *why* this is even throwing at all // known reason it's throwing, i failed to verify account, besides, this also works to get a new token when token fails
                 {
-                    if (ReleventInfo.bUseOAuth)
+                    try
                     {
-                        OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI);
-                        OAuthToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
-                        reddit = new Reddit(OAuthToken);
-                    }
+                        if (ReleventInfo.bUseOAuth)
+                        {
+                            OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI);
+                            OAuthToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
+                            reddit = new Reddit(OAuthToken);
+                        }
+
                         reddit.InitOrUpdateUser();
+                    }
+                    catch
+                    {
+
+                    }
                 }
                 catch (FailureToArchiveException ex)
                 {
