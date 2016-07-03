@@ -141,7 +141,7 @@ namespace Mnemosyne_Of_Mine
                             /// </summary>
                             if(bDoPostArchiving)
                             {
-                                string archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString());
+                                string archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString()).Result;
                                 if(archiveURL.Contains("archive.is"))
                                 {
                                     Console.WriteLine(archiveURL);
@@ -340,7 +340,7 @@ namespace Mnemosyne_Of_Mine
             {
                 if (!exclusions.IsMatch(link))
                 {
-                    string archiveURL = Archiving.Archive(@"archive.is", link);
+                    string archiveURL = Archiving.Archive(@"archive.is", link).Result;
                     if (Archiving.VerifyArchiveResult(link, archiveURL))
                     {
                         string hostname = new Uri(link).Host.Replace("www.","");

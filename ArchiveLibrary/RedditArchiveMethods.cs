@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace ArchiveLibrary
 {
@@ -13,7 +14,7 @@ namespace ArchiveLibrary
         /// <param name="FoundLinks">links found by the linkfinder</param>
         /// <param name="exclusions">exclusions from archiving</param>
         /// <returns>archives</returns>
-        public static List<string> ArchivePostLinks(UserData config, List<string> FoundLinks, Regex exclusions)
+        public static async Task<List<string>> ArchivePostLinks(UserData config, List<string> FoundLinks, Regex exclusions)
         {
             List<string> ArchiveLinks = new List<string>();
             int counter = 1;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace ArchiveLibrary
 {
@@ -10,9 +11,9 @@ namespace ArchiveLibrary
         /// This gets a post/comment and archives it
         /// </summary>
         /// <param name="postID">id for the post that you want archived</param>
-        public static string ArchivePost(string postID, string Subreddit)
+        public static async Task<string> ArchivePost(string postID, string Subreddit)
         {
-            return Archive(@"archive.is", $"https://www.reddit.com/r/{Subreddit}/comments/{postID}");
+            return await Archive(@"archive.is", $"https://www.reddit.com/r/{Subreddit}/comments/{postID}");
         }
         /// <summary>
         /// Gets the url of the Archive, goddamn once this is finished i will have no idea how this works
@@ -21,7 +22,7 @@ namespace ArchiveLibrary
         /// <param name="url">The url that we're archiving</param>
         /// <returns>the archive url</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String)")]
-        public static string Archive(string serviceURL, string url)
+        public static async Task<string> Archive(string serviceURL, string url)
         {
             string archiveURL = null;
             HttpClientHandler handle = new HttpClientHandler();
@@ -37,7 +38,7 @@ namespace ArchiveLibrary
                 /// <summary>
                 /// This puts a request to the archive site, so yhea...
                 /// </summary>
-                var response = client.PostAsync(serviceURL, content).Result;
+                var response =  await client.PostAsync(serviceURL, content);
                 archiveURL = response.RequestMessage.RequestUri.ToString();
                 /// <remarks>
                 /// Fixes the bug where archive.is returns a json file that has a url tag
