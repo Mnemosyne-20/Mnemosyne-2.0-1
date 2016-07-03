@@ -155,7 +155,7 @@ namespace Mnemosyne_Of_Mine
                             List<string> FoundLinks = LinkFinder.FindLinks(post.SelfTextHtml);
                             if (FoundLinks.Count >= 1)
                             {
-                                ArchiveLinks.AddRange(ArchivePostLinks(ReleventInfo, FoundLinks, exclude));                                
+                                ArchiveLinks.AddRange(ArchivePostLinks(FoundLinks, exclude));                                
                             }
                             if (ArchiveLinks.Count >= 1)
                             {
@@ -328,11 +328,10 @@ namespace Mnemosyne_Of_Mine
         /// <summary>
         /// Archives all links in a post
         /// </summary>
-        /// <param name="config">userconfig</param>
         /// <param name="FoundLinks">links found by the linkfinder</param>
         /// <param name="exclusions">exclusions from archiving</param>
         /// <returns>archives</returns>
-        static List<string> ArchivePostLinks(UserData config, List<string> FoundLinks, Regex exclusions)
+        static List<string> ArchivePostLinks( List<string> FoundLinks, Regex exclusions)
         {
             List<string> ArchiveLinks = new List<string>();            
             int counter = 1;

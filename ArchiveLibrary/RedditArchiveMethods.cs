@@ -8,13 +8,12 @@ namespace ArchiveLibrary
     public class RedditArchiveMethods
     {
         /// <summary>
-        /// Archives all links in a post
+        /// returns string for your archive links
         /// </summary>
-        /// <param name="config">userconfig</param>
-        /// <param name="FoundLinks">links found by the linkfinder</param>
-        /// <param name="exclusions">exclusions from archiving</param>
-        /// <returns>archives</returns>
-        public static async Task<List<string>> ArchivePostLinks(UserData config, List<string> FoundLinks, Regex exclusions)
+        /// <param name="FoundLinks">Links found</param>
+        /// <param name="exclusions">regex of excluded links</param>
+        /// <returns>links archived!</returns>
+        public static async Task<List<string>> ArchivePostLinks(List<string> FoundLinks, Regex exclusions)
         {
             List<string> ArchiveLinks = new List<string>();
             int counter = 1;
@@ -22,7 +21,7 @@ namespace ArchiveLibrary
             {
                 if (!exclusions.IsMatch(link))
                 {
-                    string archiveURL = Archiving.Archive(@"archive.is", link);
+                    string archiveURL = await Archiving.Archive(@"archive.is", link);
                     if (Archiving.VerifyArchiveResult(link, archiveURL))
                     {
                         string hostname = new Uri(link).Host.Replace("www.", "");

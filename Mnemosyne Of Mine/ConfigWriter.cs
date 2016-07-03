@@ -19,42 +19,33 @@ namespace Mnemosyne_Of_Mine
                 writer.WriteStartDocument();
                 writer.WriteStartElement("Settings");
                 Console.WriteLine("So, what is your subreddit this bot will run on?");
-                string subreddit = Console.ReadLine();
-                writer.makeReadable("subreddit", subreddit);
+                writer.makeReadable("subreddit", Console.ReadLine());
                 Console.WriteLine("What do you want the request limit to be?");
-                string reqlimit = Console.ReadLine();
-                writer.makeReadable("ReqLimit",reqlimit);
+                writer.makeReadable("ReqLimit", Console.ReadLine());
                 Console.WriteLine("What is the sleep time?");
-                string sleepTime = Console.ReadLine();
-                writer.makeReadable("SleepTime",sleepTime);
+                writer.makeReadable("SleepTime", Console.ReadLine());
                 Console.WriteLine("Use OAuth? (Y/N)");
                 bool bUseOAuth = false;
-                string useOAuthResponse = Console.ReadLine();
-                if(useOAuthResponse.ToUpper() == "Y")
+                if (Console.ReadLine().ToUpper() == "Y")
                 {
                     bUseOAuth = true;
                 }
-                writer.makeReadable("UseOAuth",bUseOAuth.ToString().ToLower());
+                writer.makeReadable("UseOAuth", bUseOAuth.ToString().ToLower());
                 if (bUseOAuth)
                 {
                     Console.WriteLine("OAuth Client ID?");
-                    string oauthClientID = Console.ReadLine();
-                    writer.makeReadable("OAuthClientID",oauthClientID);
+                    writer.makeReadable("OAuthClientID", Console.ReadLine());
                     Console.WriteLine("OAuth Client Secret?");
-                    string oauthClientSecret = Console.ReadLine();
-                    writer.makeReadable("OAuthClientSecret",oauthClientSecret);
+                    writer.makeReadable("OAuthClientSecret", Console.ReadLine());
                     Console.WriteLine("Redirect URI?"); // pointless for a bot but the auth API still asks for it
-                    string redirectURI = Console.ReadLine();
-                    writer.makeReadable("RedirectURI",redirectURI);
+                    writer.makeReadable("RedirectURI", Console.ReadLine());
                 }
                 Console.WriteLine("What is your username?");
-                string username = Console.ReadLine();
-                writer.makeReadable("Username",username);
+                writer.makeReadable("Username", Console.ReadLine());
                 Console.WriteLine("What about password? note: this is stored in plaintext, don't actually send out in a git or type Y (just \"Y\") to not use a password in the config, and require one on startup");
-                string password = Console.ReadLine();
-                writer.makeReadable("Password",password);
+                writer.makeReadable("Password", Console.ReadLine());
                 Console.WriteLine("You have to add flavortext manually after the fact, go into the config file and seperate each flavor text with a \"");
-                writer.makeReadable("flavortext","");
+                writer.makeReadable("flavortext", "");
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
                 writer.Flush();

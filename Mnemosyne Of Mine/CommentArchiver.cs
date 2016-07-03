@@ -47,7 +47,7 @@ namespace Mnemosyne_Of_Mine
                     Console.WriteLine($"Found {link} in comment {commentID}");
                     string hostname = new Uri(link).Host.Replace("www.", "");
                     string commentLink = $"https://www.reddit.com/comments/{postID}/_/{comment.Id}"; // ugly way to get comment link
-                    string archiveURL = Archiving.Archive(@"archive.is", link);
+                    string archiveURL = Archiving.Archive(@"archive.is", link).Result;
                     if (Archiving.VerifyArchiveResult(link, archiveURL))
                     {
                         ArchivedLinks.Add($"* **By [{comment.Author}]({commentLink})** ([{hostname}]({link})): {archiveURL}\n");
