@@ -58,7 +58,7 @@ namespace Mnemosyne_Of_Mine
                 if (bHasPostITT)
                 {
                     string botCommentThingID = "t1_" + BotState.GetBotCommentForPost(postID);
-                    Console.WriteLine($"Already have post in {postID}, getting comment {botCommentThingID}");
+                    Console.WriteLine($"Already have post in {postID}, getting comment {botCommentThingID.Substring(3)}");
                     Comment botComment = (Comment)reddit.GetThingByFullname(botCommentThingID);
                     EditArchiveListComment(botComment, ArchivedLinks);
                 }
