@@ -16,13 +16,11 @@ namespace Mnemosyne_Of_Mine
         /// Archives comments that contain links
         /// </summary>
         /// <param name="config">user config, see <see cref="UserData"/></param>
-        /// <param name="ReplyDict">dictionary of replies for each post</param>
         /// <param name="reddit">the reddit<seealso cref="Reddit"/></param>
         /// <param name="comment">the comment to point to<seealso cref="Comment"/></param>
         /// <param name="FoundLinks">links found in the stuff lol</param>
-        /// <param name="commentsSeenList">list of seen comments</param>
         /// <!--What the hell is the point of this, i'm adding this line just because, this is a fucking comment for no real reason-->
-        internal static Tuple<Dictionary<string, string>, List<string>> ArchiveCommentLinks(UserData config, Dictionary<string, string> ReplyDict, Reddit reddit, Comment comment, List<string> FoundLinks, List<string> commentsSeenList) // not as bad now
+        internal static void ArchiveCommentLinks(UserData config, IBotStateTracker BotState, Reddit reddit, Comment comment, List<string> FoundLinks)
         {
             List<string> ArchivedLinks = new List<string>();
             string commentID = comment.Id;
@@ -56,11 +54,11 @@ namespace Mnemosyne_Of_Mine
             }
             if (ArchivedLinks.Count >= 1) // ensure bot does not post if list is empty (ex. archiving failed)
             {
-                bool bHasPostITT = ReplyDict.ContainsKey(postID);
+                bool bHasPostITT = BotState.DoesBotCommentExist(postID);
                 if (bHasPostITT)
                 {
-                    Console.WriteLine($"Already have post in {postID}, getting comment {ReplyDict[postID]}");
-                    string botCommentThingID = "t1_" + ReplyDict[postID];
+                    string botCommentThingID = "t1_" + BotState.GetBotCommentForPost(postID);
+                    Console.WriteLine($"Already have post in {postID}, getting comment {botCommentThingID}");
                     Comment botComment = (Comment)reddit.GetThingByFullname(botCommentThingID);
                     EditArchiveListComment(botComment, ArchivedLinks);
                 }
@@ -68,22 +66,19 @@ namespace Mnemosyne_Of_Mine
                 {
                     Console.WriteLine($"No comment in {postID} to edit, making new one");
                     Post post = (Post)reddit.GetThingByFullname(comment.LinkId);
-                    ReplyDict = PostArchiveLinks(config, ReplyDict, Program.c_head, post, ArchivedLinks);
+                    PostArchiveLinks(config, BotState, Program.c_head, post, ArchivedLinks);
                 }
-                commentsSeenList.Add(commentID);
+                BotState.AddCheckedComment(commentID);
             }
-            return new Tuple<Dictionary<string, string>, List<string>>(ReplyDict, commentsSeenList);
         }
         /// <summary>
         /// posts everything
         /// </summary>
         /// <param name="config">configuration for flavortext</param>
-        /// <param name="ReplyDict">dictionary of replies</param>
         /// <param name="head">header</param>
         /// <param name="post">post to edit</param>
         /// <param name="ArchiveLinks">links of archives</param>
-        /// <returns>dictoinary of replied to list, so that it updates</returns>
-        internal static Dictionary<string, string> PostArchiveLinks(UserData config, Dictionary<string, string> ReplyDict, string head, Post post, List<string> ArchiveLinks)
+        internal static void PostArchiveLinks(UserData config, IBotStateTracker BotState, string head, Post post, List<string> ArchiveLinks)
         {
             //string head = post.IsSelfPost ? Program.d_head : Program.p_head;
             string LinksListBody = "";
@@ -102,9 +97,8 @@ namespace Mnemosyne_Of_Mine
             {
                 botComment.Id = botComment.Id.Substring(3);
             }
-            ReplyDict.Add(post.Id, botComment.Id);
+            BotState.AddBotComment(post.Id, botComment.Id);
             Console.WriteLine(c);
-            return ReplyDict;
         }
         /// <summary>
         /// Edits the archive comment
@@ -155,39 +149,6 @@ namespace Mnemosyne_Of_Mine
                     targetComment.EditText(newCommentText);
                 }
             }
-        }
-        /// <summary>
-        /// Reads the file where we track who we reply to
-        /// </summary>
-        /// <param name="file">file that we're using</param>
-        /// <returns>dictionary of replys and comment ids</returns>
-        internal static Dictionary<string, string> ReadReplyTrackingFile(string file)
-        {
-            Dictionary<string, string> replyDict = new Dictionary<string, string>();
-            string fileIn = File.ReadAllText(file);
-            string[] elements = fileIn.Split(new char[] { ':', ',' }, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < elements.Length; i += 2)
-            {
-                string postID = elements[i];
-                string botCommentID = elements[i + 1];
-                replyDict.Add(postID, botCommentID);
-            }
-
-            return replyDict;
-        }
-        /// <summary>
-        /// Writes the reply tracking file
-        /// </summary>
-        /// <param name="replyDict">Dictionary of replies</param>
-        internal static void WriteReplyTrackingFile(Dictionary<string, string> replyDict)
-        {
-            StringBuilder builder = new StringBuilder();
-            foreach (KeyValuePair<string, string> reply in replyDict)
-            {
-                builder.Append(reply.Key + ':' + reply.Value + ',');
-            }
-
-            File.WriteAllText(@".\ReplyTracker.txt", builder.ToString(0, builder.Length - 1));
         }
     }
 }
