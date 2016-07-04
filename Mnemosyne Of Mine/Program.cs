@@ -30,7 +30,6 @@ namespace Mnemosyne_Of_Mine
         internal static string c_head = "Archives for links in comments: \n\n";
         internal static string footer = "----\nI am Mnemosyne 2.0, ";
         internal static string botsrights = "^^^^/r/botsrights ^^^^[Contribute](https://github.com/chuggafan/Mnemosyne-2.0-1) ^^^^[Website](https://mnemosyne-20.github.io/Mnemosyne-2.0-1/)";
-        internal static string[] AnnoyCuckbot = { "Fun Fact!\n\nIn male feminist culture, it is [a great compliment](https://anonmgur.com/up/94297d3df43d5d4829141eafce3f127a.png) to be called [\"beta as fuck\"](https://www.youtube.com/watch?v=XCkEdB87yGA).","This is a public service announcement by Hipsterdom Who's Who.\n\nThe culmination of feminist courtship is the marriage ceremony, [after exchanging vows the happy couple share a platonic hug before the female goes off to mate with all the other attendees while the male cries over his water gun collection](https://www.youtube.com/watch?v=XshS_6evfp4).", "Did you know [female feminists often regard male feminist as creepy sex offenders](https://anonmgur.com/up/e4f611022fe46e6548d8b03170070cde.png)? Now you do, and knowing is half the battle!", "ALERT!\n\nAttempting to keep a wife/girlfriend from exploring her sexuality with friends, co-workers, neighbors, mail/milkmen, random strangers in bars/clubs, or crack addicts living under a bridge is unfeminist!\n\nCuckoldry is mandatory for feminism! Non-feminism is literally rape! Report all known non-cucks to law enforcement immediately!"};
         #endregion
         static void Main(string[] args)
         {
@@ -166,15 +165,6 @@ namespace Mnemosyne_Of_Mine
                     ///</summary>
                     foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit))
                     {
-#if ANNOYTHECUCKBOT
-                        if (comment.Author == "CuckyMcCuckFace" && !BotState.HasCommentBeenChecked(comment.Id))
-                        {
-                            Random rand = new Random();
-                            comment.Reply(AnnoyCuckbot[rand.Next(3)]);
-                            BotState.AddCheckedComment(comment.Id);
-                            continue;
-                        }
-#endif
                         if (ArchiveBots.Contains(comment.Author))
                         {
                             continue;
@@ -184,7 +174,7 @@ namespace Mnemosyne_Of_Mine
                         {
                             if (!BotState.HasCommentBeenChecked(comment.Id) && !ArchiveBots.Contains(comment.Author))
                             {
-                                CommentArchiver.ArchiveCommentLinks(ReleventInfo, BotState, reddit, comment, FoundLinks);
+                                BotState = CommentArchiver.ArchiveCommentLinks(ReleventInfo, BotState, reddit, comment, FoundLinks);
                             }
                         }
                     }

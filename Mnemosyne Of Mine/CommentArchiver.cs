@@ -20,7 +20,7 @@ namespace Mnemosyne_Of_Mine
         /// <param name="comment">the comment to point to<seealso cref="Comment"/></param>
         /// <param name="FoundLinks">links found in the stuff lol</param>
         /// <!--What the hell is the point of this, i'm adding this line just because, this is a fucking comment for no real reason-->
-        internal static void ArchiveCommentLinks(UserData config, IBotStateTracker BotState, Reddit reddit, Comment comment, List<string> FoundLinks)
+        internal static IBotStateTracker ArchiveCommentLinks(UserData config, IBotStateTracker BotState, Reddit reddit, Comment comment, List<string> FoundLinks)
         {
             List<string> ArchivedLinks = new List<string>();
             string commentID = comment.Id;
@@ -66,10 +66,11 @@ namespace Mnemosyne_Of_Mine
                 {
                     Console.WriteLine($"No comment in {postID} to edit, making new one");
                     Post post = (Post)reddit.GetThingByFullname(comment.LinkId);
-                    PostArchiveLinks(config, BotState, Program.c_head, post, ArchivedLinks);
+                    BotState = PostArchiveLinks(config, BotState, Program.c_head, post, ArchivedLinks);
                 }
                 BotState.AddCheckedComment(commentID);
             }
+            return BotState;
         }
         /// <summary>
         /// posts everything
@@ -78,7 +79,7 @@ namespace Mnemosyne_Of_Mine
         /// <param name="head">header</param>
         /// <param name="post">post to edit</param>
         /// <param name="ArchiveLinks">links of archives</param>
-        internal static void PostArchiveLinks(UserData config, IBotStateTracker BotState, string head, Post post, List<string> ArchiveLinks)
+        internal static IBotStateTracker PostArchiveLinks(UserData config, IBotStateTracker BotState, string head, Post post, List<string> ArchiveLinks)
         {
             //string head = post.IsSelfPost ? Program.d_head : Program.p_head;
             string LinksListBody = "";
@@ -99,6 +100,7 @@ namespace Mnemosyne_Of_Mine
             }
             BotState.AddBotComment(post.Id, botComment.Id);
             Console.WriteLine(c);
+            return BotState;
         }
         /// <summary>
         /// Edits the archive comment
