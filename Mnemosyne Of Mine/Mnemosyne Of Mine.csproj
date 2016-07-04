@@ -115,7 +115,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FlatFileBotStateTracker.cs" />
     <Compile Include="CommentArchiver.cs" />
+    <Compile Include="IBotStateTracker.cs" />
     <Compile Include="NConfigWriter.cs" />
     <Compile Include="LinkFinder.cs" />
     <Compile Include="Config.cs" />

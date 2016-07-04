@@ -47,6 +47,7 @@ namespace Mnemosyne_Of_Mine
                     Sql.CreateDatabase();
             }
 #endif
+            IBotStateTracker BotState = new FlatFileBotStateTracker();
             Reddit reddit;
             AuthProvider OAuthProvider;
             string OAuthToken = "";
@@ -87,9 +88,6 @@ namespace Mnemosyne_Of_Mine
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
             bool isMnemosyneThereAlready = false; // ignore visual studio complaining about this
 #pragma warning restore CS0219 // Variable is assigned but its value is never used
-            Dictionary<string, string> ReplyDict = CommentArchiver.ReadReplyTrackingFile(@".\ReplyTracker.txt");
-            string[] commentsSeen = File.ReadAllLines(@".\Comments_Seen.txt");
-            List<string> commentsSeenList = commentsSeen.ToList();
             bool bDoPostArchiving = false; // temp off switch for archiving self posts themselves
             #region postChecking
             while (true)
@@ -108,7 +106,7 @@ namespace Mnemosyne_Of_Mine
                     foreach (var post in sub.New.Take(ReleventInfo.ReqLimit))
                     {
                         Console.Title = $"Finding posts in {sub.Name}";
-                        if (ReplyDict.ContainsKey(post.Id))
+                        if (BotState.DoesBotCommentExist(post.Id))
                         {
                             break;
                         }
@@ -159,8 +157,7 @@ namespace Mnemosyne_Of_Mine
                             }
                             if (ArchiveLinks.Count >= 1)
                             {
-                                ReplyDict = CommentArchiver.PostArchiveLinks(ReleventInfo, ReplyDict, d_head, post, ArchiveLinks);
-                                CommentArchiver.WriteReplyTrackingFile(ReplyDict); // this should probably be done elsewhere
+                                CommentArchiver.PostArchiveLinks(ReleventInfo, BotState, d_head, post, ArchiveLinks);
                             }
                         }
                     }
@@ -170,11 +167,11 @@ namespace Mnemosyne_Of_Mine
                     foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit))
                     {
 #if ANNOYTHECUCKBOT
-                        if (comment.Author == "CuckyMcCuckFace" && !commentsSeenList.Contains(comment.Id))
+                        if (comment.Author == "CuckyMcCuckFace" && !BotState.HasCommentBeenChecked(comment.Id))
                         {
                             Random rand = new Random();
                             comment.Reply(AnnoyCuckbot[rand.Next(3)]);
-                            commentsSeenList.Add(comment.Id);
+                            BotState.AddCheckedComment(comment.Id);
                             continue;
                         }
 #endif
@@ -185,16 +182,11 @@ namespace Mnemosyne_Of_Mine
                         List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
                         if (FoundLinks.Count >= 1) // should fix empty comments bug
                         {
-                            if (!commentsSeenList.Contains(comment.Id) && !ArchiveBots.Contains(comment.Author))
+                            if (!BotState.HasCommentBeenChecked(comment.Id) && !ArchiveBots.Contains(comment.Author))
                             {
-                                var ass = CommentArchiver.ArchiveCommentLinks(ReleventInfo, ReplyDict, reddit, comment, FoundLinks, commentsSeenList);
-                                ReplyDict = ass.Item1;
-                                commentsSeenList = ass.Item2;
-                                File.WriteAllLines(@".\Comments_Seen.txt", commentsSeenList.ToArray());
-
+                                CommentArchiver.ArchiveCommentLinks(ReleventInfo, BotState, reddit, comment, FoundLinks);
                             }
                         }
-                        CommentArchiver.WriteReplyTrackingFile(ReplyDict);
                     }
                     Console.Title = $"waiting for next batch from {sub.Name} New messages: {newMessages}";
 #if REPOSTCHECK
@@ -207,7 +199,7 @@ namespace Mnemosyne_Of_Mine
                             {
                                 continue;
                             }
-                            if (repliedList.Contains(post.Id))
+                            if (BotState.DoesBotCommentExist(post.Id))
                             {
                                 break;
                             }
@@ -215,9 +207,9 @@ namespace Mnemosyne_Of_Mine
                             if (repostPer > .5 && !double.IsInfinity(repostPer))
                             {
                                 string comment = $"Your post had a {repostPer} similarity match for the title to the fake karly cross guys code vs girls code image\n\n----\n\n Please message /u/chugga_fan if this is incorrect, you can also ask for the source from him^^^^/r/botsrights";
-                                //post.Comment(comment);
+                                //Comment botComment = post.Comment(comment);
                                 Console.Write(comment);
-                                repliedList.Add(post.Id);
+                                BotState.AddBotComment(post.Id, ""); // plug botComment.Id in here when/if you use this
                             }
                         }
                     }
