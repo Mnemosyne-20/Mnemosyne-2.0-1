@@ -38,6 +38,7 @@ namespace Mnemosyne_Of_Mine
             string query = $"insert into replies (postID, botReplyID) values ({postID},{commentID})";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
             cmd.ExecuteNonQuery();
+            cmd.Dispose();
         }
 
         public void AddCheckedComment(string commentID)
@@ -45,6 +46,7 @@ namespace Mnemosyne_Of_Mine
             string query = $"insert into comments (commentID) values ({commentID})";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
             cmd.ExecuteNonQuery();
+            cmd.Dispose();
         }
 
         public bool DoesBotCommentExist(string commentID)
@@ -52,6 +54,7 @@ namespace Mnemosyne_Of_Mine
             string query = $"select count(*) from replies where commentID = {commentID}";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
             int count = (int)cmd.ExecuteScalar();
+            cmd.Dispose();
             return count != 0;
         }
 
@@ -60,6 +63,7 @@ namespace Mnemosyne_Of_Mine
             string query = $"select commentID from replies where postID = {postID}";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
             string commentID = (string)cmd.ExecuteScalar();
+            cmd.Dispose();
             return commentID;
         }
 
@@ -68,6 +72,7 @@ namespace Mnemosyne_Of_Mine
             string query = $"select count(commentID) from comments where commentID = {commentID}";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
             int count = (int)cmd.ExecuteScalar();
+            cmd.Dispose();
             return count != 0;
         }
 
@@ -76,6 +81,7 @@ namespace Mnemosyne_Of_Mine
             string query = $"select count(*) from archives where originalURL = {url}";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
             int count = (int)cmd.ExecuteScalar();
+            cmd.Dispose();
             return count != 0;
         }
 
@@ -84,6 +90,7 @@ namespace Mnemosyne_Of_Mine
             string query = $"select archiveURL from archives where originalURL = {url}";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
             string archiveURL = (string)cmd.ExecuteScalar();
+            cmd.Dispose();
             return archiveURL;
         }
 
@@ -92,6 +99,7 @@ namespace Mnemosyne_Of_Mine
             string query = $"insert into archives (originalURL, archiveURL) values ({originalURL}, {archiveURL})";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
             cmd.ExecuteNonQuery();
+            cmd.Dispose();
         }
 
         void InitializeDatabase()
@@ -99,12 +107,15 @@ namespace Mnemosyne_Of_Mine
             string query = "create table replies (postID text, botReplyID text)";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
             cmd.ExecuteNonQuery();
+            cmd.Dispose();
             query = "create table comments (commentID text)"; // yes this is a table with one column and eventually along with the reply table won't even be needed at all
             cmd = new SQLiteCommand(query, dbConnection);
             cmd.ExecuteNonQuery();
+            cmd.Dispose();
             query = "create table archives (originalURL text, archiveURL text)";
             cmd = new SQLiteCommand(query, dbConnection);
             cmd.ExecuteNonQuery();
+            cmd.Dispose();
         }
     }
 }
