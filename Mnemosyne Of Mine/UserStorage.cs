@@ -39,17 +39,20 @@ namespace Mnemosyne_Of_Mine
                 reader.ReadToFollowing("Username");
                 Username = reader.ReadElementContentAsString();
                 try
-                { 
+                {
                     reader.ReadToFollowing("Password");
                     Password = reader.ReadElementContentAsString();
                     reader.ReadToFollowing("flavortext");
                     FlavorText = reader.ReadElementContentAsString().Split('\"'); // split by a " because commas
                     reader.ReadToFollowing("Repost");
                     Repost = reader.ReadElementContentAsString();
+                    reader.ReadToFollowing("SQLite");
+                    SQLite = bool.Parse(reader.GetAttribute(0));
+
                 }
                 catch
                 {
-                    
+
                 }
             }
         }
@@ -75,5 +78,6 @@ namespace Mnemosyne_Of_Mine
         public string RedirectURI { get; private set; }
         public string SubReddit { get; private set; }
         public string Repost { get; private set; }
+        public bool SQLite { get; private set; }
     }
 }
