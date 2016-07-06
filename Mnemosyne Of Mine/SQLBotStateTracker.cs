@@ -27,7 +27,7 @@ namespace Mnemosyne_Of_Mine
             dbConnection = new SQLiteConnection($"Data Source=|DataDirectory|\\{DatabaseFilename};Version=3;");
             dbConnection.Open();
 
-            if(bFreshStart)
+            if (bFreshStart)
             {
                 InitializeDatabase();
             }
@@ -69,6 +69,29 @@ namespace Mnemosyne_Of_Mine
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
             int count = (int)cmd.ExecuteScalar();
             return count != 0;
+        }
+
+        public bool IsURLAlreadyArchived(string url)
+        {
+            string query = $"select count(*) from archives where originalURL = {url}";
+            SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            int count = (int)cmd.ExecuteScalar();
+            return count != 0;
+        }
+
+        public string GetArchiveForURL(string url)
+        {
+            string query = $"select archiveURL from archives where originalURL = {url}";
+            SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            string archiveURL = (string)cmd.ExecuteScalar();
+            return archiveURL;
+        }
+
+        public void AddArchiveForURL(string originalURL, string archiveURL)
+        {
+            string query = $"insert into archives (originalURL, archiveURL) values ({originalURL}, {archiveURL})";
+            SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            cmd.ExecuteNonQuery();
         }
 
         void InitializeDatabase()
