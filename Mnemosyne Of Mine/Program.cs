@@ -24,7 +24,7 @@ namespace Mnemosyne_Of_Mine
             "TweetPoster"
         };
         #region constants
-        internal static Regex exclude = new Regex(@"(youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be|wiki/rules|politics_feedback_results_and_where_it_goes_from)");
+        internal static Regex exclude = new Regex(@"(sli.mg|imgur.com|youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be|wiki/rules|politics_feedback_results_and_where_it_goes_from)");
         internal static string d_head = "Archives for links in this post: \n\n";
         internal static string p_head = "Archive for this post: \n\n";
         internal static string c_head = "Archives for links in comments: \n\n";
