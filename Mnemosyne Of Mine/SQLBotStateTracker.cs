@@ -35,24 +35,28 @@ namespace Mnemosyne_Of_Mine
 
         public void AddBotComment(string postID, string commentID)
         {
-            string query = $"insert into replies (postID, botReplyID) values ({postID},{commentID})";
+            string query = "insert into replies (postID, botReplyID) values (@postID, @commentID)";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            cmd.Parameters.Add(new SQLiteParameter("@postID", postID));
+            cmd.Parameters.Add(new SQLiteParameter("@commentID", commentID));
             cmd.ExecuteNonQuery();
             cmd.Dispose();
         }
 
         public void AddCheckedComment(string commentID)
         {
-            string query = $"insert into comments (commentID) values ({commentID})";
+            string query = "insert into comments (commentID) values (@commentID)";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            cmd.Parameters.Add(new SQLiteParameter("@commentID", commentID));
             cmd.ExecuteNonQuery();
             cmd.Dispose();
         }
 
         public bool DoesBotCommentExist(string commentID)
         {
-            string query = $"select count(*) from replies where commentID = {commentID}";
+            string query = "select count(*) from replies where commentID = @commentID";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            cmd.Parameters.Add(new SQLiteParameter("@commentID", commentID));
             int count = (int)cmd.ExecuteScalar();
             cmd.Dispose();
             return count != 0;
@@ -60,8 +64,9 @@ namespace Mnemosyne_Of_Mine
 
         public string GetBotCommentForPost(string postID)
         {
-            string query = $"select commentID from replies where postID = {postID}";
+            string query = "select commentID from replies where postID = @postID";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            cmd.Parameters.Add(new SQLiteParameter("@postID", postID));
             string commentID = (string)cmd.ExecuteScalar();
             cmd.Dispose();
             return commentID;
@@ -69,8 +74,9 @@ namespace Mnemosyne_Of_Mine
 
         public bool HasCommentBeenChecked(string commentID)
         {
-            string query = $"select count(commentID) from comments where commentID = {commentID}";
+            string query = "select count(commentID) from comments where commentID = @commentID";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            cmd.Parameters.Add(new SQLiteParameter("@commentID", commentID));
             int count = (int)cmd.ExecuteScalar();
             cmd.Dispose();
             return count != 0;
@@ -78,8 +84,9 @@ namespace Mnemosyne_Of_Mine
 
         public bool IsURLAlreadyArchived(string url)
         {
-            string query = $"select count(*) from archives where originalURL = {url}";
+            string query = "select count(*) from archives where originalURL = @url";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            cmd.Parameters.Add(new SQLiteParameter("@url", url));
             int count = (int)cmd.ExecuteScalar();
             cmd.Dispose();
             return count != 0;
@@ -87,8 +94,9 @@ namespace Mnemosyne_Of_Mine
 
         public string GetArchiveForURL(string url)
         {
-            string query = $"select archiveURL from archives where originalURL = {url}";
+            string query = "select archiveURL from archives where originalURL = @url";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            cmd.Parameters.Add(new SQLiteParameter("@url", url));
             string archiveURL = (string)cmd.ExecuteScalar();
             cmd.Dispose();
             return archiveURL;
@@ -96,8 +104,10 @@ namespace Mnemosyne_Of_Mine
 
         public void AddArchiveForURL(string originalURL, string archiveURL)
         {
-            string query = $"insert into archives (originalURL, archiveURL) values ({originalURL}, {archiveURL})";
+            string query = "insert into archives (originalURL, archiveURL) values (@originalURL, @archiveURL)";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            cmd.Parameters.Add(new SQLiteParameter("@originalURL", originalURL));
+            cmd.Parameters.Add(new SQLiteParameter("@archiveURL", archiveURL));
             cmd.ExecuteNonQuery();
             cmd.Dispose();
         }
