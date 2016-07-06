@@ -46,7 +46,15 @@ namespace Mnemosyne_Of_Mine
                     Sql.CreateDatabase();
             }
 #endif
-            IBotStateTracker BotState = new FlatFileBotStateTracker();
+            IBotStateTracker BotState = null;
+            if (ReleventInfo.SQLite == false)
+            {
+                BotState = new FlatFileBotStateTracker();
+            }
+            else
+            {
+                BotState = new SQLBotStateTracker();
+            }
             Reddit reddit;
             AuthProvider OAuthProvider;
             string OAuthToken = "";
@@ -115,7 +123,7 @@ namespace Mnemosyne_Of_Mine
                         }
                         foreach (var comment in post.Comments)
                         {
-                            if(!bDoPostArchiving)
+                            if (!bDoPostArchiving)
                             {
                                 break;
                             }
@@ -128,7 +136,7 @@ namespace Mnemosyne_Of_Mine
                         }
                         if (post.IsSelfPost)
                         {
-                            if(post.SelfTextHtml == null)
+                            if (post.SelfTextHtml == null)
                             {
                                 continue;
                             }
@@ -136,10 +144,10 @@ namespace Mnemosyne_Of_Mine
                             ///<summary>
                             ///This checks if we should archive or not based on ITSigno yelling at me
                             /// </summary>
-                            if(bDoPostArchiving)
+                            if (bDoPostArchiving)
                             {
                                 string archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString()).Result;
-                                if(archiveURL.Contains("archive.is"))
+                                if (archiveURL.Contains("archive.is"))
                                 {
                                     Console.WriteLine(archiveURL);
                                     Console.ReadLine();
@@ -152,7 +160,7 @@ namespace Mnemosyne_Of_Mine
                             List<string> FoundLinks = LinkFinder.FindLinks(post.SelfTextHtml);
                             if (FoundLinks.Count >= 1)
                             {
-                                ArchiveLinks.AddRange(ArchivePostLinks(FoundLinks, exclude));                                
+                                ArchiveLinks.AddRange(ArchivePostLinks(FoundLinks, exclude));
                             }
                             if (ArchiveLinks.Count >= 1)
                             {
@@ -237,7 +245,7 @@ namespace Mnemosyne_Of_Mine
 
                 Console.Title = $"Sleeping New messages: {newMessages}";
                 System.Threading.Thread.Sleep(TimeSpan.FromSeconds(ReleventInfo.SleepTime));
-#endregion
+                #endregion
             }
         }
         /// <summary>
@@ -288,9 +296,9 @@ namespace Mnemosyne_Of_Mine
         /// <param name="FoundLinks">links found by the linkfinder</param>
         /// <param name="exclusions">exclusions from archiving</param>
         /// <returns>archives</returns>
-        static List<string> ArchivePostLinks( List<string> FoundLinks, Regex exclusions)
+        static List<string> ArchivePostLinks(List<string> FoundLinks, Regex exclusions)
         {
-            List<string> ArchiveLinks = new List<string>();            
+            List<string> ArchiveLinks = new List<string>();
             int counter = 1;
             foreach (string link in FoundLinks)
             {
@@ -299,13 +307,13 @@ namespace Mnemosyne_Of_Mine
                     string archiveURL = Archiving.Archive(@"archive.is", link).Result;
                     if (Archiving.VerifyArchiveResult(link, archiveURL))
                     {
-                        string hostname = new Uri(link).Host.Replace("www.","");
+                        string hostname = new Uri(link).Host.Replace("www.", "");
                         ArchiveLinks.Add($"* **Link: {counter.ToString()}** ([{hostname}]({link})): {archiveURL}\n");
                     }
                 }
                 ++counter;
             }
-            return ArchiveLinks;            
+            return ArchiveLinks;
         }
     }
 }

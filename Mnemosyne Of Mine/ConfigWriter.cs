@@ -46,6 +46,9 @@ namespace Mnemosyne_Of_Mine
                 writer.makeReadable("Password", Console.ReadLine());
                 Console.WriteLine("You have to add flavortext manually after the fact, go into the config file and seperate each flavor text with a \"");
                 writer.makeReadable("flavortext", "");
+                Console.WriteLine("Do you want to use SQLite or a normal file?");
+                writer.WriteStartAttribute("SQLite");
+                writer.WriteAttributeString("thisdoesn'tmatter", Console.ReadLine().ToLower());
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
                 writer.Flush();
