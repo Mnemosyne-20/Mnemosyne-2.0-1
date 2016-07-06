@@ -10,9 +10,6 @@ namespace Mnemosyne_Of_Mine
 {
     class SQLBotStateTracker : IBotStateTracker
     {
-        static Dictionary<string, string> BotComments = new Dictionary<string, string>();
-        static List<string> CheckedComments = new List<string>();
-
         string DatabaseFilename = "botstate.sqlite";
         SQLiteConnection dbConnection;
 
@@ -35,30 +32,43 @@ namespace Mnemosyne_Of_Mine
                 InitializeDatabase();
             }
         }
+
         public void AddBotComment(string postID, string commentID)
         {
-            BotComments.Add(postID, commentID);
-            
+            string query = $"insert into replies (postID, botReplyID) values ({postID},{commentID})";
+            SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            cmd.ExecuteNonQuery();
         }
 
         public void AddCheckedComment(string commentID)
         {
-            
+            string query = $"insert into comments (commentID) values ({commentID})";
+            SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            cmd.ExecuteNonQuery();
         }
 
         public bool DoesBotCommentExist(string commentID)
         {
-            return true;
+            string query = $"select count(*) from replies where commentID = {commentID}";
+            SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            int count = (int)cmd.ExecuteScalar();
+            return count != 0;
         }
 
         public string GetBotCommentForPost(string postID)
         {
-            return null;
+            string query = $"select commentID from replies where postID = {postID}";
+            SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            string commentID = (string)cmd.ExecuteScalar();
+            return commentID;
         }
 
         public bool HasCommentBeenChecked(string commentID)
         {
-            return true;
+            string query = $"select count(commentID) from comments where commentID = {commentID}";
+            SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
+            int count = (int)cmd.ExecuteScalar();
+            return count != 0;
         }
 
         void InitializeDatabase()
