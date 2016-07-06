@@ -161,7 +161,7 @@ namespace Mnemosyne_Of_Mine
                         }
                     }
                     ///<summary>
-                    ///grabs new comments, may need to see if we need to do changes to the ReqLimit to be able to do this, as i currently have a low one of 30
+                    /// grabs new comments, may need to see if we need to do changes to the ReqLimit to be able to do this, as i currently have a low one of 30
                     ///</summary>
                     foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit))
                     {
