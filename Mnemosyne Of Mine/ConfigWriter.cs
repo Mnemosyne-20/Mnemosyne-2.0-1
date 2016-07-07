@@ -48,7 +48,7 @@ namespace Mnemosyne_Of_Mine
                 writer.makeReadable("flavortext", "");
                 Console.WriteLine("Do you want to use SQLite or a normal file?");
                 writer.WriteStartAttribute("SQLite");
-                writer.WriteAttributeString("thisdoesn'tmatter", Console.ReadLine().ToLower());
+                writer.WriteAttributeString("thisdoesntmatter", Console.ReadLine().ToLower());
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
                 writer.Flush();
