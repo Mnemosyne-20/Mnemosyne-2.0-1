@@ -42,7 +42,7 @@ namespace Mnemosyne_Of_Mine
         public void AddBotComment(string postID, string commentID)
         {
             SQLCmd_AddBotComment.Parameters["@postID"].Value = postID;
-            SQLCmd_AddBotComment.Parameters["@botReplytID"].Value = commentID;
+            SQLCmd_AddBotComment.Parameters["@botReplyID"].Value = commentID;
             SQLCmd_AddBotComment.ExecuteNonQuery();
         }
 
@@ -55,7 +55,7 @@ namespace Mnemosyne_Of_Mine
         public bool DoesBotCommentExist(string postID)
         {
             SQLCmd_DoesBotCommentExist.Parameters["@postID"].Value = postID;
-            int count = (int)SQLCmd_DoesBotCommentExist.ExecuteScalar();
+            long count = SQLCmd_DoesBotCommentExist.ExecuteScalar() as long? ?? 0;
             return count != 0;
         }
 
@@ -69,14 +69,14 @@ namespace Mnemosyne_Of_Mine
         public bool HasCommentBeenChecked(string commentID)
         {
             SQLCmd_HasCommentBeenChecked.Parameters["@commentID"].Value = commentID;
-            int count = (int)SQLCmd_HasCommentBeenChecked.ExecuteScalar();
+            long count = SQLCmd_HasCommentBeenChecked.ExecuteScalar() as long? ?? 0;
             return count != 0;
         }
 
         public bool IsURLAlreadyArchived(string url)
         {
             SQLCmd_IsURLArchived.Parameters["@url"].Value = url;
-            int count = (int)SQLCmd_IsURLArchived.ExecuteScalar();
+            long count = SQLCmd_IsURLArchived.ExecuteScalar() as long? ?? 0;
             return count != 0;
         }
 
