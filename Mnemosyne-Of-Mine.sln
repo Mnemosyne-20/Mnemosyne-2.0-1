@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationConversion", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesterForConfig", "UnitTesterForConfig\UnitTesterForConfig.csproj", "{8CFEDB8C-BC69-4A61-8E8B-5598F1A1D6E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotStateTests", "BotStateTests\BotStateTests.csproj", "{C283DC4F-AB66-4FA3-9041-C450E891B4A4}"
+EndProject
 Global
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
@@ -73,6 +75,16 @@ Global
 		{8CFEDB8C-BC69-4A61-8E8B-5598F1A1D6E4}.REPOSTRELEASE|Any CPU.Build.0 = Release|Any CPU
 		{8CFEDB8C-BC69-4A61-8E8B-5598F1A1D6E4}.SQLDEBUG|Any CPU.ActiveCfg = Release|Any CPU
 		{8CFEDB8C-BC69-4A61-8E8B-5598F1A1D6E4}.SQLDEBUG|Any CPU.Build.0 = Release|Any CPU
+		{C283DC4F-AB66-4FA3-9041-C450E891B4A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C283DC4F-AB66-4FA3-9041-C450E891B4A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C283DC4F-AB66-4FA3-9041-C450E891B4A4}.DEBUGANNOY|Any CPU.ActiveCfg = Debug|Any CPU
+		{C283DC4F-AB66-4FA3-9041-C450E891B4A4}.DEBUGANNOY|Any CPU.Build.0 = Debug|Any CPU
+		{C283DC4F-AB66-4FA3-9041-C450E891B4A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C283DC4F-AB66-4FA3-9041-C450E891B4A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C283DC4F-AB66-4FA3-9041-C450E891B4A4}.REPOSTRELEASE|Any CPU.ActiveCfg = Release|Any CPU
+		{C283DC4F-AB66-4FA3-9041-C450E891B4A4}.REPOSTRELEASE|Any CPU.Build.0 = Release|Any CPU
+		{C283DC4F-AB66-4FA3-9041-C450E891B4A4}.SQLDEBUG|Any CPU.ActiveCfg = Release|Any CPU
+		{C283DC4F-AB66-4FA3-9041-C450E891B4A4}.SQLDEBUG|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

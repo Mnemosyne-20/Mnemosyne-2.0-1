@@ -7,16 +7,19 @@ namespace Mnemosyne_Of_Mine
 {
     class FlatFileBotStateTracker : IBotStateTracker
     {
-        string replyTrackerFilePath = @".\ReplyTracker.txt";
-        string checkedCommentsFilePath = @".\Comments_Seen.txt";
-        string archivesTrackerFilePath = @".\ArchiveTracker.txt";
+        string replyTrackerFilePath;
+        string checkedCommentsFilePath;
+        string archivesTrackerFilePath;
 
         static Dictionary<string, string> BotComments = new Dictionary<string, string>();
         static List<string> CheckedComments = new List<string>();
         static Dictionary<string, string> Archives = new Dictionary<string, string>();
 
-        public FlatFileBotStateTracker()
+        public FlatFileBotStateTracker(string replyFile = @".\ReplyTracker.txt", string commentFile = @".\Comments_Seen.txt", string archivesFile = @".\ArchiveTracker.txt")
         {
+            replyTrackerFilePath = replyFile;
+            checkedCommentsFilePath = commentFile;
+            archivesTrackerFilePath = archivesFile;
             BotComments = ReadReplyTrackingFile(replyTrackerFilePath);
             CheckedComments = File.ReadAllLines(checkedCommentsFilePath).ToList();
             //Archives = ReadArchivesTrackingFile(archivesTrackerFilePath);

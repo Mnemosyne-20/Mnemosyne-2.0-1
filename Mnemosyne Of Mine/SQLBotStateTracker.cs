@@ -8,16 +8,17 @@ using System.IO;
 
 namespace Mnemosyne_Of_Mine
 {
-    class SQLBotStateTracker : IBotStateTracker
+    public class SQLBotStateTracker : IBotStateTracker
     {
-        string DatabaseFilename = "botstate.sqlite";
+        string DatabaseFilename;
         SQLiteConnection dbConnection;
 
         SQLiteCommand SQLCmd_AddBotComment, SQLCmd_AddCheckedComment, SQLCmd_DoesBotCommentExist, SQLCmd_GetBotComment,
             SQLCmd_HasCommentBeenChecked, SQLCmd_IsURLArchived, SQLCmd_GetArchive, SQLCmd_AddArchive;
 
-        public SQLBotStateTracker()
+        public SQLBotStateTracker(string filename = "botstate.sqlite")
         {
+            DatabaseFilename = filename;
             bool bFreshStart = false;
             if (!File.Exists($".\\{DatabaseFilename}"))
             {
@@ -51,9 +52,9 @@ namespace Mnemosyne_Of_Mine
             SQLCmd_AddCheckedComment.ExecuteNonQuery();
         }
 
-        public bool DoesBotCommentExist(string commentID)
+        public bool DoesBotCommentExist(string postID)
         {
-            SQLCmd_DoesBotCommentExist.Parameters["@commentID"].Value = commentID;
+            SQLCmd_DoesBotCommentExist.Parameters["@postID"].Value = postID;
             int count = (int)SQLCmd_DoesBotCommentExist.ExecuteScalar();
             return count != 0;
         }
@@ -118,8 +119,8 @@ namespace Mnemosyne_Of_Mine
             SQLCmd_AddCheckedComment = new SQLiteCommand("insert or abort into comments (commentID) values (@commentID)", dbConnection);
             SQLCmd_AddCheckedComment.Parameters.Add(new SQLiteParameter("@commentID"));
             
-            SQLCmd_DoesBotCommentExist = new SQLiteCommand("select count(*) from replies where commentID = @commentID", dbConnection);
-            SQLCmd_DoesBotCommentExist.Parameters.Add(new SQLiteParameter("@commentID"));
+            SQLCmd_DoesBotCommentExist = new SQLiteCommand("select count(*) from replies where postID = @postID", dbConnection);
+            SQLCmd_DoesBotCommentExist.Parameters.Add(new SQLiteParameter("@postID"));
             
             SQLCmd_GetBotComment = new SQLiteCommand("select commentID from replies where postID = @postID", dbConnection);
             SQLCmd_GetBotComment.Parameters.Add(new SQLiteParameter("@postID"));
