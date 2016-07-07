@@ -8,7 +8,8 @@ using System.Data.SQLite;
 namespace BotStateTests
 {
     [TestClass]
-    [DeploymentItem("x64\\SQLite.Interop.dll")] //it's half a bit stupid that this is even necessary, and another half a bit stupid that this specifically isn't deleted afterwards
+    [DeploymentItem("x64\\SQLite.Interop.dll", "x64")] //it's half a bit stupid that this is even necessary, and another half a bit stupid that this specifically isn't deleted afterwards
+    [DeploymentItem("x86\\SQLite.Interop.dll", "x86")]
     public class SQLTests
     {
         Dictionary<string, string> BotRepliesDataset = new Dictionary<string, string>()

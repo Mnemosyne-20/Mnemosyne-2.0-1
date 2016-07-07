@@ -41,15 +41,45 @@ namespace Mnemosyne_Of_Mine
 
         public void AddBotComment(string postID, string commentID)
         {
-            SQLCmd_AddBotComment.Parameters["@postID"].Value = postID;
-            SQLCmd_AddBotComment.Parameters["@botReplyID"].Value = commentID;
-            SQLCmd_AddBotComment.ExecuteNonQuery();
+            try
+            {
+                SQLCmd_AddBotComment.Parameters["@postID"].Value = postID;
+                SQLCmd_AddBotComment.Parameters["@botReplyID"].Value = commentID;
+                SQLCmd_AddBotComment.ExecuteNonQuery();
+            }
+            catch(SQLiteException ex)
+            {
+                SQLiteErrorCode error = ex.ResultCode;
+                if(error == SQLiteErrorCode.Constraint_Unique)
+                {
+                    Console.WriteLine($"The post {postID} already exists in database");
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         public void AddCheckedComment(string commentID)
         {
-            SQLCmd_AddCheckedComment.Parameters["@commentID"].Value = commentID;
-            SQLCmd_AddCheckedComment.ExecuteNonQuery();
+            try
+            {
+                SQLCmd_AddCheckedComment.Parameters["@commentID"].Value = commentID;
+                SQLCmd_AddCheckedComment.ExecuteNonQuery();
+            }
+            catch(SQLiteException ex)
+            {
+                SQLiteErrorCode error = ex.ResultCode;
+                if (error == SQLiteErrorCode.Constraint_Unique)
+                {
+                    Console.WriteLine($"The comment {commentID} already exists in database");
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         public bool DoesBotCommentExist(string postID)
@@ -62,7 +92,7 @@ namespace Mnemosyne_Of_Mine
         public string GetBotCommentForPost(string postID)
         {
             SQLCmd_GetBotComment.Parameters["@postID"].Value = postID;
-            string botReplyID = (string)SQLCmd_GetBotComment.ExecuteScalar();
+            string botReplyID = (string)SQLCmd_GetBotComment.ExecuteScalar() ?? "";
             return botReplyID;
         }
 
@@ -83,15 +113,30 @@ namespace Mnemosyne_Of_Mine
         public string GetArchiveForURL(string url)
         {
             SQLCmd_GetArchive.Parameters["@url"].Value = url;
-            string archiveURL = (string)SQLCmd_GetArchive.ExecuteScalar();
+            string archiveURL = (string)SQLCmd_GetArchive.ExecuteScalar() ?? "";
             return archiveURL;
         }
 
         public void AddArchiveForURL(string originalURL, string archiveURL)
         {
-            SQLCmd_AddArchive.Parameters["@originalURL"].Value = originalURL;
-            SQLCmd_AddArchive.Parameters["@archiveURL"].Value = archiveURL;
-            SQLCmd_AddArchive.ExecuteNonQuery();
+            try
+            {
+                SQLCmd_AddArchive.Parameters["@originalURL"].Value = originalURL;
+                SQLCmd_AddArchive.Parameters["@archiveURL"].Value = archiveURL;
+                SQLCmd_AddArchive.ExecuteNonQuery();
+            }
+            catch(SQLiteException ex)
+            {
+                SQLiteErrorCode error = ex.ResultCode;
+                if (error == SQLiteErrorCode.Constraint_Unique)
+                {
+                    Console.WriteLine($"The URL {originalURL} already exists in database");
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         void InitializeDatabase()
