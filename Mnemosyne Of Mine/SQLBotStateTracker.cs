@@ -95,15 +95,15 @@ namespace Mnemosyne_Of_Mine
 
         void InitializeDatabase()
         {
-            string query = "create table replies (postID text, botReplyID text)";
+            string query = "create table replies (postID text unique, botReplyID text)";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
             cmd.ExecuteNonQuery();
             cmd.Dispose();
-            query = "create table comments (commentID text)"; // yes this is a table with one column and eventually along with the reply table won't even be needed at all
+            query = "create table comments (commentID text unique)"; // yes this is a table with one column and eventually along with the reply table won't even be needed at all
             cmd = new SQLiteCommand(query, dbConnection);
             cmd.ExecuteNonQuery();
             cmd.Dispose();
-            query = "create table archives (originalURL text, archiveURL text)";
+            query = "create table archives (originalURL text unique, archiveURL text)";
             cmd = new SQLiteCommand(query, dbConnection);
             cmd.ExecuteNonQuery();
             cmd.Dispose();
@@ -111,11 +111,11 @@ namespace Mnemosyne_Of_Mine
 
         void InitializeCommands()
         {
-            SQLCmd_AddBotComment = new SQLiteCommand("insert into replies(postID, botReplyID) values(@postID, @commentID)", dbConnection);
+            SQLCmd_AddBotComment = new SQLiteCommand("insert or abort into replies(postID, botReplyID) values(@postID, @commentID)", dbConnection);
             SQLCmd_AddBotComment.Parameters.Add(new SQLiteParameter("@postID"));
             SQLCmd_AddBotComment.Parameters.Add(new SQLiteParameter("@commentID"));
             
-            SQLCmd_AddCheckedComment = new SQLiteCommand("insert into comments (commentID) values (@commentID)", dbConnection);
+            SQLCmd_AddCheckedComment = new SQLiteCommand("insert or abort into comments (commentID) values (@commentID)", dbConnection);
             SQLCmd_AddCheckedComment.Parameters.Add(new SQLiteParameter("@commentID"));
             
             SQLCmd_DoesBotCommentExist = new SQLiteCommand("select count(*) from replies where commentID = @commentID", dbConnection);
@@ -133,7 +133,7 @@ namespace Mnemosyne_Of_Mine
             SQLCmd_GetArchive = new SQLiteCommand("select archiveURL from archives where originalURL = @url", dbConnection);
             SQLCmd_GetArchive.Parameters.Add(new SQLiteParameter("@url"));
             
-            SQLCmd_AddArchive = new SQLiteCommand("insert into archives (originalURL, archiveURL) values (@originalURL, @archiveURL)", dbConnection);
+            SQLCmd_AddArchive = new SQLiteCommand("insert or abort into archives (originalURL, archiveURL) values (@originalURL, @archiveURL)", dbConnection);
             SQLCmd_AddArchive.Parameters.Add(new SQLiteParameter("@originalURL"));
             SQLCmd_AddArchive.Parameters.Add(new SQLiteParameter("@archiveURL"));
         }
