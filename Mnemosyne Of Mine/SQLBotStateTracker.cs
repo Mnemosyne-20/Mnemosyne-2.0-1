@@ -42,7 +42,7 @@ namespace Mnemosyne_Of_Mine
         public void AddBotComment(string postID, string commentID)
         {
             SQLCmd_AddBotComment.Parameters["@postID"].Value = postID;
-            SQLCmd_AddBotComment.Parameters["@commentID"].Value = commentID;
+            SQLCmd_AddBotComment.Parameters["@botReplytID"].Value = commentID;
             SQLCmd_AddBotComment.ExecuteNonQuery();
         }
 
@@ -62,8 +62,8 @@ namespace Mnemosyne_Of_Mine
         public string GetBotCommentForPost(string postID)
         {
             SQLCmd_GetBotComment.Parameters["@postID"].Value = postID;
-            string commentID = (string)SQLCmd_GetBotComment.ExecuteScalar();
-            return commentID;
+            string botReplyID = (string)SQLCmd_GetBotComment.ExecuteScalar();
+            return botReplyID;
         }
 
         public bool HasCommentBeenChecked(string commentID)
@@ -112,9 +112,9 @@ namespace Mnemosyne_Of_Mine
 
         void InitializeCommands()
         {
-            SQLCmd_AddBotComment = new SQLiteCommand("insert or abort into replies(postID, botReplyID) values(@postID, @commentID)", dbConnection);
+            SQLCmd_AddBotComment = new SQLiteCommand("insert or abort into replies(postID, botReplyID) values(@postID, @botReplyID)", dbConnection);
             SQLCmd_AddBotComment.Parameters.Add(new SQLiteParameter("@postID"));
-            SQLCmd_AddBotComment.Parameters.Add(new SQLiteParameter("@commentID"));
+            SQLCmd_AddBotComment.Parameters.Add(new SQLiteParameter("@botReplyID"));
             
             SQLCmd_AddCheckedComment = new SQLiteCommand("insert or abort into comments (commentID) values (@commentID)", dbConnection);
             SQLCmd_AddCheckedComment.Parameters.Add(new SQLiteParameter("@commentID"));
@@ -122,7 +122,7 @@ namespace Mnemosyne_Of_Mine
             SQLCmd_DoesBotCommentExist = new SQLiteCommand("select count(*) from replies where postID = @postID", dbConnection);
             SQLCmd_DoesBotCommentExist.Parameters.Add(new SQLiteParameter("@postID"));
             
-            SQLCmd_GetBotComment = new SQLiteCommand("select commentID from replies where postID = @postID", dbConnection);
+            SQLCmd_GetBotComment = new SQLiteCommand("select botReplyID from replies where postID = @postID", dbConnection);
             SQLCmd_GetBotComment.Parameters.Add(new SQLiteParameter("@postID"));
             
             SQLCmd_HasCommentBeenChecked = new SQLiteCommand("select count(commentID) from comments where commentID = @commentID", dbConnection);
