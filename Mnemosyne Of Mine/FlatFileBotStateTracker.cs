@@ -41,14 +41,16 @@ namespace Mnemosyne_Of_Mine
         /// <returns>The bot's comment ID</returns>
         public string GetBotCommentForPost(string postID)
         {
+            string botReplyID = "";
             if (BotComments.ContainsKey(postID))
             {
-                return BotComments[postID];
+                botReplyID = BotComments[postID];
             }
-            else
+            if (string.IsNullOrWhiteSpace(botReplyID))
             {
-                return "";
+                throw new InvalidOperationException($"Comment ID for post {postID} is null or empty");
             }
+            return botReplyID;
         }
 
         /// <summary>
@@ -72,6 +74,10 @@ namespace Mnemosyne_Of_Mine
                 BotComments.Add(postID, commentID);
                 AppendReplyTrackingFile(postID, commentID);
             }
+            else
+            {
+                throw new InvalidOperationException($"The post {postID} already exists in the tracking file");
+            }
         }
 
         /// <summary>
@@ -80,8 +86,15 @@ namespace Mnemosyne_Of_Mine
         /// <param name="commentID">Comment ID</param>
         public void AddCheckedComment(string commentID)
         {
-            CheckedComments.Add(commentID);
-            File.AppendAllText(checkedCommentsFilePath, $"{commentID}{Environment.NewLine}");
+            if (!CheckedComments.Contains(commentID))
+            {
+                CheckedComments.Add(commentID);
+                File.AppendAllText(checkedCommentsFilePath, $"{commentID}{Environment.NewLine}");
+            }
+            else
+            {
+                throw new InvalidOperationException($"The comment {commentID} already exists in the tracking file");
+            }
         }
 
         public bool IsURLAlreadyArchived(string url)
