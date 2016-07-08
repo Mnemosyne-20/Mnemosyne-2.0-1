@@ -28,7 +28,6 @@ namespace BotStateTests
             "d46k73i",
             "d46ezlc"
         };
-        Dictionary<string, string> ArchivesDataset;
 
         [TestMethod]
         [DeploymentItem("Test.sqlite", "1")]
