@@ -40,14 +40,8 @@ namespace Mnemosyne_Of_Mine
                 createNewConfig();
             }
             UserData ReleventInfo = new UserData(@".\config.xml");
-#if SQL
-            if (!File.Exists(@".\RepliedToList.mdf")) //TODO: ADD THIS
-            {
-                    Sql.CreateDatabase();
-            }
-#endif
             IBotStateTracker BotState = null;
-            if (ReleventInfo.SQLite == false)
+            if (!ReleventInfo.SQLite)
             {
                 BotState = new FlatFileBotStateTracker();
             }
@@ -61,6 +55,7 @@ namespace Mnemosyne_Of_Mine
             bool bAuthenticated = false;
             bool newMessages = false;
             #region password and OAuth
+            auth:;
             if (ReleventInfo.Password == "Y")
             {
                 Console.WriteLine("Type in your password");
@@ -83,6 +78,7 @@ namespace Mnemosyne_Of_Mine
             if (!bAuthenticated)
             {
                 Console.WriteLine("User authentication failed");
+                goto auth;
             }
             #endregion
             createFiles();
