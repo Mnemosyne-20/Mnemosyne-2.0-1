@@ -71,7 +71,7 @@ namespace Mnemosyne_Of_Mine
             {
                 if (ex.ResultCode == SQLiteErrorCode.Constraint)
                 {
-                    throw new InvalidOperationException($"The comment {commentID} already exists in database");
+                    Console.WriteLine($"The comment {commentID} already exists in database");
                 }
                 else
                 {

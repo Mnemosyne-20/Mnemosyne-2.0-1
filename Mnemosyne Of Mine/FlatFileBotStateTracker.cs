@@ -89,7 +89,7 @@ namespace Mnemosyne_Of_Mine
             }
             else
             {
-                throw new InvalidOperationException($"The comment {commentID} already exists in the tracking file");
+                Console.WriteLine($"The comment {commentID} already exists in the tracking file");
             }
         }
 
