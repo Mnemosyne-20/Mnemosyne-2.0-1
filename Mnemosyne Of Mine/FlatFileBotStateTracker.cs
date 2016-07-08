@@ -93,7 +93,7 @@ namespace Mnemosyne_Of_Mine
             }
             else
             {
-                throw new InvalidOperationException($"The comment {commentID} already exists in the tracking file");
+                Console.WriteLine($"The comment {commentID} already exists in the tracking file");
             }
         }
 
@@ -156,8 +156,8 @@ namespace Mnemosyne_Of_Mine
             Dictionary<string, string> archives = new Dictionary<string, string>();
             string fileIn = File.ReadAllText(file);
             string[] elements = fileIn.Split(new char[] { ':', ',' }, StringSplitOptions.RemoveEmptyEntries);
-            for(int i = 0; i < elements.Length; i += 2)
-            {   
+            for (int i = 0; i < elements.Length; i += 2)
+            {
                 string originalURL = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(elements[i]));
                 string archiveURL = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(elements[i + 1]));
                 archives.Add(originalURL, archiveURL);
@@ -171,7 +171,7 @@ namespace Mnemosyne_Of_Mine
             string encodedOriginalURL = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(originalURL));
             string encodedArchiveURL = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(archiveURL));
             string appendStr = encodedOriginalURL + ":" + encodedArchiveURL;
-            if(new FileInfo(archivesTrackerFilePath).Length > 0)
+            if (new FileInfo(archivesTrackerFilePath).Length > 0)
             {
                 appendStr = "," + appendStr;
             }

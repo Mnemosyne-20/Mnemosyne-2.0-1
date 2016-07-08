@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.IO;
 
@@ -127,7 +123,7 @@ namespace Mnemosyne_Of_Mine
                 SQLCmd_AddArchive.Parameters["@archiveURL"].Value = archiveURL;
                 SQLCmd_AddArchive.ExecuteNonQuery();
             }
-            catch(SQLiteException ex)
+            catch (SQLiteException ex)
             {
                 if (ex.ResultCode == SQLiteErrorCode.Constraint)
                 {
@@ -173,13 +169,13 @@ namespace Mnemosyne_Of_Mine
             
             SQLCmd_HasCommentBeenChecked = new SQLiteCommand("select count(commentID) from comments where commentID = @commentID", dbConnection);
             SQLCmd_HasCommentBeenChecked.Parameters.Add(new SQLiteParameter("@commentID"));
-            
+
             SQLCmd_IsURLArchived = new SQLiteCommand("select count(*) from archives where originalURL = @url", dbConnection);
             SQLCmd_IsURLArchived.Parameters.Add(new SQLiteParameter("@url"));
-            
+
             SQLCmd_GetArchive = new SQLiteCommand("select archiveURL from archives where originalURL = @url", dbConnection);
             SQLCmd_GetArchive.Parameters.Add(new SQLiteParameter("@url"));
-            
+
             SQLCmd_AddArchive = new SQLiteCommand("insert or abort into archives (originalURL, archiveURL) values (@originalURL, @archiveURL)", dbConnection);
             SQLCmd_AddArchive.Parameters.Add(new SQLiteParameter("@originalURL"));
             SQLCmd_AddArchive.Parameters.Add(new SQLiteParameter("@archiveURL"));

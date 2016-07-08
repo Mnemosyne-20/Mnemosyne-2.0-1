@@ -1,9 +1,7 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mnemosyne_Of_Mine;
+using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Data.SQLite;
 
 namespace BotStateTests
 {
@@ -28,6 +26,7 @@ namespace BotStateTests
             "d46k73i",
             "d46ezlc"
         };
+        Dictionary<string, string> ArchivesDataset;
 
         [TestMethod]
         [DeploymentItem("Test.sqlite", "1")]

@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.IO;
 using System.Xml;
-using System.IO;
 namespace ConfigurationConversion
 {
     internal partial class Config

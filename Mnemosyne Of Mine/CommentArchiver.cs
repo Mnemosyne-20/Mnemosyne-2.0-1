@@ -80,7 +80,6 @@ namespace Mnemosyne_Of_Mine
         /// <param name="ArchiveLinks">links of archives</param>
         internal static void PostArchiveLinks(UserData config, IBotStateTracker BotState, string head, Post post, List<string> ArchiveLinks)
         {
-            //string head = post.IsSelfPost ? Program.d_head : Program.p_head;
             string LinksListBody = "";
             foreach (string str in ArchiveLinks)
             {
@@ -93,12 +92,21 @@ namespace Mnemosyne_Of_Mine
                 + Program.botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
             Comment botComment = post.Comment(c);
-            if (botComment.Id.Contains("t1_"))
+            string commentID = botComment.Id;
+            if (commentID.Contains("t1_"))
             {
-                botComment.Id = botComment.Id.Substring(3);
+                commentID = commentID.Substring(3);
             }
-            BotState.AddBotComment(post.Id, botComment.Id);
-            Console.WriteLine(c);
+            try
+            {
+                BotState.AddBotComment(post.Id, botComment.Id);
+                Console.WriteLine(c);
+            }
+            catch(InvalidOperationException ex)
+            {
+                Console.WriteLine($"Caught exception replying to {post.Id} with new comment {botComment.Id}: {ex.Message}");
+                botComment.Del(); // likely will never happen but this should ensure things don't get dupey if things get dupey
+            }
         }
         /// <summary>
         /// Edits the archive comment
