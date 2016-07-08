@@ -65,7 +65,7 @@ namespace BotStateTests
         public void BotReplyGet_ReplyDoesNotExist()
         {
             IBotStateTracker SQLTracker = new SQLBotStateTracker("4\\Test.sqlite");
-            Assert.IsNull(SQLTracker.GetBotCommentForPost("nope"));
+            Assert.AreEqual("", SQLTracker.GetBotCommentForPost("nope"));
         }
 
         [TestMethod]
@@ -78,7 +78,6 @@ namespace BotStateTests
 
         [TestMethod]
         [DeploymentItem("Test.sqlite", "6")]
-        [ExpectedException(typeof(SQLiteException))]
         public void BotReplyAddTest_NotUniqueAdd()
         {
             IBotStateTracker SQLTracker = new SQLBotStateTracker("6\\Test.sqlite");
@@ -114,11 +113,24 @@ namespace BotStateTests
 
         [TestMethod]
         [DeploymentItem("Test.sqlite", "10")]
-        [ExpectedException(typeof(SQLiteException))]
         public void CheckedCommentsTest_NotUniqueAdd()
         {
             IBotStateTracker SQLTracker = new SQLBotStateTracker("10\\Test.sqlite");
             SQLTracker.AddCheckedComment("d46qosm");
+        }
+
+        [TestMethod]
+        public void FreshDatabaseTest()
+        {
+            IBotStateTracker SQLTracker = new SQLBotStateTracker("newdb.sqlite");
+            foreach(KeyValuePair<string, string> pair in BotRepliesDataset)
+            {
+                SQLTracker.AddBotComment(pair.Key, pair.Value);
+            }
+            foreach(string str in CheckedCommentsDataset)
+            {
+                SQLTracker.AddCheckedComment(str);
+            }
         }
     }
 }

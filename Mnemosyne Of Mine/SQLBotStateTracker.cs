@@ -49,8 +49,7 @@ namespace Mnemosyne_Of_Mine
             }
             catch(SQLiteException ex)
             {
-                SQLiteErrorCode error = ex.ResultCode;
-                if(error == SQLiteErrorCode.Constraint_Unique)
+                if(ex.ResultCode == SQLiteErrorCode.Constraint)
                 {
                     Console.WriteLine($"The post {postID} already exists in database");
                 }
@@ -70,8 +69,7 @@ namespace Mnemosyne_Of_Mine
             }
             catch(SQLiteException ex)
             {
-                SQLiteErrorCode error = ex.ResultCode;
-                if (error == SQLiteErrorCode.Constraint_Unique)
+                if (ex.ResultCode == SQLiteErrorCode.Constraint)
                 {
                     Console.WriteLine($"The comment {commentID} already exists in database");
                 }
@@ -127,8 +125,7 @@ namespace Mnemosyne_Of_Mine
             }
             catch(SQLiteException ex)
             {
-                SQLiteErrorCode error = ex.ResultCode;
-                if (error == SQLiteErrorCode.Constraint_Unique)
+                if (ex.ResultCode == SQLiteErrorCode.Constraint)
                 {
                     Console.WriteLine($"The URL {originalURL} already exists in database");
                 }
