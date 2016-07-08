@@ -81,6 +81,7 @@ namespace BotStateTests
         [DeploymentItem("Test.sqlite", "4")]
         [DeploymentItem("ReplyTracker.txt", "4")]
         [DeploymentItem("Comments_Seen.txt", "4")]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void BotReplyGet_ReplyDoesNotExist()
         {
             IBotStateTracker BotState = new SQLBotStateTracker("4\\Test.sqlite");
@@ -105,6 +106,7 @@ namespace BotStateTests
         [DeploymentItem("Test.sqlite", "6")]
         [DeploymentItem("ReplyTracker.txt", "6")]
         [DeploymentItem("Comments_Seen.txt", "6")]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void BotReplyAddTest_NotUniqueAdd()
         {
             IBotStateTracker BotState = new SQLBotStateTracker("6\\Test.sqlite");
@@ -159,6 +161,7 @@ namespace BotStateTests
         [DeploymentItem("Test.sqlite", "10")]
         [DeploymentItem("ReplyTracker.txt", "10")]
         [DeploymentItem("Comments_Seen.txt", "10")]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void CheckedCommentsTest_NotUniqueAdd()
         {
             IBotStateTracker BotState = new SQLBotStateTracker("10\\Test.sqlite");

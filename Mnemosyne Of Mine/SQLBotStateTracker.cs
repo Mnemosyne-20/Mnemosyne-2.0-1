@@ -51,7 +51,7 @@ namespace Mnemosyne_Of_Mine
             {
                 if(ex.ResultCode == SQLiteErrorCode.Constraint)
                 {
-                    Console.WriteLine($"The post {postID} already exists in database");
+                    throw new InvalidOperationException($"The post {postID} already exists in database");
                 }
                 else
                 {
@@ -71,7 +71,7 @@ namespace Mnemosyne_Of_Mine
             {
                 if (ex.ResultCode == SQLiteErrorCode.Constraint)
                 {
-                    Console.WriteLine($"The comment {commentID} already exists in database");
+                    throw new InvalidOperationException($"The comment {commentID} already exists in database");
                 }
                 else
                 {
@@ -90,7 +90,11 @@ namespace Mnemosyne_Of_Mine
         public string GetBotCommentForPost(string postID)
         {
             SQLCmd_GetBotComment.Parameters["@postID"].Value = postID;
-            string botReplyID = (string)SQLCmd_GetBotComment.ExecuteScalar() ?? "";
+            string botReplyID = (string)SQLCmd_GetBotComment.ExecuteScalar();
+            if(string.IsNullOrWhiteSpace(botReplyID))
+            {
+                throw new InvalidOperationException($"Comment ID for post {postID} is null or empty");
+            }
             return botReplyID;
         }
 
