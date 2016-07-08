@@ -5,16 +5,18 @@ using System.Linq;
 
 namespace Mnemosyne_Of_Mine
 {
-    class FlatFileBotStateTracker : IBotStateTracker
+    public class FlatFileBotStateTracker : IBotStateTracker
     {
-        string replyTrackerFilePath = @".\ReplyTracker.txt";
-        string checkedCommentsFilePath = @".\Comments_Seen.txt";
+        string replyTrackerFilePath;
+        string checkedCommentsFilePath;
 
         static Dictionary<string, string> BotComments = new Dictionary<string, string>();
         static List<string> CheckedComments = new List<string>();
 
-        public FlatFileBotStateTracker()
+        public FlatFileBotStateTracker(string replyFile = @".\ReplyTracker.txt", string commentFile = @".\Comments_Seen.txt")
         {
+            replyTrackerFilePath = replyFile;
+            checkedCommentsFilePath = commentFile;
             BotComments = ReadReplyTrackingFile(replyTrackerFilePath);
             CheckedComments = File.ReadAllLines(checkedCommentsFilePath).ToList();
         }
@@ -35,7 +37,16 @@ namespace Mnemosyne_Of_Mine
         /// <returns>The bot's comment ID</returns>
         public string GetBotCommentForPost(string postID)
         {
-            return BotComments[postID];
+            string botReplyID = "";
+            if (BotComments.ContainsKey(postID))
+            {
+                botReplyID = BotComments[postID];
+            }
+            if (string.IsNullOrWhiteSpace(botReplyID))
+            {
+                throw new InvalidOperationException($"Comment ID for post {postID} is null or empty");
+            }
+            return botReplyID;
         }
 
         /// <summary>
@@ -54,8 +65,15 @@ namespace Mnemosyne_Of_Mine
         /// <param name="commentID">Bot comment ID</param>
         public void AddBotComment(string postID, string commentID)
         {
-            BotComments.Add(postID, commentID);
-            AppendReplyTrackingFile(postID, commentID);
+            if (!BotComments.ContainsKey(postID))
+            {
+                BotComments.Add(postID, commentID);
+                AppendReplyTrackingFile(postID, commentID);
+            }
+            else
+            {
+                throw new InvalidOperationException($"The post {postID} already exists in the tracking file");
+            }
         }
 
         /// <summary>
@@ -64,8 +82,15 @@ namespace Mnemosyne_Of_Mine
         /// <param name="commentID">Comment ID</param>
         public void AddCheckedComment(string commentID)
         {
-            CheckedComments.Add(commentID);
-            File.AppendAllText(checkedCommentsFilePath, $"{commentID}{Environment.NewLine}");
+            if (!CheckedComments.Contains(commentID))
+            {
+                CheckedComments.Add(commentID);
+                File.AppendAllText(checkedCommentsFilePath, $"{commentID}{Environment.NewLine}");
+            }
+            else
+            {
+                Console.WriteLine($"The comment {commentID} already exists in the tracking file");
+            }
         }
 
         /// <summary>
@@ -94,13 +119,12 @@ namespace Mnemosyne_Of_Mine
         /// <param name="commentID">Bot comment ID</param>
         void AppendReplyTrackingFile(string postID, string commentID)
         {
-            string filePath = @".\ReplyTracker.txt";
             string appendStr = postID + ":" + commentID;
-            if (new FileInfo(filePath).Length > 0)
+            if (new FileInfo(replyTrackerFilePath).Length > 0)
             {
                 appendStr = "," + appendStr;
             }
-            File.AppendAllText(@".\ReplyTracker.txt", appendStr);
+            File.AppendAllText(replyTrackerFilePath, appendStr);
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Mnemosyne_Of_Mine
 {
-    interface IBotStateTracker
+    public interface IBotStateTracker
     {
         bool DoesBotCommentExist(string commentID);
         string GetBotCommentForPost(string postID);
