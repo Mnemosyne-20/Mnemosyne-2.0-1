@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Mnemosyne_Of_Mine
 {
-    class FlatFileBotStateTracker : IBotStateTracker
+    public class FlatFileBotStateTracker : IBotStateTracker
     {
         string replyTrackerFilePath;
         string checkedCommentsFilePath;
@@ -41,7 +41,14 @@ namespace Mnemosyne_Of_Mine
         /// <returns>The bot's comment ID</returns>
         public string GetBotCommentForPost(string postID)
         {
-            return BotComments[postID];
+            if (BotComments.ContainsKey(postID))
+            {
+                return BotComments[postID];
+            }
+            else
+            {
+                return "";
+            }
         }
 
         /// <summary>
@@ -60,8 +67,11 @@ namespace Mnemosyne_Of_Mine
         /// <param name="commentID">Bot comment ID</param>
         public void AddBotComment(string postID, string commentID)
         {
-            BotComments.Add(postID, commentID);
-            AppendReplyTrackingFile(postID, commentID);
+            if (!BotComments.ContainsKey(postID))
+            {
+                BotComments.Add(postID, commentID);
+                AppendReplyTrackingFile(postID, commentID);
+            }
         }
 
         /// <summary>
