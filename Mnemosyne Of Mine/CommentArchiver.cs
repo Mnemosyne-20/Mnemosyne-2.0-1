@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Mnemosyne_Of_Mine
 {
@@ -99,12 +99,12 @@ namespace Mnemosyne_Of_Mine
             }
             try
             {
-                BotState.AddBotComment(post.Id, botComment.Id);
+                BotState.AddBotComment(post.Id, Regex.Replace(botComment.Id,"t1_",""));
                 Console.WriteLine(c);
             }
             catch(InvalidOperationException ex)
             {
-                Console.WriteLine($"Caught exception replying to {post.Id} with new comment {botComment.Id}: {ex.Message}");
+                Console.WriteLine($"Caught exception replying to {post.Id} with new comment {Regex.Replace(botComment.Id, "t1_", "")}: {ex.Message}");
                 botComment.Del(); // likely will never happen but this should ensure things don't get dupey if things get dupey
             }
         }
