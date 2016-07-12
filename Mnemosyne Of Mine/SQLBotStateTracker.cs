@@ -10,7 +10,7 @@ namespace Mnemosyne_Of_Mine
         SQLiteConnection dbConnection;
 
         SQLiteCommand SQLCmd_AddBotComment, SQLCmd_AddCheckedComment, SQLCmd_DoesBotCommentExist, SQLCmd_GetBotComment,
-            SQLCmd_HasCommentBeenChecked, SQLCmd_IsURLArchived, SQLCmd_GetArchive, SQLCmd_AddArchive;
+            SQLCmd_HasCommentBeenChecked, SQLCmd_IsURLArchived, SQLCmd_GetArchive, SQLCmd_AddArchive;//, SQLCmd_AddTrackingLink, SQLCmd_GetNumArchived;
 
         public SQLBotStateTracker(string filename = "botstate.sqlite")
         {
@@ -111,6 +111,10 @@ namespace Mnemosyne_Of_Mine
             cmd = new SQLiteCommand(query, dbConnection);
             cmd.ExecuteNonQuery();
             cmd.Dispose();
+            //query = "create table archiveTracker (link text unique, numArchived int)";
+            //cmd = new SQLiteCommand(query, dbConnection);
+            //cmd.ExecuteNonQuery();
+            //cmd.Dispose();
         }
 
         void InitializeCommands()
@@ -130,6 +134,10 @@ namespace Mnemosyne_Of_Mine
             
             SQLCmd_HasCommentBeenChecked = new SQLiteCommand("select count(commentID) from comments where commentID = @commentID", dbConnection);
             SQLCmd_HasCommentBeenChecked.Parameters.Add(new SQLiteParameter("@commentID"));
+
+            //SQLCmd_AddTrackingLink = new SQLiteCommand("insert or abort into archiveTracker(link,numArchived) values(@link,@numArchived)");
+            //SQLCmd_AddTrackingLink.Parameters.Add(new SQLiteParameter("@link"));
+            //SQLCmd_AddTrackingLink.Parameters.Add(new SQLiteParameter("@numArchived"));
         }
     }
 }

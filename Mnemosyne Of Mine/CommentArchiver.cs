@@ -34,7 +34,7 @@ namespace Mnemosyne_Of_Mine
             }
             if (commentID.Contains("t1_"))
             {
-                commentID = commentID.Split('_')[1];
+                commentID = Regex.Replace(commentID, "t1_", "");
             }
             string postID = comment.LinkId.Substring(3);
             foreach (string link in FoundLinks)
