@@ -9,16 +9,20 @@ namespace Mnemosyne_Of_Mine
     {
         string replyTrackerFilePath;
         string checkedCommentsFilePath;
+        string archivesTrackerFilePath;
 
         static Dictionary<string, string> BotComments = new Dictionary<string, string>();
         static List<string> CheckedComments = new List<string>();
+        static Dictionary<string, string> Archives = new Dictionary<string, string>();
 
-        public FlatFileBotStateTracker(string replyFile = @".\ReplyTracker.txt", string commentFile = @".\Comments_Seen.txt")
+        public FlatFileBotStateTracker(string replyFile = @".\ReplyTracker.txt", string commentFile = @".\Comments_Seen.txt", string archivesFile = @".\ArchiveTracker.txt")
         {
             replyTrackerFilePath = replyFile;
             checkedCommentsFilePath = commentFile;
+            archivesTrackerFilePath = archivesFile;
             BotComments = ReadReplyTrackingFile(replyTrackerFilePath);
             CheckedComments = File.ReadAllLines(checkedCommentsFilePath).ToList();
+            //Archives = ReadArchivesTrackingFile(archivesTrackerFilePath);
         }
 
         /// <summary>
@@ -93,6 +97,39 @@ namespace Mnemosyne_Of_Mine
             }
         }
 
+        public bool IsURLAlreadyArchived(string url)
+        {
+            //return Archives.ContainsKey(url);
+            return false;
+        }
+
+        public string GetArchiveForURL(string url)
+        {
+            /*if (Archives.ContainsKey(url))
+            {
+                return Archives[url];
+            }
+            else return "";*/
+            return "";
+        }
+
+        public void AddArchiveForURL(string originalURL, string archiveURL)
+        {
+            /*Archives.Add(originalURL, archiveURL);
+            AppendArchiveTrackingFile(originalURL, archiveURL);*/
+        }
+
+        //TODO: all the things
+        public int GetArchiveCount(string url)
+        {
+            return 0;
+        }
+
+        public void SetArchiveCount(string url, int amount)
+        {
+
+        }
+
         /// <summary>
         /// Reads the file where we track who we reply to
         /// </summary>
@@ -125,6 +162,33 @@ namespace Mnemosyne_Of_Mine
                 appendStr = "," + appendStr;
             }
             File.AppendAllText(replyTrackerFilePath, appendStr);
+        }
+
+        Dictionary<string, string> ReadArchivesTrackingFile(string file)
+        {
+            Dictionary<string, string> archives = new Dictionary<string, string>();
+            string fileIn = File.ReadAllText(file);
+            string[] elements = fileIn.Split(new char[] { ':', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < elements.Length; i += 2)
+            {
+                string originalURL = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(elements[i]));
+                string archiveURL = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(elements[i + 1]));
+                archives.Add(originalURL, archiveURL);
+            }
+
+            return archives;
+        }
+
+        void AppendArchiveTrackingFile(string originalURL, string archiveURL)
+        {
+            string encodedOriginalURL = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(originalURL));
+            string encodedArchiveURL = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(archiveURL));
+            string appendStr = encodedOriginalURL + ":" + encodedArchiveURL;
+            if (new FileInfo(archivesTrackerFilePath).Length > 0)
+            {
+                appendStr = "," + appendStr;
+            }
+            File.AppendAllText(archivesTrackerFilePath, appendStr);
         }
     }
 }

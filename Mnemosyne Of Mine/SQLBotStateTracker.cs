@@ -10,28 +10,21 @@ namespace Mnemosyne_Of_Mine
         SQLiteConnection dbConnection;
 
         SQLiteCommand SQLCmd_AddBotComment, SQLCmd_AddCheckedComment, SQLCmd_DoesBotCommentExist, SQLCmd_GetBotComment,
-            SQLCmd_HasCommentBeenChecked, SQLCmd_IsURLArchived, SQLCmd_GetArchive, SQLCmd_AddArchive;//, SQLCmd_AddTrackingLink, SQLCmd_GetNumArchived;
+            SQLCmd_HasCommentBeenChecked, SQLCmd_IsURLArchived, SQLCmd_GetArchive, SQLCmd_AddArchive, SQLCmd_GetArchivesCount, SQLCmd_SetArchivesCount;//, SQLCmd_AddTrackingLink, SQLCmd_GetNumArchived;
 
         public SQLBotStateTracker(string filename = "botstate.sqlite")
         {
             DatabaseFilename = filename;
-            bool bFreshStart = false;
             if (!File.Exists($".\\{DatabaseFilename}"))
             {
                 SQLiteConnection.CreateFile($".\\{DatabaseFilename}");
-                bFreshStart = true;
             }
 
             string assemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             AppDomain.CurrentDomain.SetData("DataDirectory", assemblyPath);
             dbConnection = new SQLiteConnection($"Data Source=|DataDirectory|\\{DatabaseFilename};Version=3;");
             dbConnection.Open();
-
-            if (bFreshStart)
-            {
-                InitializeDatabase();
-            }
-
+            InitializeDatabase();
             InitializeCommands();
         }
 
@@ -101,20 +94,57 @@ namespace Mnemosyne_Of_Mine
             return count != 0;
         }
 
+        //TODO: yes
+        public bool IsURLAlreadyArchived(string url)
+        {
+            /*SQLCmd_IsURLArchived.Parameters["@url"].Value = url;
+            long count = SQLCmd_IsURLArchived.ExecuteScalar() as long? ?? 0;
+            return count != 0;*/
+            return false;
+        }
+
+        public string GetArchiveForURL(string url)
+        {
+            /*SQLCmd_GetArchive.Parameters["@url"].Value = url;
+            string archiveURL = (string)SQLCmd_GetArchive.ExecuteScalar() ?? "";
+            return archiveURL;*/
+            return "";
+        }
+
+        public void AddArchiveForURL(string originalURL, string archiveURL)
+        {
+            /*SQLCmd_AddArchive.Parameters["@originalURL"].Value = originalURL;
+            SQLCmd_AddArchive.Parameters["@archiveURL"].Value = archiveURL;
+            SQLCmd_AddArchive.ExecuteNonQuery();*/
+        }
+
+        public int GetArchiveCount(string url)
+        {
+            SQLCmd_GetArchivesCount.Parameters[@"url"].Value = url;
+            return (int)(SQLCmd_GetArchivesCount.ExecuteScalar() ?? 0);
+        }
+
+        public void SetArchiveCount(string url, int amount)
+        {
+            SQLCmd_SetArchivesCount.Parameters["@url"].Value = url;
+            SQLCmd_SetArchivesCount.Parameters["@numArchives"].Value = amount;
+            SQLCmd_SetArchivesCount.ExecuteNonQuery();
+        }
+
         void InitializeDatabase()
         {
-            string query = "create table replies (postID text unique, botReplyID text)";
+            string query = "create table if not exists replies (postID text unique, botReplyID text)";
             SQLiteCommand cmd = new SQLiteCommand(query, dbConnection);
             cmd.ExecuteNonQuery();
             cmd.Dispose();
-            query = "create table comments (commentID text unique)"; // yes this is a table with one column and eventually along with the reply table won't even be needed at all
+            query = "create table if not exists comments (commentID text unique)"; // yes this is a table with one column and eventually along with the reply table won't even be needed at all
             cmd = new SQLiteCommand(query, dbConnection);
             cmd.ExecuteNonQuery();
             cmd.Dispose();
-            //query = "create table archiveTracker (link text unique, numArchived int)";
-            //cmd = new SQLiteCommand(query, dbConnection);
-            //cmd.ExecuteNonQuery();
-            //cmd.Dispose();
+            query = "create table if not exists archives (originalURL text unique, numArchives integer)";
+            cmd = new SQLiteCommand(query, dbConnection);
+            cmd.ExecuteNonQuery();
+            cmd.Dispose();
         }
 
         void InitializeCommands()
@@ -135,9 +165,23 @@ namespace Mnemosyne_Of_Mine
             SQLCmd_HasCommentBeenChecked = new SQLiteCommand("select count(commentID) from comments where commentID = @commentID", dbConnection);
             SQLCmd_HasCommentBeenChecked.Parameters.Add(new SQLiteParameter("@commentID"));
 
-            //SQLCmd_AddTrackingLink = new SQLiteCommand("insert or abort into archiveTracker(link,numArchived) values(@link,@numArchived)");
-            //SQLCmd_AddTrackingLink.Parameters.Add(new SQLiteParameter("@link"));
-            //SQLCmd_AddTrackingLink.Parameters.Add(new SQLiteParameter("@numArchived"));
+            /*SQLCmd_IsURLArchived = new SQLiteCommand("select count(*) from archives where originalURL = @url", dbConnection);
+            SQLCmd_IsURLArchived.Parameters.Add(new SQLiteParameter("@url"));
+
+            SQLCmd_GetArchive = new SQLiteCommand("select archiveURLs from archives where originalURL = @url", dbConnection);
+            SQLCmd_GetArchive.Parameters.Add(new SQLiteParameter("@url"));
+
+            SQLCmd_AddArchive = new SQLiteCommand("insert or replace into archives (originalURL, numArchives, archiveURLs) values (@originalURL, @numArchives, @archiveURLs)", dbConnection);
+            SQLCmd_AddArchive.Parameters.Add(new SQLiteParameter("@originalURL"));
+            SQLCmd_AddArchive.Parameters.Add(new SQLiteParameter("@numArchives"));
+            SQLCmd_AddArchive.Parameters.Add(new SQLiteParameter("@archiveURLs"));*/
+
+            SQLCmd_GetArchivesCount = new SQLiteCommand("select numArchives from archives where originalURL = @url", dbConnection);
+            SQLCmd_GetArchivesCount.Parameters.Add(new SQLiteParameter("@url"));
+
+            SQLCmd_SetArchivesCount = new SQLiteCommand("insert or replace into archives (originalURL, numArchives", dbConnection);
+            SQLCmd_SetArchivesCount.Parameters.Add(new SQLiteParameter("@url"));
+            SQLCmd_SetArchivesCount.Parameters.Add(new SQLiteParameter("@numArchives"));
         }
     }
 }
