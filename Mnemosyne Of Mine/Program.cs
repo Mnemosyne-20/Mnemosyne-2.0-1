@@ -21,7 +21,8 @@ namespace Mnemosyne_Of_Mine
             "Mentioned_Videos",
             "AutoModerator",
             "TotesMessenger",
-            "TweetPoster"
+            "TweetPoster",
+            "RemindMeBot"
         };
         #region constants
         internal static Regex exclude = new Regex(@"(sli.mg|imgur.com|youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be|wiki/rules|politics_feedback_results_and_where_it_goes_from)");

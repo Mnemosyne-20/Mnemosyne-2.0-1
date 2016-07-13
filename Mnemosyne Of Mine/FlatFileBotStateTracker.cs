@@ -99,22 +99,35 @@ namespace Mnemosyne_Of_Mine
 
         public bool IsURLAlreadyArchived(string url)
         {
-            return Archives.ContainsKey(url);
+            //return Archives.ContainsKey(url);
+            return false;
         }
 
         public string GetArchiveForURL(string url)
         {
-            if (Archives.ContainsKey(url))
+            /*if (Archives.ContainsKey(url))
             {
                 return Archives[url];
             }
-            else return "";
+            else return "";*/
+            return "";
         }
 
         public void AddArchiveForURL(string originalURL, string archiveURL)
         {
-            Archives.Add(originalURL, archiveURL);
-            AppendArchiveTrackingFile(originalURL, archiveURL);
+            /*Archives.Add(originalURL, archiveURL);
+            AppendArchiveTrackingFile(originalURL, archiveURL);*/
+        }
+
+        //TODO: all the things
+        public int GetArchiveCount(string url)
+        {
+            return 0;
+        }
+
+        public void SetArchiveCount(string url, int amount)
+        {
+
         }
 
         /// <summary>
