@@ -3,7 +3,6 @@ using RedditSharp;
 using RedditSharp.Things;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -19,12 +18,12 @@ namespace Mnemosyne_Of_Mine
         /// <param name="reddit">the reddit<seealso cref="Reddit"/></param>
         /// <param name="comment">the comment to point to<seealso cref="Comment"/></param>
         /// <param name="FoundLinks">links found in the stuff lol</param>
-        /// <!--What the hell is the point of this, i'm adding this line just because, this is a fucking comment for no real reason-->
+        /// <!--What the hell is the point of this, i'm adding this line just because, this is a fucking comment for no real reason--> //  that thing to the left is here because it's pointless 
         internal static void ArchiveCommentLinks(UserData config, IBotStateTracker BotState, Reddit reddit, Comment comment, List<string> FoundLinks)
         {
             List<string> ArchivedLinks = new List<string>();
             string commentID = comment.Id;
-            if (comment.Id.Contains("t1_") || comment.LinkId.Contains("t1_"))
+            if (comment.Id.Contains("t1_") || comment.LinkId.Contains("t1_")) // Should NEVER ever EVER happen, hasn't yet
             {
                 Console.WriteLine(comment.Id);
                 Console.WriteLine(comment.LinkId);
@@ -121,14 +120,14 @@ namespace Mnemosyne_Of_Mine
                 bool bEditGood = false;
                 string newCommentText = "";
                 string[] oldCommentLines = targetComment.Body.Split("\n".ToArray(), StringSplitOptions.None);
-                if (oldCommentLines.Length >= 1) // removed the null check, as that's pointless because if you have an element it's not null
+                if (oldCommentLines.Length >= 1)
                 {
                     string[] head = oldCommentLines.Take(oldCommentLines.Length - 3).ToArray();
                     string[] tail = oldCommentLines.Skip(oldCommentLines.Length - 3).ToArray();
                     newCommentText += string.Join("\n", head);
                     if (head.Length >= 1)
                     {
-                        if (head[head.Length - 1].StartsWith("* **By"))
+                        if (head[head.Length - 1].StartsWith("* **By")) // a comment
                         {
                             foreach (string str in ArchivesToInsert)
                             {
@@ -136,7 +135,7 @@ namespace Mnemosyne_Of_Mine
                             }
                             bEditGood = true;
                         }
-                        else if (head[head.Length - 1].StartsWith("* **Link"))
+                        else if (head[head.Length - 1].StartsWith("* **Link")) // links in a post
                         {
                             newCommentText += "\n\n----\nArchives for links in comments: \n\n";
                             foreach (string str in ArchivesToInsert)

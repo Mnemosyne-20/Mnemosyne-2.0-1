@@ -241,16 +241,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
-    <Compile Include="FlatFileBotStateTracker.cs" />
+    <Compile Include="BotStates\FlatFileBotStateTracker.cs" />
     <Compile Include="CommentArchiver.cs" />
-    <Compile Include="IBotStateTracker.cs" />
-    <Compile Include="NConfigWriter.cs" />
+    <Compile Include="BotStates\IBotStateTracker.cs" />
+    <Compile Include="Configuration\NConfigWriter.cs" />
     <Compile Include="LinkFinder.cs" />
-    <Compile Include="Config.cs" />
-    <Compile Include="SQLBotStateTracker.cs" />
+    <Compile Include="Configuration\Config.cs" />
+    <Compile Include="BotStates\SQLBotStateTracker.cs" />
     <Compile Include="UserStorage.cs" />
     <Compile Include="ImageComparison.cs" />
-    <Compile Include="ConfigWriter.cs" />
+    <Compile Include="Configuration\ConfigWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

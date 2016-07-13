@@ -175,7 +175,7 @@ namespace Mnemosyne_Of_Mine
                             continue;
                         }
                         List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
-                        if (FoundLinks.Count >= 1) // should fix empty comments bug
+                        if (FoundLinks.Count >= 1)
                         {
                             if (!BotState.HasCommentBeenChecked(comment.Id) && !ArchiveBots.Contains(comment.Author))
                             {

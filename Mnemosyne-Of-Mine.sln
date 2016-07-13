@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesterForConfig", "Unit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotStateTests", "BotStateTests\BotStateTests.csproj", "{C283DC4F-AB66-4FA3-9041-C450E891B4A4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unit Tests", "Unit Tests", "{9EA4D9B7-235A-4CD1-92B2-F248CF01E134}"
+EndProject
 Global
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
@@ -198,5 +200,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8CFEDB8C-BC69-4A61-8E8B-5598F1A1D6E4} = {9EA4D9B7-235A-4CD1-92B2-F248CF01E134}
+		{C283DC4F-AB66-4FA3-9041-C450E891B4A4} = {9EA4D9B7-235A-4CD1-92B2-F248CF01E134}
 	EndGlobalSection
 EndGlobal
