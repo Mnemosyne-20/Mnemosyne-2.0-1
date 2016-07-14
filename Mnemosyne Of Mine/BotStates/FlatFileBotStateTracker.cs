@@ -123,12 +123,14 @@ namespace Mnemosyne_Of_Mine
         //TODO: all the things
         public int GetArchiveCount(string url)
         {
-            return 0;
+            return ArchiveCount[url];
         }
 
         public void SetArchiveCount(string url, int amount)
         {
-
+            ArchiveCount.Remove(url);
+            ArchiveCount.Add(url, amount);
+            WriteArchiveCountFile("./ArchiveCount");
         }
 
         /// <summary>
@@ -179,7 +181,26 @@ namespace Mnemosyne_Of_Mine
 
             return archives;
         }
-
+        void ReadArchiveCountTrackingFile(string file)
+        {
+            string fileIn = File.ReadAllText(file);
+            string[] elements = fileIn.Split(new char[] { ':', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < elements.Length; i += 2)
+            {
+                string originalURL = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(elements[i]));
+                int archiveURL = int.Parse(System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(elements[i + 1])));
+                ArchiveCount.Add(originalURL, archiveURL);
+            }
+        }
+        void WriteArchiveCountFile(string file)
+        {
+            string fileWriter = "";
+            foreach(KeyValuePair<string, int> keypair in ArchiveCount)
+            {
+                fileWriter = keypair.Key + ':' + keypair.Value;
+            }
+            File.WriteAllText(file, fileWriter);
+        }
         void AppendArchiveTrackingFile(string originalURL, string archiveURL)
         {
             string encodedOriginalURL = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(originalURL));
