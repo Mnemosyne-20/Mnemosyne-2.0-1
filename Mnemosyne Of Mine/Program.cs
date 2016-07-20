@@ -25,7 +25,7 @@ namespace Mnemosyne_Of_Mine
             "RemindMeBot"
         };
         #region constants
-        internal static Regex exclude = new Regex(@"(sli.mg|imgur.com|youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be|wiki/rules|politics_feedback_results_and_where_it_goes_from)");
+        internal static Regex exclude = new Regex(@"(gyazo.com|sli.mg|imgur.com|youtube.com|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be|wiki/rules|politics_feedback_results_and_where_it_goes_from)");
         internal static string d_head = "Archives for links in this post: \n\n";
         internal static string p_head = "Archive for this post: \n\n";
         internal static string c_head = "Archives for links in comments: \n\n";
@@ -269,6 +269,10 @@ namespace Mnemosyne_Of_Mine
             if (!File.Exists(@".\Comments_Seen.txt")) // this might end up being an absolutely terrible idea. //  I've got 300 gbs of storage space and can get a lot of decomissioned but not degaussed hardrives, it's fine
             {
                 File.Create(@".\Comments_Seen.txt").Dispose();
+            }
+            if(!File.Exists(@".\ArchiveCount.txt"))
+            {
+                File.Create(@".\ArchiveCount.txt").Dispose();
             }
         }
         /// <summary>
