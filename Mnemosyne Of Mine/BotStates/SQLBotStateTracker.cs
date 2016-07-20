@@ -124,10 +124,10 @@ namespace Mnemosyne_Of_Mine
             return (int)(SQLCmd_GetArchivesCount.ExecuteScalar() ?? 0);
         }
 
-        public void SetArchiveCount(string url, int amount)
+        public void SetArchiveCount(string url)
         {
             SQLCmd_SetArchivesCount.Parameters["@url"].Value = url;
-            SQLCmd_SetArchivesCount.Parameters["@numArchives"].Value = amount;
+            SQLCmd_SetArchivesCount.Parameters["@numArchives"].Value = GetArchiveCount(url)+1;
             SQLCmd_SetArchivesCount.ExecuteNonQuery();
         }
 

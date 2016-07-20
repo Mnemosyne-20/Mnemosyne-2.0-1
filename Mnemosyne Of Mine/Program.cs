@@ -53,10 +53,10 @@ namespace Mnemosyne_Of_Mine
             Reddit reddit;
             AuthProvider OAuthProvider;
             string OAuthToken = "";
-            bool bAuthenticated = false;
+            bool bAuthenticated = true;
             bool newMessages = false;
             #region password and OAuth
-            auth:;
+
             if (ReleventInfo.Password == "Y")
             {
                 Console.WriteLine("Type in your password");
@@ -79,7 +79,7 @@ namespace Mnemosyne_Of_Mine
             if (!bAuthenticated)
             {
                 Console.WriteLine("User authentication failed");
-                goto auth;
+
             }
             #endregion
             createFiles();
@@ -216,8 +216,7 @@ namespace Mnemosyne_Of_Mine
                     {
                         if (ReleventInfo.bUseOAuth)
                         {
-                            OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI);
-                            OAuthToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
+                            OAuthToken = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI).GetOAuthToken(ReleventInfo.Username,ReleventInfo.Password);
                             reddit = new Reddit(OAuthToken);
                         }
 
