@@ -173,14 +173,29 @@ namespace BotStateTests
         public void FreshDatabaseTest()
         {
             IBotStateTracker BotState = new SQLBotStateTracker("newdb.sqlite");
-            foreach(KeyValuePair<string, string> pair in BotRepliesDataset)
+            foreach (KeyValuePair<string, string> pair in BotRepliesDataset)
             {
                 BotState.AddBotComment(pair.Key, pair.Value);
             }
-            foreach(string str in CheckedCommentsDataset)
+            foreach (string str in CheckedCommentsDataset)
             {
                 BotState.AddCheckedComment(str);
             }
+        }
+        [TestMethod]
+        [DeploymentItem("Test.sqlite", "11")]
+        [DeploymentItem("ReplyTracker.txt", "11")]
+        [DeploymentItem("Comments_Seen.txt", "11")]
+        public void ArchiveCountTest()
+        {
+            IBotStateTracker botstate = new SQLBotStateTracker("10\\Test.sqlite");
+            botstate.AddArchiveCount("hello");
+            if(botstate.GetArchiveCount("hello") != 1)
+                throw new Exception("Failed to add count");
+            botstate = new FlatFileBotStateTracker();
+            botstate.AddArchiveCount("hello");
+            if (botstate.GetArchiveCount("hello") != 1)
+                throw new Exception("Failed to get count");
         }
     }
 }
