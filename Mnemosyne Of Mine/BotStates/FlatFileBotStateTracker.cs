@@ -10,19 +10,22 @@ namespace Mnemosyne_Of_Mine
         string replyTrackerFilePath;
         string checkedCommentsFilePath;
         string archivesTrackerFilePath;
+        string archiveCountFilePath;
 
         static Dictionary<string, string> BotComments = new Dictionary<string, string>();
         static List<string> CheckedComments = new List<string>();
         static Dictionary<string, string> Archives = new Dictionary<string, string>();
         static Dictionary<string, int> ArchiveCount = new Dictionary<string, int>(); // added for later, this is how the flatfile will see how much it's been done
 
-        public FlatFileBotStateTracker(string replyFile = @".\ReplyTracker.txt", string commentFile = @".\Comments_Seen.txt", string archivesFile = @".\ArchiveTracker.txt")
+        public FlatFileBotStateTracker(string replyFile = @".\ReplyTracker.txt", string commentFile = @".\Comments_Seen.txt", string archivesFile = @".\ArchiveTracker.txt", string archiveCountFile = @".\ArchiveCount.txt")
         {
             replyTrackerFilePath = replyFile;
             checkedCommentsFilePath = commentFile;
             archivesTrackerFilePath = archivesFile;
+            archiveCountFilePath = archiveCountFile;
             BotComments = ReadReplyTrackingFile(replyTrackerFilePath);
             CheckedComments = File.ReadAllLines(checkedCommentsFilePath).ToList();
+            ArchiveCount = ReadArchiveCountTrackingFile(archiveCountFile);
             //Archives = ReadArchivesTrackingFile(archivesTrackerFilePath);
         }
 
@@ -128,7 +131,15 @@ namespace Mnemosyne_Of_Mine
 
         public void AddArchiveCount(string url)
         {
-            ArchiveCount[url]++;
+            if (ArchiveCount.ContainsKey(url))
+            {
+                ArchiveCount[url]++;
+            }
+            else
+            {
+                ArchiveCount.Add(url, 1);
+            }
+            WriteArchiveCountFile(archiveCountFilePath);
         }
 
         /// <summary>

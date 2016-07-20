@@ -210,6 +210,7 @@ namespace Mnemosyne_Of_Mine
                     }
 #endif
                 }
+                #region errors
                 catch (System.Net.WebException) // I would prefer to find *why* this is even throwing at all // known reason it's throwing, i failed to verify account, besides, this also works to get a new token when token fails
                 {
                     try
@@ -235,10 +236,10 @@ namespace Mnemosyne_Of_Mine
                 {
                     File.AppendAllText(@".\Errors.txt", $"Error: {e.Message}\n{e}");
                 }
+                #endregion
 #if REPOSTCHECK
                 Console.WriteLine("Repost check done");
 #endif
-
                 Console.Title = $"Sleeping New messages: {newMessages}";
                 System.Threading.Thread.Sleep(TimeSpan.FromSeconds(ReleventInfo.SleepTime));
                 #endregion
