@@ -32,8 +32,10 @@ namespace Mnemosyne_Of_Mine
         internal static string footer = "----\nI am Mnemosyne 2.0, ";
         internal static string botsrights = "^^^^/r/botsrights ^^^^[Contribute](https://github.com/chuggafan/Mnemosyne-2.0-1) ^^^^[Website](https://mnemosyne-20.github.io/Mnemosyne-2.0-1/)";
         #endregion
+
         static void Main(string[] args)
         {
+            bool readyToDeploy = false;
             Console.Title = "Mnemosyne by chugga_fan and Lord_Spoot, Archive AWAY!";
             if (!File.Exists(@".\config.xml"))
             {
@@ -144,6 +146,8 @@ namespace Mnemosyne_Of_Mine
                             if (bDoPostArchiving)
                             {
                                 string archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString()).Result;
+                                if (readyToDeploy)
+                                    BotState.AddArchiveCount(post.Url.ToString());
                                 if (archiveURL.Contains("archive.is"))
                                 {
                                     Console.WriteLine(archiveURL);
@@ -158,6 +162,8 @@ namespace Mnemosyne_Of_Mine
                             if (FoundLinks.Count >= 1)
                             {
                                 ArchiveLinks.AddRange(ArchivePostLinks(FoundLinks, exclude));
+                                if (readyToDeploy)
+                                    foreach (var link in FoundLinks) BotState.AddArchiveCount(link);
                             }
                             if (ArchiveLinks.Count >= 1)
                             {
@@ -179,6 +185,8 @@ namespace Mnemosyne_Of_Mine
                         {
                             if (!BotState.HasCommentBeenChecked(comment.Id) && !ArchiveBots.Contains(comment.Author))
                             {
+                                if (readyToDeploy)
+                                    foreach (var link in FoundLinks) BotState.AddArchiveCount(link);
                                 CommentArchiver.ArchiveCommentLinks(ReleventInfo, BotState, reddit, comment, FoundLinks);
                             }
                         }
