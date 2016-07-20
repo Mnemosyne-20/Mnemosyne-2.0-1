@@ -124,7 +124,7 @@ namespace Mnemosyne_Of_Mine
             return (int)(SQLCmd_GetArchivesCount.ExecuteScalar() ?? 0);
         }
 
-        public void SetArchiveCount(string url)
+        public void AddArchiveCount(string url)
         {
             SQLCmd_SetArchivesCount.Parameters["@url"].Value = url;
             SQLCmd_SetArchivesCount.Parameters["@numArchives"].Value = GetArchiveCount(url)+1;

@@ -17,6 +17,6 @@ namespace Mnemosyne_Of_Mine
         string GetArchiveForURL(string url);
         void AddArchiveForURL(string originalURL, string archiveURL);
         int GetArchiveCount(string url);
-        void SetArchiveCount(string url);
+        void AddArchiveCount(string url);
     }
 }
