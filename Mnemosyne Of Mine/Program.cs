@@ -43,6 +43,7 @@ namespace Mnemosyne_Of_Mine
                 createNewConfig();
             }
             UserData ReleventInfo = new UserData(@".\config.xml");
+            createFiles();
             IBotStateTracker BotState = null;
             if (!ReleventInfo.SQLite)
             {
@@ -84,7 +85,6 @@ namespace Mnemosyne_Of_Mine
 
             }
             #endregion
-            createFiles();
             Subreddit sub = reddit.GetSubreddit(ReleventInfo.SubReddit); // TODO: handle exceptions when reddit is under heavy load and fecal matter hits the rotary impeller
             Subreddit repostSub;                                         // LOL AT THIS ^
             if (ReleventInfo.Repost != null && ReleventInfo.Repost != "")
