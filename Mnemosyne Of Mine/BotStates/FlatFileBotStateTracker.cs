@@ -207,7 +207,7 @@ namespace Mnemosyne_Of_Mine
             string fileWriter = "";
             foreach(KeyValuePair<string, int> keypair in ArchiveCount)
             {
-                fileWriter = keypair.Key + ';' + keypair.Value;
+                fileWriter = keypair.Key + ';' + keypair.Value + ",";
             }
             File.WriteAllText(file, fileWriter);
         }
