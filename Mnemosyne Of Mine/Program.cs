@@ -166,14 +166,14 @@ namespace Mnemosyne_Of_Mine
                             List<string> FoundLinks = LinkFinder.FindLinks(post.SelfTextHtml);
                             if (FoundLinks.Count >= 1)
                             {
-                                ArchiveLinks.AddRange(ArchivePostLinks(FoundLinks, exclude));
+                                    if (readyToDeploy)
+                                    {
+                                        foreach (var link in FoundLinks) { if (!exclude.IsMatch(link)) BotState.AddArchiveCount(link); }
+                                    }
+                                    ArchiveLinks.AddRange(ArchivePostLinks(FoundLinks, exclude));
                             }
                             if (ArchiveLinks.Count >= 1)
                             {
-                                if (readyToDeploy)
-                                {
-                                    foreach (var link in FoundLinks) { if(!exclude.IsMatch(link))BotState.AddArchiveCount(link); }
-                                }
                                 CommentArchiver.PostArchiveLinks(ReleventInfo, BotState, d_head, post, ArchiveLinks);
                             }
                         }
