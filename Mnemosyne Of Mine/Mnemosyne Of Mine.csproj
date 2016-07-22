@@ -246,6 +246,7 @@
     <Compile Include="BotStates\IBotStateTracker.cs" />
     <Compile Include="Configuration\NConfigWriter.cs" />
     <Compile Include="LinkFinder.cs" />
+    <Compile Include="ArchiveMethods.cs"/>
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="BotStates\SQLBotStateTracker.cs" />
     <Compile Include="UserStorage.cs" />

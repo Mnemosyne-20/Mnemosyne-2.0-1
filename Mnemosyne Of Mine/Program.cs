@@ -1,4 +1,4 @@
-﻿using ArchiveLibrary;
+﻿//using ArchiveLibrary;
 using RedditSharp;
 using RedditSharp.Things;
 using System;
@@ -245,7 +245,7 @@ namespace Mnemosyne_Of_Mine
 
                     }
                 }
-                catch (FailureToArchiveException ex)
+                catch (ArchiveLibrary.FailureToArchiveException ex)
                 {
                     File.AppendAllText(@".\Failed.txt", ex.Message + '\n');
                 }
