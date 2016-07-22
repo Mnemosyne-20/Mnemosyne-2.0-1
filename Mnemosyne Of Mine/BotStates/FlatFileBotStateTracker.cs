@@ -193,11 +193,11 @@ namespace Mnemosyne_Of_Mine
         Dictionary<string,int> ReadArchiveCountTrackingFile(string file)
         {
             string fileIn = File.ReadAllText(file);
-            string[] elements = fileIn.Split(new char[] { ':', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] elements = fileIn.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < elements.Length; i += 2)
             {
-                string originalURL = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(elements[i]));
-                int count = int.Parse(System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(elements[i + 1])));
+                string originalURL = elements[i];
+                int count = Convert.ToInt32(elements[i+1]);
                 ArchiveCount.Add(originalURL, count);
             }
             return ArchiveCount;
@@ -207,7 +207,7 @@ namespace Mnemosyne_Of_Mine
             string fileWriter = "";
             foreach(KeyValuePair<string, int> keypair in ArchiveCount)
             {
-                fileWriter = keypair.Key + ':' + keypair.Value;
+                fileWriter = keypair.Key + ';' + keypair.Value;
             }
             File.WriteAllText(file, fileWriter);
         }

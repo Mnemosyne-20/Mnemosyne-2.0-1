@@ -35,7 +35,7 @@ namespace Mnemosyne_Of_Mine
 
         static void Main(string[] args)
         {
-            bool readyToDeploy = false;
+            bool readyToDeploy = true;
             Console.Title = "Mnemosyne by chugga_fan and Lord_Spoot, Archive AWAY!";
             if (!File.Exists(@".\config.xml"))
             {
@@ -162,11 +162,11 @@ namespace Mnemosyne_Of_Mine
                             if (FoundLinks.Count >= 1)
                             {
                                 ArchiveLinks.AddRange(ArchivePostLinks(FoundLinks, exclude));
-                                if (readyToDeploy)
-                                    foreach (var link in FoundLinks) BotState.AddArchiveCount(link);
                             }
                             if (ArchiveLinks.Count >= 1)
                             {
+                                if (readyToDeploy)
+                                    foreach (var link in FoundLinks) { BotState.AddArchiveCount(link); }
                                 CommentArchiver.PostArchiveLinks(ReleventInfo, BotState, d_head, post, ArchiveLinks);
                             }
                         }
@@ -186,7 +186,7 @@ namespace Mnemosyne_Of_Mine
                             if (!BotState.HasCommentBeenChecked(comment.Id) && !ArchiveBots.Contains(comment.Author))
                             {
                                 if (readyToDeploy)
-                                    foreach (var link in FoundLinks) BotState.AddArchiveCount(link);
+                                    foreach (var link in FoundLinks) { BotState.AddArchiveCount(link); }
                                 CommentArchiver.ArchiveCommentLinks(ReleventInfo, BotState, reddit, comment, FoundLinks);
                             }
                         }
