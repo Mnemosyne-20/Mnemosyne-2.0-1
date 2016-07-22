@@ -183,21 +183,18 @@ namespace Mnemosyne_Of_Mine
                     ///</summary>
                     foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit))
                     {
-                        if (ArchiveBots.Contains(comment.Author))
+                        if (ArchiveBots.Contains(comment.Author) || BotState.HasCommentBeenChecked(comment.Id))
                         {
                             continue;
                         }
                         List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
                         if (FoundLinks.Count >= 1)
                         {
-                            if (!BotState.HasCommentBeenChecked(comment.Id) && !ArchiveBots.Contains(comment.Author))
+                            if (readyToDeploy)
                             {
-                                if (readyToDeploy)
-                                {
-                                    foreach (var link in FoundLinks) { if (!exclude.IsMatch(link)) BotState.AddArchiveCount(link); }
-                                }
-                                CommentArchiver.ArchiveCommentLinks(ReleventInfo, BotState, reddit, comment, FoundLinks);
+                                foreach (var link in FoundLinks) { if (!exclude.IsMatch(link)) BotState.AddArchiveCount(link); }
                             }
+                            CommentArchiver.ArchiveCommentLinks(ReleventInfo, BotState, reddit, comment, FoundLinks);
                         }
                     }
                     Console.Title = $"waiting for next batch from {sub.Name} New messages: {newMessages}";
