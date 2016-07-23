@@ -35,6 +35,7 @@ namespace ArchiveLibrary
                 };
                 var content = new FormUrlEncodedContent(values);
                 serviceURL = "http://" + serviceURL + "/submit/";
+                retry:;
                 /// <summary>
                 /// This puts a request to the archive site, so yhea...
                 /// </summary>
@@ -43,7 +44,7 @@ namespace ArchiveLibrary
                 /// <remarks>
                 /// Fixes the bug where archive.is returns a json file that has a url tag
                 /// </remarks>
-                if (archiveURL == "http://archive.is/submit/")
+                if (archiveURL == "http://archive.is/submit/" && response.IsSuccessStatusCode)
                 {
                     #region fixing it
                     StringReader reader = new StringReader(response.ToString());
@@ -56,6 +57,10 @@ namespace ArchiveLibrary
                     string[] sides = wanted.Split('=');
                     archiveURL = sides[1];
                     #endregion
+                }
+                else
+                {
+                    goto retry;
                 }
             }
             handle.Dispose();
