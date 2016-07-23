@@ -47,18 +47,20 @@ namespace ArchiveLibrary
                 if (archiveURL == "http://archive.is/submit/" && response.IsSuccessStatusCode)
                 {
                     #region fixing it
-                    StringReader reader = new StringReader(response.ToString());
-                    for (int i = 0; i < 3; i++)
+                    using (StringReader reader = new StringReader(response.ToString()))
                     {
-                        reader.ReadLine();
+                        for (int i = 0; i < 3; i++)
+                        {
+                            reader.ReadLine();
+                        }
+                        string wanted = reader.ReadLine();
+                        reader.Dispose();
+                        string[] sides = wanted.Split('=');
+                        archiveURL = sides[1];
                     }
-                    string wanted = reader.ReadLine();
-                    reader.Dispose();
-                    string[] sides = wanted.Split('=');
-                    archiveURL = sides[1];
                     #endregion
                 }
-                else
+                else if(!response.IsSuccessStatusCode)
                 {
                     goto retry;
                 }
