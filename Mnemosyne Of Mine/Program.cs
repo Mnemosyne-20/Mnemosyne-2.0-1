@@ -188,7 +188,7 @@ namespace Mnemosyne_Of_Mine
                             continue;
                         }
                         List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
-                        if (FoundLinks.Count >= 1)
+                        if (FoundLinks.Count >= 1 && !BotState.HasCommentBeenChecked(comment.Id))
                         {
                             if (readyToDeploy)
                             {

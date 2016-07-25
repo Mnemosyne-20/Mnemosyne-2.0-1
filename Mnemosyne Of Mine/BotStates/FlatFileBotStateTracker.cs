@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using System.Text;
 namespace Mnemosyne_Of_Mine
 {
     public class FlatFileBotStateTracker : IBotStateTracker
@@ -183,8 +183,8 @@ namespace Mnemosyne_Of_Mine
             string[] elements = fileIn.Split(new char[] { ':', ',' }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < elements.Length; i += 2)
             {
-                string originalURL = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(elements[i]));
-                string archiveURL = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(elements[i + 1]));
+                string originalURL = Encoding.UTF8.GetString(Convert.FromBase64String(elements[i]));
+                string archiveURL = Encoding.UTF8.GetString(Convert.FromBase64String(elements[i + 1]));
                 archives.Add(originalURL, archiveURL);
             }
 
@@ -196,8 +196,8 @@ namespace Mnemosyne_Of_Mine
             string[] elements = fileIn.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < elements.Length; i += 2)
             {
-                string originalURL = elements[i];
-                int count = Convert.ToInt32(elements[i+1]);
+                string originalURL = Encoding.UTF8.GetString(Convert.FromBase64String(elements[i]));
+                int count = Convert.ToInt32(Encoding.UTF8.GetString(Convert.FromBase64String(elements[i+1])));
                 ArchiveCount.Add(originalURL, count);
             }
             return ArchiveCount;
@@ -207,14 +207,14 @@ namespace Mnemosyne_Of_Mine
             string fileWriter = "";
             foreach(KeyValuePair<string, int> keypair in ArchiveCount)
             {
-                fileWriter += keypair.Key + ';' + keypair.Value + ",";
+                fileWriter += Convert.ToBase64String(Encoding.UTF8.GetBytes(keypair.Key)) + ';' + Convert.ToBase64String(Encoding.UTF8.GetBytes(keypair.Value.ToString())) + ",";
             }
             File.WriteAllText(file, fileWriter);
         }
         void AppendArchiveTrackingFile(string originalURL, string archiveURL)
         {
-            string encodedOriginalURL = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(originalURL));
-            string encodedArchiveURL = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(archiveURL));
+            string encodedOriginalURL = Convert.ToBase64String(Encoding.UTF8.GetBytes(originalURL));
+            string encodedArchiveURL = Convert.ToBase64String(Encoding.UTF8.GetBytes(archiveURL));
             string appendStr = encodedOriginalURL + ":" + encodedArchiveURL;
             if (new FileInfo(archivesTrackerFilePath).Length > 0)
             {
