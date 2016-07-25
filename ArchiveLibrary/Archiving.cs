@@ -27,42 +27,43 @@ namespace ArchiveLibrary
             string archiveURL = null;
             HttpClientHandler handle = new HttpClientHandler();
             handle.AllowAutoRedirect = true;
-            using (var client = new HttpClient(handle))
+            bool fix = true;
+            while (fix)
             {
-                var values = new Dictionary<string, string>
+                using (var client = new HttpClient(handle))
+                {
+                    var values = new Dictionary<string, string>
                 {
                     {"url", url }
                 };
-                var content = new FormUrlEncodedContent(values);
-                serviceURL = "http://" + serviceURL + "/submit/";
-                retry:;
-                /// <summary>
-                /// This puts a request to the archive site, so yhea...
-                /// </summary>
-                var response =  await client.PostAsync(serviceURL, content);
-                archiveURL = response.RequestMessage.RequestUri.ToString();
-                /// <remarks>
-                /// Fixes the bug where archive.is returns a json file that has a url tag
-                /// </remarks>
-                if (archiveURL == "http://archive.is/submit/" && response.IsSuccessStatusCode)
-                {
-                    #region fixing it
-                    using (StringReader reader = new StringReader(response.ToString()))
+                    var content = new FormUrlEncodedContent(values);
+                    serviceURL = "http://" + serviceURL + "/submit/";
+                    retry:;
+                    /// <summary>
+                    /// This puts a request to the archive site, so yhea...
+                    /// </summary>
+                    var response = await client.PostAsync(serviceURL, content);
+                    archiveURL = response.RequestMessage.RequestUri.ToString();
+                    /// <remarks>
+                    /// Fixes the bug where archive.is returns a json file that has a url tag
+                    /// </remarks>
+                    if (archiveURL == "http://archive.is/submit/" && response.IsSuccessStatusCode)
                     {
-                        for (int i = 0; i < 3; i++)
+                        #region fixing it
+                        using (StringReader reader = new StringReader(response.ToString()))
                         {
-                            reader.ReadLine();
+                            for (int i = 0; i < 3; i++)
+                            {
+                                reader.ReadLine();
+                            }
+                            string wanted = reader.ReadLine();
+                            reader.Dispose();
+                            string[] sides = wanted.Split('=');
+                            archiveURL = sides[1];
                         }
-                        string wanted = reader.ReadLine();
-                        reader.Dispose();
-                        string[] sides = wanted.Split('=');
-                        archiveURL = sides[1];
+                        fix = false;
+                        #endregion
                     }
-                    #endregion
-                }
-                else if(!response.IsSuccessStatusCode)
-                {
-                    goto retry;
                 }
             }
             handle.Dispose();
