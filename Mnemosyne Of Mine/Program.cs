@@ -39,7 +39,7 @@ namespace Mnemosyne_Of_Mine
             Console.Title = "Mnemosyne by chugga_fan and Lord_Spoot, Archive AWAY!";
             if (!File.Exists(@".\config.xml"))
             {
-                Console.WriteLine("File doesn't exist, let's setup a config file");
+                Console.WriteLine("Config file doesn't exist, let's setup a config file");
                 createNewConfig();
             }
             UserData ReleventInfo = new UserData(@".\config.xml");
@@ -59,7 +59,6 @@ namespace Mnemosyne_Of_Mine
             bool bAuthenticated = true;
             bool newMessages = false;
             #region password and OAuth
-
             if (ReleventInfo.Password == "Y")
             {
                 Console.WriteLine("Type in your password");

@@ -123,7 +123,7 @@ namespace Mnemosyne_Of_Mine
             AppendArchiveTrackingFile(originalURL, archiveURL);*/
         }
 
-        //TODO: all the things
+        //TODO: Add these
         public int GetArchiveCount(string url)
         {
             return ArchiveCount[url];

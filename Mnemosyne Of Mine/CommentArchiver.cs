@@ -144,6 +144,15 @@ namespace Mnemosyne_Of_Mine
                             }
                             bEditGood = true;
                         }
+                        else if(head[head.Length - 1].StartsWith("* **Post")) // POST
+                        {
+                            newCommentText += "\n\n----\nArchives for links in comments: \n\n";
+                            foreach (string str in ArchivesToInsert)
+                            {
+                                newCommentText += str;
+                            }
+                            bEditGood = true;
+                        }
                         else
                         {
                             throw new Exception($"Unexpected end of head: {head[head.Length - 1]}"); // more appropriate, as that's not supposed to happen
