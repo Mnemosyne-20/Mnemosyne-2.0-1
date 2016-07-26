@@ -22,9 +22,12 @@
 	<Fragment>
 		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
 			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
-      <Component Id="ProductComponent">
-        <File Source="$(var.MyApplication.TargetPath)" />
+      <!--<Component Id="ProductComponent">
+        <File Source="../Mnemosyne Of" />
       </Component>
+    <Component>
+      <File Source="" />
+    </Component> -->
 		</ComponentGroup>
 	</Fragment>
 </Wix>
