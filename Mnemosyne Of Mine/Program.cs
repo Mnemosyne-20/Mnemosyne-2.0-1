@@ -115,7 +115,7 @@ namespace Mnemosyne_Of_Mine
                         {
                             break;
                         }
-                        if (exclude.IsMatch(post.Url.ToString()))
+                        if (new Regex("(archive.today|archive.is|youtube.com|youtu.be|webcache.googleusercontent.com|web.archive.org)").IsMatch(post.Url.ToString()))
                         {
                             continue;
                         }
