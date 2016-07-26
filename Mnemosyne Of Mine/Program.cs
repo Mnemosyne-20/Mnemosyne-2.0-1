@@ -94,7 +94,7 @@ namespace Mnemosyne_Of_Mine
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
             bool isMnemosyneThereAlready = false; // ignore visual studio complaining about this
 #pragma warning restore CS0219 // Variable is assigned but its value is never used
-            bool bDoPostArchiving = false; // temp off switch for archiving self posts themselves
+            bool bDoPostArchiving = true; // temp off switch for archiving self posts themselves
             #region postChecking
             while (true)
             {
@@ -160,7 +160,7 @@ namespace Mnemosyne_Of_Mine
                                 }
                                 if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
                                 {
-                                    ArchiveLinks.Add($"* **Post** {archiveURL}\n");
+                                    ArchiveLinks.Add($"* **Post due to 0001 not working currently** {archiveURL}\n");
                                 }
                             }
                             List<string> FoundLinks = LinkFinder.FindLinks(post.SelfTextHtml);
