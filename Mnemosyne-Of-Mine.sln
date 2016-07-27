@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Installer.bat = Installer.bat
 		..\hugh_000\nuget.exe = ..\hugh_000\nuget.exe
 		Readme.md = Readme.md
+		Startup.sh = Startup.sh
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchiveLibrary", "ArchiveLibrary\ArchiveLibrary.csproj", "{1C8EA747-89C2-4F4B-A3B5-D65041ECF3FC}"
