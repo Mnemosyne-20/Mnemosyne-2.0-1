@@ -37,15 +37,15 @@ namespace Mnemosyne_Of_Mine
         {
             bool readyToDeploy = true;
             Console.Title = "Mnemosyne by chugga_fan and Lord_Spoot, Archive AWAY!";
-            if (!File.Exists(@".\config.xml"))
+            if (!File.Exists(@"./config.xml"))
             {
                 Console.WriteLine("Config file doesn't exist, let's setup a config file");
                 createNewConfig();
             }
-            UserData ReleventInfo = new UserData(@".\config.xml");
+            UserData ReleventInfo = new UserData(@"./config.xml");
             createFiles();
             IBotStateTracker BotState = null;
-            if (!ReleventInfo.SQLite)
+            if (true)
             {
                 BotState = new FlatFileBotStateTracker();
             }
@@ -55,6 +55,7 @@ namespace Mnemosyne_Of_Mine
             }
             Reddit reddit;
             AuthProvider OAuthProvider;
+			WebAgent RedditWebAgent = new WebAgent ();
             string OAuthToken = "";
             bool bAuthenticated = true;
             bool newMessages = false;
@@ -67,9 +68,12 @@ namespace Mnemosyne_Of_Mine
             }
             if (ReleventInfo.bUseOAuth)
             {
-                OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI);
-                OAuthToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
-                reddit = new Reddit(OAuthToken);
+				OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI, RedditWebAgent);
+				RedditWebAgent.AccessToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
+				Console.WriteLine("OAuth Token: " + RedditWebAgent.AccessToken);
+				reddit = new Reddit(RedditWebAgent);
+				WebAgent.RootDomain = "oauth.reddit.com";
+				reddit.InitOrUpdateUser();
             }
             else
             {
@@ -238,11 +242,11 @@ namespace Mnemosyne_Of_Mine
                 }
                 catch (ArchiveLibrary.FailureToArchiveException ex)
                 {
-                    File.AppendAllText(@".\Failed.txt", ex.Message + '\n');
+                    File.AppendAllText(@"./Failed.txt", ex.Message + '\n');
                 }
                 catch (Exception e)
                 {
-                    File.AppendAllText(@".\Errors.txt", $"Error: {e.Message}\n{e}");
+                    File.AppendAllText(@"./Errors.txt", $"Error: {e.Message}\n{e}");
                 }
                 #endregion
 #if REPOSTCHECK
@@ -258,21 +262,21 @@ namespace Mnemosyne_Of_Mine
         /// </summary>
         static void createFiles()
         {
-            if (!File.Exists(@".\ReplyTracker.txt"))
+            if (!File.Exists(@"./ReplyTracker.txt"))
             {
-                File.Create(@".\ReplyTracker.txt").Dispose();
+                File.Create(@"./ReplyTracker.txt").Dispose();
             }
-            if (!File.Exists(@".\Failed.txt"))
+            if (!File.Exists(@"./Failed.txt"))
             {
-                File.Create(@".\Failed.txt").Dispose();
+                File.Create(@"./Failed.txt").Dispose();
             }
-            if (!File.Exists(@".\Comments_Seen.txt")) // this might end up being an absolutely terrible idea. //  I've got 300 gbs of storage space and can get a lot of decomissioned but not degaussed hardrives, it's fine
+            if (!File.Exists(@"./Comments_Seen.txt")) // this might end up being an absolutely terrible idea. //  I've got 300 gbs of storage space and can get a lot of decomissioned but not degaussed hardrives, it's fine
             {
-                File.Create(@".\Comments_Seen.txt").Dispose();
+                File.Create(@"./Comments_Seen.txt").Dispose();
             }
-            if(!File.Exists(@".\ArchiveCount.txt"))
+            if(!File.Exists(@"./ArchiveCount.txt"))
             {
-                File.Create(@".\ArchiveCount.txt").Dispose();
+                File.Create(@"./ArchiveCount.txt").Dispose();
             }
         }
         /// <summary>

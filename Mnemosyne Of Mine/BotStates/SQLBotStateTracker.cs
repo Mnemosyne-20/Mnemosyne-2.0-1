@@ -15,14 +15,14 @@ namespace Mnemosyne_Of_Mine
         public SQLBotStateTracker(string filename = "botstate.sqlite")
         {
             DatabaseFilename = filename;
-            if (!File.Exists($".\\{DatabaseFilename}"))
+            if (!File.Exists($"./{DatabaseFilename}"))
             {
-                SQLiteConnection.CreateFile($".\\{DatabaseFilename}");
+                SQLiteConnection.CreateFile($"./{DatabaseFilename}");
             }
 
             string assemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             AppDomain.CurrentDomain.SetData("DataDirectory", assemblyPath);
-            dbConnection = new SQLiteConnection($"Data Source=|DataDirectory|\\{DatabaseFilename};Version=3;");
+            dbConnection = new SQLiteConnection($"Data Source=|DataDirectory|/{DatabaseFilename};Version=3;");
             dbConnection.Open();
             InitializeDatabase();
             InitializeCommands();
