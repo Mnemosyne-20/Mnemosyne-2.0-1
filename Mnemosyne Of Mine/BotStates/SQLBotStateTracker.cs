@@ -6,6 +6,7 @@ namespace Mnemosyne_Of_Mine
 {
     public class SQLBotStateTracker : IBotStateTracker
     {
+        bool isMono;
         string DatabaseFilename;
         SQLiteConnection dbConnection;
 
@@ -14,6 +15,7 @@ namespace Mnemosyne_Of_Mine
 
         public SQLBotStateTracker(string filename = "botstate.sqlite")
         {
+            isMono = Type.GetType("Mono.Runtime") != null;
             DatabaseFilename = filename;
             if (!File.Exists($".\\{DatabaseFilename}"))
             {
