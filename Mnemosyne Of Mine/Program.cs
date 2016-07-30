@@ -45,7 +45,7 @@ namespace Mnemosyne_Of_Mine
             UserData ReleventInfo = new UserData(@"./config.xml");
             createFiles();
             IBotStateTracker BotState = null;
-            if (true)
+            if (false)
             {
                 BotState = new FlatFileBotStateTracker();
             }
@@ -68,12 +68,12 @@ namespace Mnemosyne_Of_Mine
             }
             if (ReleventInfo.bUseOAuth)
             {
-				OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI, RedditWebAgent);
-				RedditWebAgent.AccessToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
-				Console.WriteLine("OAuth Token: " + RedditWebAgent.AccessToken);
-				reddit = new Reddit(RedditWebAgent);
-				WebAgent.RootDomain = "oauth.reddit.com";
-				reddit.InitOrUpdateUser();
+                OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI, RedditWebAgent);
+                RedditWebAgent.AccessToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
+                Console.WriteLine("OAuth Token: " + RedditWebAgent.AccessToken);
+                reddit = new Reddit(RedditWebAgent);
+                WebAgent.RootDomain = "oauth.reddit.com";
+                reddit.InitOrUpdateUser();
             }
             else
             {
