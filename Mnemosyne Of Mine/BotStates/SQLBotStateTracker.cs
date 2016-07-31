@@ -179,7 +179,7 @@ namespace Mnemosyne_Of_Mine
             SQLCmd_GetArchivesCount = new SQLiteCommand("select numArchives from archives where originalURL = @url", dbConnection);
             SQLCmd_GetArchivesCount.Parameters.Add(new SQLiteParameter("@url"));
 
-            SQLCmd_SetArchivesCount = new SQLiteCommand("insert or replace into archives (originalURL, numArchives", dbConnection);
+            SQLCmd_SetArchivesCount = new SQLiteCommand("insert or replace into archives (originalURL, numArchives) values (@url, @numArchives)", dbConnection);
             SQLCmd_SetArchivesCount.Parameters.Add(new SQLiteParameter("@url"));
             SQLCmd_SetArchivesCount.Parameters.Add(new SQLiteParameter("@numArchives"));
         }
