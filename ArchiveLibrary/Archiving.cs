@@ -43,7 +43,7 @@ namespace ArchiveLibrary
                 /// <remarks>
                 /// Fixes the bug where archive.is returns a json file that has a url tag
                 /// </remarks>
-                if (archiveURL == "http://archive.is/submit/" && response.IsSuccessStatusCode)
+                if (archiveURL == "http://archive.is/submit/" && !response.IsSuccessStatusCode)
                 {
                     #region fixing it
                     using (StringReader reader = new StringReader(response.ToString()))
