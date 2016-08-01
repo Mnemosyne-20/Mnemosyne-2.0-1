@@ -17,14 +17,14 @@ namespace Mnemosyne_Of_Mine
         {
             isMono = Type.GetType("Mono.Runtime") != null;
             DatabaseFilename = filename;
-            if (!File.Exists($".\\{DatabaseFilename}"))
+            if (!File.Exists(DatabaseFilename))
             {
-                SQLiteConnection.CreateFile($".\\{DatabaseFilename}");
+                SQLiteConnection.CreateFile(DatabaseFilename);
             }
 
             string assemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             AppDomain.CurrentDomain.SetData("DataDirectory", assemblyPath);
-            dbConnection = new SQLiteConnection($"Data Source=|DataDirectory|\\{DatabaseFilename};Version=3;");
+            dbConnection = new SQLiteConnection($"Data Source=|DataDirectory|/{DatabaseFilename};Version=3;");
             dbConnection.Open();
             InitializeDatabase();
             InitializeCommands();
@@ -122,8 +122,8 @@ namespace Mnemosyne_Of_Mine
 
         public int GetArchiveCount(string url)
         {
-            SQLCmd_GetArchivesCount.Parameters[@"url"].Value = url;
-            return (int)(SQLCmd_GetArchivesCount.ExecuteScalar() ?? 0);
+            SQLCmd_GetArchivesCount.Parameters["@url"].Value = url;
+            return Convert.ToInt32(SQLCmd_GetArchivesCount.ExecuteScalar() ?? 0);
         }
 
         public void AddArchiveCount(string url)
@@ -181,7 +181,7 @@ namespace Mnemosyne_Of_Mine
             SQLCmd_GetArchivesCount = new SQLiteCommand("select numArchives from archives where originalURL = @url", dbConnection);
             SQLCmd_GetArchivesCount.Parameters.Add(new SQLiteParameter("@url"));
 
-            SQLCmd_SetArchivesCount = new SQLiteCommand("insert or replace into archives (originalURL, numArchives", dbConnection);
+            SQLCmd_SetArchivesCount = new SQLiteCommand("insert or replace into archives (originalURL, numArchives) values (@url, @numArchives)", dbConnection);
             SQLCmd_SetArchivesCount.Parameters.Add(new SQLiteParameter("@url"));
             SQLCmd_SetArchivesCount.Parameters.Add(new SQLiteParameter("@numArchives"));
         }

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Xml;
+﻿using System.Xml;
 namespace Mnemosyne_Of_Mine
 {
     internal class UserData
@@ -11,50 +10,25 @@ namespace Mnemosyne_Of_Mine
         /// <param name="helper">There to allow you to convert</param>
         public UserData(string path)
         {
-            var readers = new StringReader(File.ReadAllText(path));
-            using (XmlReader reader = XmlReader.Create(readers))
+            XmlDocument configXML = new XmlDocument();
+            configXML.PreserveWhitespace = true;
+            configXML.Load(path);
+
+            SubReddit = TryGetElementValue(configXML, "subreddit", "");
+            ReqLimit = TryGetElementValue(configXML, "ReqLimit", 30);
+            SleepTime = TryGetElementValue(configXML, "SleepTime", 5);
+            bUseOAuth = TryGetElementValue(configXML, "UseOAuth", false);
+            if(bUseOAuth)
             {
-                reader.ReadToFollowing("Settings");
-                if (reader.HasAttributes)
-                {
-                    ReadNewData(reader);
-                }
-                reader.ReadToFollowing("subreddit");
-                SubReddit = reader.ReadElementContentAsString();
-                reader.ReadToFollowing("ReqLimit");
-                ReqLimit = int.Parse(reader.ReadElementContentAsString());
-                reader.ReadToFollowing("SleepTime");
-                SleepTime = reader.ReadElementContentAsInt();
-                reader.ReadToFollowing("UseOAuth");
-                bUseOAuth = reader.ReadElementContentAsBoolean();
-                if (bUseOAuth)
-                {
-                    reader.ReadToFollowing("OAuthClientID");
-                    OAuthClientID = reader.ReadElementContentAsString();
-                    reader.ReadToFollowing("OAuthClientSecret");
-                    OAuthClientSecret = reader.ReadElementContentAsString();
-                    reader.ReadToFollowing("RedirectURI");
-                    RedirectURI = reader.ReadElementContentAsString();
-                }
-                reader.ReadToFollowing("Username");
-                Username = reader.ReadElementContentAsString();
-                try
-                {
-                    reader.ReadToFollowing("Password");
-                    Password = reader.ReadElementContentAsString();
-                    reader.ReadToFollowing("flavortext");
-                    FlavorText = reader.ReadElementContentAsString().Split('\"'); // split by a " because commas
-                    reader.ReadToFollowing("Repost");
-                    Repost = reader.ReadElementContentAsString();
-                    reader.ReadToFollowing("SQLite");
-                    SQLite = bool.Parse(reader.GetAttribute(0));
-
-                }
-                catch
-                {
-
-                }
+                OAuthClientID = TryGetElementValue(configXML, "OAuthClientID", "");
+                OAuthClientSecret = TryGetElementValue(configXML, "OAuthClientSecret", "");
+                RedirectURI = TryGetElementValue(configXML, "RedirectURI", "");
             }
+            Username = TryGetElementValue(configXML, "Username", "");
+            Password = TryGetElementValue(configXML, "Password", "");
+            FlavorText = TryGetElementValue(configXML, "flavortext", "Sample Text").Split('\"');
+            Repost = TryGetElementValue(configXML, "Repost", "");
+            SQLite = TryGetElementValue(configXML, "UseSQLite", false);
         }
         /// <summary>
         /// Will read the new data
@@ -79,5 +53,46 @@ namespace Mnemosyne_Of_Mine
         public string SubReddit { get; private set; }
         public string Repost { get; private set; }
         public bool SQLite { get; private set; }
+
+        private string TryGetElementValue(XmlDocument doc, string elementID, string defaultValue)
+        {
+            string r = defaultValue;
+            XmlNode element = doc.DocumentElement.SelectSingleNode(elementID);
+            if(element != null)
+            {
+                r = element.InnerText;
+            }
+            return r;
+        }
+
+        private int TryGetElementValue(XmlDocument doc, string elementID, int defaultValue)
+        {
+            int r = defaultValue;
+            XmlNode element = doc.DocumentElement.SelectSingleNode(elementID);
+            if(element != null)
+            {
+                int i;
+                if(int.TryParse(element.InnerText, out i))
+                {
+                    r = i;
+                }
+            }
+            return r;
+        }
+
+        private bool TryGetElementValue(XmlDocument doc, string elementID, bool defaultValue)
+        {
+            bool r = defaultValue;
+            XmlNode element = doc.DocumentElement.SelectSingleNode(elementID);
+            if(element != null)
+            {
+                bool b;
+                if(bool.TryParse(element.InnerText, out b))
+                {
+                    r = b;
+                }
+            }
+            return r;
+        }
     }
 }
