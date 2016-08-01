@@ -17,7 +17,7 @@ namespace Mnemosyne_Of_Mine
         static Dictionary<string, string> Archives = new Dictionary<string, string>();
         static Dictionary<string, int> ArchiveCount = new Dictionary<string, int>(); // added for later, this is how the flatfile will see how much it's been done
 
-        public FlatFileBotStateTracker(string replyFile = @"./ReplyTracker.txt", string commentFile = @"./Comments_Seen.txt", string archivesFile = @"./ArchiveTracker.txt", string archiveCountFile = @"./ArchiveCount.txt")
+        public FlatFileBotStateTracker(string replyFile = "ReplyTracker.txt", string commentFile = "Comments_Seen.txt", string archivesFile = "ArchiveTracker.txt", string archiveCountFile = "ArchiveCount.txt")
         {
             replyTrackerFilePath = replyFile;
             checkedCommentsFilePath = commentFile;
