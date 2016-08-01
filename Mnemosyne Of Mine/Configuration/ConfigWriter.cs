@@ -13,7 +13,7 @@ namespace Mnemosyne_Of_Mine
         internal static void writeConfig(XmlWriterSettings settings)
         {
             XmlWriter writer = null;
-            using (writer = XmlWriter.Create(@"./config.xml", settings)) //this should be obvious
+            using (writer = XmlWriter.Create("config.xml", settings)) //this should be obvious
             {
                 #region writers
                 writer.WriteStartDocument();
