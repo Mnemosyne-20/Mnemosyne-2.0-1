@@ -45,7 +45,7 @@ namespace Mnemosyne_Of_Mine
             UserData ReleventInfo = new UserData("config.xml");
             createFiles();
             IBotStateTracker BotState = null;
-            if (false)
+            if (!ReleventInfo.SQLite)
             {
                 BotState = new FlatFileBotStateTracker();
             }
