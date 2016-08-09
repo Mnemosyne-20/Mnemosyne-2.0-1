@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Mnemosyne_Of_Mine
 {
-    public class SQLBotStateTracker : IBotStateTracker
+    public class SQLBotStateTracker : IBotStateTracker, IDisposable
     {
         bool isMono;
         string DatabaseFilename;
@@ -184,6 +184,21 @@ namespace Mnemosyne_Of_Mine
             SQLCmd_SetArchivesCount = new SQLiteCommand("insert or replace into archives (originalURL, numArchives) values (@url, @numArchives)", dbConnection);
             SQLCmd_SetArchivesCount.Parameters.Add(new SQLiteParameter("@url"));
             SQLCmd_SetArchivesCount.Parameters.Add(new SQLiteParameter("@numArchives"));
+        }
+
+        public void Dispose()
+        {
+            dbConnection.Dispose();
+            SQLCmd_AddArchive.Dispose();
+            SQLCmd_AddBotComment.Dispose();
+            SQLCmd_AddCheckedComment.Dispose();
+            SQLCmd_DoesBotCommentExist.Dispose();
+            SQLCmd_GetArchive.Dispose();
+            SQLCmd_GetArchivesCount.Dispose();
+            SQLCmd_GetBotComment.Dispose();
+            SQLCmd_HasCommentBeenChecked.Dispose();
+            SQLCmd_IsURLArchived.Dispose();
+            SQLCmd_SetArchivesCount.Dispose();
         }
     }
 }

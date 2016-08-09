@@ -146,6 +146,11 @@ namespace Mnemosyne_Of_Mine
                             if (bDoPostArchiving)
                             {
                                 string archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString()).Result;
+
+                                if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
+                                {
+                                    ArchiveLinks.Add($"* **Post due to 0001 not working currently** {archiveURL}\n");
+                                }
                                 if (readyToDeploy)
                                 {
                                     if (!exclude.IsMatch(post.Url.ToString()))
@@ -153,22 +158,19 @@ namespace Mnemosyne_Of_Mine
                                         BotState.AddArchiveCount(post.Url.ToString());
                                     }
                                 }
-                                if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
-                                {
-                                    ArchiveLinks.Add($"* **Post due to 0001 not working currently** {archiveURL}\n");
-                                }
                             }
                             List<string> FoundLinks = LinkFinder.FindLinks(post.SelfTextHtml);
                             if (FoundLinks.Count >= 1)
                             {
-                                    if (readyToDeploy)
-                                    {
-                                        foreach (var link in FoundLinks) { if (!exclude.IsMatch(link)) BotState.AddArchiveCount(link); }
-                                    }
-                                    ArchiveLinks.AddRange(ArchivePostLinks(FoundLinks, exclude));
+                                ArchiveLinks.AddRange(ArchivePostLinks(FoundLinks, exclude));
+                                if (readyToDeploy)
+                                {
+                                    foreach (var link in FoundLinks) { if (!exclude.IsMatch(link)) BotState.AddArchiveCount(link); }
+                                }
                             }
                             if (ArchiveLinks.Count >= 1)
                             {
+
                                 CommentArchiver.PostArchiveLinks(ReleventInfo, BotState, d_head, post, ArchiveLinks);
                             }
                         }
@@ -185,11 +187,11 @@ namespace Mnemosyne_Of_Mine
                         List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
                         if (FoundLinks.Count >= 1 && !BotState.HasCommentBeenChecked(comment.Id))
                         {
+                            CommentArchiver.ArchiveCommentLinks(ReleventInfo, BotState, reddit, comment, FoundLinks);
                             if (readyToDeploy)
                             {
                                 foreach (var link in FoundLinks) { if (!exclude.IsMatch(link)) BotState.AddArchiveCount(link); }
                             }
-                            CommentArchiver.ArchiveCommentLinks(ReleventInfo, BotState, reddit, comment, FoundLinks);
                         }
                     }
                     Console.Title = $"waiting for next batch from {sub.Name} New messages: {newMessages}";
@@ -226,7 +228,7 @@ namespace Mnemosyne_Of_Mine
                     {
                         if (ReleventInfo.bUseOAuth)
                         {
-                            OAuthToken = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI).GetOAuthToken(ReleventInfo.Username,ReleventInfo.Password);
+                            OAuthToken = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI).GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
                             reddit = new Reddit(OAuthToken);
                         }
 
