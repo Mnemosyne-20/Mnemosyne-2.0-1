@@ -228,7 +228,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExportToCSV.cs" />
+    <Compile Include="CSVhandling.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="BotStates\FlatFileBotStateTracker.cs" />
     <Compile Include="CommentArchiver.cs" />
