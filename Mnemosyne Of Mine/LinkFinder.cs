@@ -18,9 +18,7 @@ namespace Mnemosyne_Of_Mine
             {
                 string foundlink = match.Value.TrimStart('"').TrimEnd('"');
                 if (!LinksList.Contains(foundlink))
-                {
                     LinksList.Add(foundlink);
-                }
                 match = match.NextMatch();
             }
             return LinksList;

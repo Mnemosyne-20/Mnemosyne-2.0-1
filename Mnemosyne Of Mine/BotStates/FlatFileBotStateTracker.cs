@@ -222,5 +222,10 @@ namespace Mnemosyne_Of_Mine
             }
             File.AppendAllText(archivesTrackerFilePath, appendStr);
         }
+
+        public Dictionary<string, int> GetArchiveCountDict()
+        {
+            return ArchiveCount;
+        }
     }
 }

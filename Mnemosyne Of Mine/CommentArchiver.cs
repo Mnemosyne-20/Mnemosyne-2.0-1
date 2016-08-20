@@ -130,27 +130,21 @@ namespace Mnemosyne_Of_Mine
                         if (head[head.Length - 1].StartsWith("* **By")) // a comment
                         {
                             foreach (string str in ArchivesToInsert)
-                            {
                                 newCommentText += "\n" + str;
-                            }
                             bEditGood = true;
                         }
                         else if (head[head.Length - 1].StartsWith("* **Link")) // links in a post
                         {
                             newCommentText += "\n\n----\nArchives for links in comments: \n\n";
                             foreach (string str in ArchivesToInsert)
-                            {
                                 newCommentText += str;
-                            }
                             bEditGood = true;
                         }
                         else if(head[head.Length - 1].StartsWith("* **Post")) // POST
                         {
                             newCommentText += "\n\n----\nArchives for links in comments: \n\n";
                             foreach (string str in ArchivesToInsert)
-                            {
                                 newCommentText += str;
-                            }
                             bEditGood = true;
                         }
                         else

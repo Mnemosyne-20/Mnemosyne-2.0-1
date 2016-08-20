@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
 
@@ -6,6 +7,7 @@ namespace Mnemosyne_Of_Mine
 {
     public class SQLBotStateTracker : IBotStateTracker, IDisposable
     {
+        
         bool isMono;
         string DatabaseFilename;
         SQLiteConnection dbConnection;
@@ -199,6 +201,11 @@ namespace Mnemosyne_Of_Mine
             SQLCmd_HasCommentBeenChecked.Dispose();
             SQLCmd_IsURLArchived.Dispose();
             SQLCmd_SetArchivesCount.Dispose();
+        }
+
+        public Dictionary<string, int> GetArchiveCountDict()
+        {
+            throw new NotImplementedException();
         }
     }
 }

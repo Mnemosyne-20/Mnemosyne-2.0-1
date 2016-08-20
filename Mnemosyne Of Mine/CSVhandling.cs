@@ -16,11 +16,12 @@ namespace Mnemosyne_Of_Mine
             }
             File.WriteAllText($"./{name}", csv.ToString());
         }
-        public static void ExportDay(Dictionary<string, int> archiveCount)
+        public static Dictionary<string, int> ExportDay(Dictionary<string, int> archiveCount)
         {
             DateTime time = DateTime.Now.AddDays(-1);
             string name = $"./{time.Year}-{time.DayOfYear}ArchiveCount.csv";
             ExportCSV(archiveCount, name);
+            return archiveCount;
         }
         public static Dictionary<string, int> ExportMonth(Dictionary<string, int> archiveCount)
         {
@@ -61,14 +62,19 @@ namespace Mnemosyne_Of_Mine
             ExportCSV(temp, name);
             return temp;
         }
-        static Dictionary<string, int> Top10(Dictionary<string, int> ArchiveCount)
+        /// <summary>
+        /// Top10, should be sorted by high -> low
+        /// </summary>
+        /// <param name="ArchiveCount">Whatchu' think?</param>
+        /// <returns></returns>
+        public static SortedDictionary<int, string> Top10(Dictionary<string, int> ArchiveCount)
         {
             KeyValuePair<string, int> max = new KeyValuePair<string, int>();
-            Dictionary<string, int> Top10 = new Dictionary<string, int>();
+            SortedDictionary<int, string> Top10 = new SortedDictionary<int, string>();
             for(int i = 0; i < 10; i++)
             {
                 max = ArchiveCount.Aggregate((l, r) => l.Value > r.Value ? l : r);
-                Top10.Add(max.Key, max.Value);
+                Top10.Add(max.Value, max.Key);
                 ArchiveCount.Remove(max.Key);
             }
             return Top10;

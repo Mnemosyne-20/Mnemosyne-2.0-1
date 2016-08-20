@@ -23,12 +23,8 @@ namespace Mnemosyne_Of_Mine
             double perMatch = 0;
             string[] h = "difference between girls and guys code programs".Split(' ');
             foreach (var word in h)
-            {
                 if (post.Title.Contains(word))
-                {
                     perMatch++;
-                }
-            }
             return (post.Title.Split(' ').Length / perMatch) / 10;
         }
 

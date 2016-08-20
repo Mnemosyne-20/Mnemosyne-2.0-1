@@ -18,5 +18,6 @@ namespace Mnemosyne_Of_Mine
         void AddArchiveForURL(string originalURL, string archiveURL);
         int GetArchiveCount(string url);
         void AddArchiveCount(string url);
+        Dictionary<string, int> GetArchiveCountDict();
     }
 }
