@@ -27,7 +27,7 @@ namespace Mnemosyne_Of_Mine
         };
         #region constants
         internal static string top10Head = "Top 10 most archived URLs of the {0} are: \n\n {1} \n\n ---- \n\n [Contribute](https://github.com/chuggafan/Mnemosyne-2.0-1) [Website](https://mnemosyne-20.github.io/Mnemosyne-2.0-1/)";
-        internal static Regex exclude = new Regex(@"(gyazo.com|sli.mg|imgur.com|youtube.com|archive.today|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be|wiki/rules|politics_feedback_results_and_where_it_goes_from)");
+        internal static Regex exclude = new Regex(@"(gyazo.com|sli.mg|imgur.com|youtube.com|archive.today|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be|wiki/rules|politics_feedback_results_and_where_it_goes_from|archive.li)");
         internal static string d_head = "Archives for links in this post: \n\n";
         internal static string p_head = "Archive for this post: \n\n";
         internal static string c_head = "Archives for links in comments: \n\n";
@@ -83,7 +83,7 @@ namespace Mnemosyne_Of_Mine
             Subreddit chugga_fan = reddit.GetSubreddit("/r/chugga_fan");
             Subreddit sub = reddit.GetSubreddit(ReleventInfo.SubReddit); // TODO: handle exceptions when reddit is under heavy load and fecal matter hits the rotary impeller
             Subreddit repostSub;                                         // LOL AT THIS ^
-            if (string.IsNullOrEmpty(ReleventInfo.Repost))
+            if (!string.IsNullOrEmpty(ReleventInfo.Repost))
                 repostSub = reddit.GetSubreddit(ReleventInfo.Repost);
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
             bool isMnemosyneThereAlready = false; // ignore visual studio complaining about this
@@ -102,7 +102,7 @@ namespace Mnemosyne_Of_Mine
                         Console.Title = $"Finding posts in {sub.Name}";
                         if (BotState.DoesBotCommentExist(post.Id))
                             break;
-                        if (new Regex("(archive.today|archive.is|youtube.com|youtu.be|webcache.googleusercontent.com|web.archive.org)").IsMatch(post.Url.ToString()))
+                        if (new Regex("(archive.today|archive.is|youtube.com|youtu.be|webcache.googleusercontent.com|web.archive.org|archive.li)").IsMatch(post.Url.ToString()))
                             continue;
                         foreach (var comment in post.Comments)
                         {
@@ -264,9 +264,18 @@ namespace Mnemosyne_Of_Mine
             }
             return ArchiveLinks;
         }
-        static void PostTop10()
+        static void PostTop10(SortedDictionary<int, string> top10, int level)
         {
-
+            Reddit reddit = new Reddit();
+            Subreddit postSub = reddit.GetSubreddit("/r/chugga_fan");
+            string top10Header = "Here are the top 10 archived links for this {0}:\n\n";
+            string top10Body = "{0}: {1} {2}\n\n";
+            string temp = top10Header;
+            int i = 0;
+            foreach(var keypair in top10)
+            {
+                temp += string.Format(top10Body, i++, keypair.Key, keypair.Value);
+            }
         }
     }
 }
