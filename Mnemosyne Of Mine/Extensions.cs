@@ -27,6 +27,18 @@ namespace Mnemosyne_Of_Mine
                     perMatch++;
             return (post.Title.Split(' ').Length / perMatch) / 10;
         }
-
+        static string[] types = new string[] { "*", "^", "~~", "[", "]" };
+        static string[] replacement = new string[] { "\\*", "\\^", "\\~~", "\\[", "\\]" };
+        internal static string DeMarkup(this string str)
+        {
+            for(int i = 0; i < types.Length; i++)
+            {
+                if(str.Contains(types[i]))
+                {
+                    str.Replace(types[i], replacement[i]);
+                }
+            }
+            return str;
+        }
     }
 }

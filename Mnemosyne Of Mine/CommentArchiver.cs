@@ -47,7 +47,7 @@ namespace Mnemosyne_Of_Mine
                     string archiveURL = Archiving.Archive(@"archive.is", link).Result;
                     if (Archiving.VerifyArchiveResult(link, archiveURL))
                     {
-                        ArchivedLinks.Add($"* **By [{comment.Author}]({commentLink})** ([{hostname}]({link})): {archiveURL}\n");
+                        ArchivedLinks.Add($"* **By [{comment.Author.DeMarkup()}]({commentLink})** ([{hostname}]({link})): {archiveURL}\n");
                     }
                 }
             }
