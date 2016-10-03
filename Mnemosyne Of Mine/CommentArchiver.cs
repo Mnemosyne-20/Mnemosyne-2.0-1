@@ -39,7 +39,7 @@ namespace Mnemosyne_Of_Mine
             foreach (string link in FoundLinks)
             {
                 // foreach already handles empty collection case
-                if (!Program.exclude.IsMatch(link))
+                if (!Program.exclude.IsMatch(link) && !new Regex(Program.image_Regex).IsMatch(link))
                 {
                     Console.WriteLine($"Found {link} in comment {commentID}");
                     string hostname = new Uri(link).Host.Replace("www.", "");
