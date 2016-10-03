@@ -29,13 +29,14 @@ namespace Mnemosyne_Of_Mine
         };
         #region constants
         internal static string top10Head = "Top 10 most archived URLs of the {0} are: \n\n {1} \n\n ---- \n\n [Contribute](https://github.com/chuggafan/Mnemosyne-2.0-1) [Website](https://mnemosyne-20.github.io/Mnemosyne-2.0-1/)";
-        internal static Regex exclude = new Regex(@"(gyazo.com|sli.mg|archive.fo|imgur.com|reddit.com/message/compose/|youtube.com|archive.today|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be|wiki/rules|politics_feedback_results_and_where_it_goes_from|archive.li|archive.org)");
+        internal static Regex exclude = new Regex(@"(gyazo.com|sli.mg|archive.fo|imgur.com|reddit.com/message/compose/|youtube.com|archive.today|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be|wiki/rules|politics_feedback_results_and_where_it_goes_from|archive.li|archive.org|urbandictionary.com)");
         internal static string d_head = "Archives for links in this post: \n\n";
         internal static string p_head = "Archive for this post: \n\n";
         internal static string c_head = "Archives for links in comments: \n\n";
         internal static string footer = "----\nI am Mnemosyne 2.0, ";
         internal static string botsrights = "^^^^/r/botsrights ^^^^[Contribute](https://github.com/chuggafan/Mnemosyne-2.0-1) ^^^^[Website](https://mnemosyne-20.github.io/Mnemosyne-2.0-1/)";
         static bool readyToDeploy = false;
+        internal static string image_Regex = @"(\.gif|\.jpg|\.png)$";
         #endregion
 
         static void Main(string[] args)
@@ -104,7 +105,7 @@ namespace Mnemosyne_Of_Mine
                         Console.Title = $"Finding posts in {sub.Name}";
                         if (BotState.DoesBotCommentExist(post.Id))
                             break;
-                        if (new Regex("(archive.today|archive.is|archive.fo|youtube.com|youtu.be|webcache.googleusercontent.com|web.archive.org|archive.li)").IsMatch(post.Url.ToString()))
+                        if (new Regex("(archive.today|archive.is|archive.fo|youtube.com|youtu.be|webcache.googleusercontent.com|web.archive.org|archive.li)").IsMatch(post.Url.ToString()) || new Regex(image_Regex).IsMatch(post.Url.ToString()))
                             continue;
                         foreach (var comment in post.Comments)
                         {
