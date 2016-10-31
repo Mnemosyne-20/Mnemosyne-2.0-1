@@ -2,7 +2,7 @@
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-
+using System.Threading;
 namespace ArchiveLibrary
 {
     public class Archiving
@@ -21,7 +21,6 @@ namespace ArchiveLibrary
         /// <param name="serviceURL">Archiving service, generally archive.is</param>
         /// <param name="url">The url that we're archiving</param>
         /// <returns>the archive url</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String)")]
         public static async Task<string> Archive(string serviceURL, string url)
         {
             string archiveURL = null;
@@ -39,11 +38,12 @@ namespace ArchiveLibrary
                     {
                         {"url", url }
                     }));
+                Task.Delay(8000).Wait(); // elementary test to make it wait 8 seconds to get around, doesn't work
                 archiveURL = response.RequestMessage.RequestUri.ToString();
                 /// <remarks>
                 /// Fixes the bug where archive.is returns a json file that has a url tag
                 /// </remarks>
-                if (archiveURL == "http://archive.is/submit/" && !response.IsSuccessStatusCode)
+                if (archiveURL == $"http://{serviceURL}/submit/" && !response.IsSuccessStatusCode)
                 {
                     #region fixing it
                     using (StringReader reader = new StringReader(response.ToString()))
@@ -71,7 +71,7 @@ namespace ArchiveLibrary
         /// <returns>wether or not it succeded</returns>
         public static bool VerifyArchiveResult(string originalURL, string archiveURL)
         {
-            if (archiveURL == null || archiveURL == "http://archive.is/submit/")
+            if (archiveURL == null || archiveURL == "http://archive.is/submit/" || archiveURL == "http://archive.fo/submit/")
             {
                 throw new FailureToArchiveException($"Failed to archive: {originalURL} \n");
             }

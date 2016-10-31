@@ -1,11 +1,12 @@
-﻿using ArchiveLibrary;
-using RedditSharp;
+﻿using RedditSharp;
 using RedditSharp.Things;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace Mnemosyne_Of_Mine
@@ -29,7 +30,7 @@ namespace Mnemosyne_Of_Mine
         };
         #region constants
         internal static string top10Head = "Top 10 most archived URLs of the {0} are: \n\n {1} \n\n ---- \n\n [Contribute](https://github.com/chuggafan/Mnemosyne-2.0-1) [Website](https://mnemosyne-20.github.io/Mnemosyne-2.0-1/)";
-        internal static Regex exclude = new Regex(@"(gyazo.com|sli.mg|archive.fo|imgur.com|reddit.com/message/compose/|youtube.com|archive.today|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be|wiki/rules|politics_feedback_results_and_where_it_goes_from|archive.li|archive.org|urbandictionary.com)");
+        internal static Regex exclude = new Regex(@"(www.gobrickindustry.us|gyazo.com|sli.mg|archive.fo|imgur.com|reddit.com/message/compose/|youtube.com|archive.today|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be|wiki/rules|politics_feedback_results_and_where_it_goes_from|archive.li|archive.org|urbandictionary.com)");
         internal static string d_head = "Archives for links in this post: \n\n";
         internal static string p_head = "Archive for this post: \n\n";
         internal static string c_head = "Archives for links in comments: \n\n";
@@ -84,7 +85,18 @@ namespace Mnemosyne_Of_Mine
                 Console.WriteLine("User authentication failed");
             #endregion
             Subreddit chugga_fan = reddit.GetSubreddit("/r/chugga_fan");
+#if DEBUG2
+            List<Subreddit> subs = new List<Subreddit>();
+            Subreddit[] subreddits = new Subreddit[] { };
+            foreach (var i in ReleventInfo.SubReddits)
+            {
+                
+                subs.Add(reddit.GetSubreddit(i));
+            }
+            subreddits = subs.ToArray();
+#else
             Subreddit sub = reddit.GetSubreddit(ReleventInfo.SubReddit); // TODO: handle exceptions when reddit is under heavy load and fecal matter hits the rotary impeller
+#endif
             Subreddit repostSub;                                         // LOL AT THIS ^
             if (!string.IsNullOrEmpty(ReleventInfo.Repost))
                 repostSub = reddit.GetSubreddit(ReleventInfo.Repost);
@@ -92,9 +104,13 @@ namespace Mnemosyne_Of_Mine
             bool isMnemosyneThereAlready = false; // ignore visual studio complaining about this
 #pragma warning restore CS0219 // Variable is assigned but its value is never used
             bool bDoPostArchiving = false; // temp off switch for archiving self posts themselves
-            #region postChecking
+#region postChecking
             while (true)
             {
+#if DEBUG2
+                foreach(var sub in subreddits)
+                {
+#endif
                 DateTime today = DateTime.Now;
                 Console.Title = $"Checking sub: {sub.Name} New messages: {newMessages}";
                 try
@@ -105,7 +121,7 @@ namespace Mnemosyne_Of_Mine
                         Console.Title = $"Finding posts in {sub.Name}";
                         if (BotState.DoesBotCommentExist(post.Id))
                             break;
-                        if (new Regex("(archive.today|archive.is|archive.fo|youtube.com|youtu.be|webcache.googleusercontent.com|web.archive.org|archive.li)").IsMatch(post.Url.ToString()) || new Regex(image_Regex).IsMatch(post.Url.ToString()))
+                        if (new Regex("(www.gobrickindustry|archive.today|archive.is|archive.fo|youtube.com|youtu.be|webcache.googleusercontent.com|web.archive.org|archive.li)").IsMatch(post.Url.ToString()) || new Regex(image_Regex).IsMatch(post.Url.ToString()))
                             continue;
                         foreach (var comment in post.Comments)
                         {
@@ -130,7 +146,7 @@ namespace Mnemosyne_Of_Mine
                             {
                                 string archiveURL = Archiving.Archive(@"archive.is", post.Url.ToString()).Result;
                                 if (Archiving.VerifyArchiveResult(post.Permalink.ToString(), archiveURL))
-                                    ArchiveLinks.Add($"* **Post due to 0001 not working currently** {archiveURL}\n");
+                                    ArchiveLinks.Add($"* **Post:** {archiveURL}\n");
                                 if (!exclude.IsMatch(post.Url.ToString()))
                                     BotState.AddArchiveCount(post.Url.ToString());
                                 List<string> FoundLinks = LinkFinder.FindLinks(post.SelfTextHtml);
@@ -176,7 +192,7 @@ namespace Mnemosyne_Of_Mine
                         Console.Title = $"waiting for next batch from {sub.Name} New messages: {newMessages}";
                     }
                 }
-                #region errors
+#region errors
                 catch (System.Net.WebException) // I would prefer to find *why* this is even throwing at all // known reason it's throwing, i failed to verify account, besides, this also works to get a new token when token fails
                 {
                     try
@@ -190,7 +206,7 @@ namespace Mnemosyne_Of_Mine
                     }
                     catch { }
                 }
-                catch (FailureToArchiveException ex)
+                catch (ArchiveLibrary.FailureToArchiveException ex)
                 {
                     File.AppendAllText(@".\Failed.txt", ex.Message + '\n');
                 }
@@ -198,10 +214,13 @@ namespace Mnemosyne_Of_Mine
                 {
                     File.AppendAllText(@".\Errors.txt", $"Error: {e.Message}\n{e}");
                 }
-                #endregion
+#endregion
                 Console.Title = $"Sleeping New messages: {newMessages}";
                 System.Threading.Thread.Sleep(TimeSpan.FromSeconds(ReleventInfo.SleepTime));
-                #endregion
+#endregion
+#if DEBUG2
+                }
+#endif
             }
         }
         /// <summary>
@@ -267,6 +286,7 @@ namespace Mnemosyne_Of_Mine
             }
             return ArchiveLinks;
         }
+        [System.Diagnostics.Conditional("DEBUG2")]
         static void PostTop10(SortedDictionary<int, string> top10, int level)
         {
             Reddit reddit = new Reddit();
@@ -279,6 +299,81 @@ namespace Mnemosyne_Of_Mine
             {
                 temp += string.Format(top10Body, i++, keypair.Key, keypair.Value);
             }
+        }
+    }
+    public class Archiving
+    {
+        /// <summary>
+        /// This gets a post/comment and archives it
+        /// </summary>
+        /// <param name="postID">id for the post that you want archived</param>
+        public static async Task<string> ArchivePost(string postID, string Subreddit)
+        {
+            return await Archive(@"archive.is", $"https://www.reddit.com/r/{Subreddit}/comments/{postID}");
+        }
+        /// <summary>
+        /// Gets the url of the Archive, goddamn once this is finished i will have no idea how this works
+        /// </summary>
+        /// <param name="serviceURL">Archiving service, generally archive.is</param>
+        /// <param name="url">The url that we're archiving</param>
+        /// <returns>the archive url</returns>
+        public static async Task<string> Archive(string serviceURL, string url)
+        {
+            string archiveURL = null;
+            HttpClientHandler handle = new HttpClientHandler();
+            handle.AllowAutoRedirect = true;
+            using (var client = new HttpClient(handle))
+            {
+                serviceURL = "http://" + serviceURL + "/submit/";
+                /// <summary>
+                /// This puts a request to the archive site, so yhea...
+                /// </summary>
+                var response = await client.PostAsync(serviceURL,
+                    new FormUrlEncodedContent(
+                    new Dictionary<string, string>
+                    {
+                        {"url", url }
+                    }));
+                Task.Delay(8000).Wait();
+                string s = await response.Content.ReadAsStringAsync();
+                File.WriteAllText(".\\ErrorsFromArchive.txt", response.ToString() + "\n" + response.RequestMessage.ToString() + "\n" + $"response.Content:\n{s}\n" +  "\n" + response.ReasonPhrase + "\n" + $"RequestMessage: \n {response.RequestMessage.ToString()}");
+                archiveURL = response.RequestMessage.RequestUri.ToString();
+                /// <remarks>
+                /// Fixes the bug where archive.is returns a json file that has a url tag
+                /// </remarks>
+                if (archiveURL == $"http://{serviceURL}/submit/" && !response.IsSuccessStatusCode)
+                {
+                    #region fixing it
+                    using (StringReader reader = new StringReader(response.ToString()))
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+                            reader.ReadLine();
+                        }
+                        string wanted = reader.ReadLine();
+                        reader.Dispose();
+                        string[] sides = wanted.Split('=');
+                        archiveURL = sides[1];
+                    }
+                    #endregion
+                }
+            }
+            handle.Dispose();
+            return archiveURL;
+        }
+        /// <summary>
+        /// Making sure that we got the correct archive
+        /// </summary>
+        /// <param name="originalURL">Original URL of archive</param>
+        /// <param name="archiveURL">the url of the archive we recived</param>
+        /// <returns>wether or not it succeded</returns>
+        public static bool VerifyArchiveResult(string originalURL, string archiveURL)
+        {
+            if (archiveURL == null || archiveURL == "http://archive.is/submit/" || archiveURL == "http://archive.fo/submit/")
+            {
+                throw new ArchiveLibrary.FailureToArchiveException($"Failed to archive: {originalURL} \n");
+            }
+            return true;
         }
     }
 }

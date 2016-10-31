@@ -13,12 +13,15 @@ namespace Mnemosyne_Of_Mine
             XmlDocument configXML = new XmlDocument();
             configXML.PreserveWhitespace = true;
             configXML.Load(path);
-
+#if DEBUG2
+            SubReddits = TryGetElementValue(configXML, "subreddit", new string[1] { "" });
+#else
             SubReddit = TryGetElementValue(configXML, "subreddit", "");
+#endif
             ReqLimit = TryGetElementValue(configXML, "ReqLimit", 30);
             SleepTime = TryGetElementValue(configXML, "SleepTime", 5);
             bUseOAuth = TryGetElementValue(configXML, "UseOAuth", false);
-            if(bUseOAuth)
+            if (bUseOAuth)
             {
                 OAuthClientID = TryGetElementValue(configXML, "OAuthClientID", "");
                 OAuthClientSecret = TryGetElementValue(configXML, "OAuthClientSecret", "");
@@ -50,15 +53,28 @@ namespace Mnemosyne_Of_Mine
         public string OAuthClientID { get; private set; }
         public string OAuthClientSecret { get; private set; }
         public string RedirectURI { get; private set; }
+#if DEBUG2
+        public string[] SubReddits { get; private set; }
+#else
         public string SubReddit { get; private set; }
+#endif
         public string Repost { get; private set; }
         public bool SQLite { get; private set; }
-
+        private string[] TryGetElementValue(XmlDocument doc, string elementID, string[] defaultValue)
+        {
+            string[] r = defaultValue;
+            string s = TryGetElementValue(doc, elementID, "");
+            if (s != null)
+            {
+                r = s.Split(',');
+            }
+            return r;
+        }
         private string TryGetElementValue(XmlDocument doc, string elementID, string defaultValue)
         {
             string r = defaultValue;
             XmlNode element = doc.DocumentElement.SelectSingleNode(elementID);
-            if(element != null)
+            if (element != null)
             {
                 r = element.InnerText;
             }
@@ -69,10 +85,10 @@ namespace Mnemosyne_Of_Mine
         {
             int r = defaultValue;
             XmlNode element = doc.DocumentElement.SelectSingleNode(elementID);
-            if(element != null)
+            if (element != null)
             {
                 int i;
-                if(int.TryParse(element.InnerText, out i))
+                if (int.TryParse(element.InnerText, out i))
                 {
                     r = i;
                 }
@@ -84,10 +100,10 @@ namespace Mnemosyne_Of_Mine
         {
             bool r = defaultValue;
             XmlNode element = doc.DocumentElement.SelectSingleNode(elementID);
-            if(element != null)
+            if (element != null)
             {
                 bool b;
-                if(bool.TryParse(element.InnerText, out b))
+                if (bool.TryParse(element.InnerText, out b))
                 {
                     r = b;
                 }
