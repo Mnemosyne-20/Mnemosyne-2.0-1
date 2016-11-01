@@ -1,4 +1,5 @@
-﻿using RedditSharp;
+﻿using ArchiveLibrary;
+using RedditSharp;
 using RedditSharp.Things;
 using System;
 using System.Collections.Generic;
@@ -299,81 +300,6 @@ namespace Mnemosyne_Of_Mine
             {
                 temp += string.Format(top10Body, i++, keypair.Key, keypair.Value);
             }
-        }
-    }
-    public class Archiving
-    {
-        /// <summary>
-        /// This gets a post/comment and archives it
-        /// </summary>
-        /// <param name="postID">id for the post that you want archived</param>
-        public static async Task<string> ArchivePost(string postID, string Subreddit)
-        {
-            return await Archive(@"archive.is", $"https://www.reddit.com/r/{Subreddit}/comments/{postID}");
-        }
-        /// <summary>
-        /// Gets the url of the Archive, goddamn once this is finished i will have no idea how this works
-        /// </summary>
-        /// <param name="serviceURL">Archiving service, generally archive.is</param>
-        /// <param name="url">The url that we're archiving</param>
-        /// <returns>the archive url</returns>
-        public static async Task<string> Archive(string serviceURL, string url)
-        {
-            string archiveURL = null;
-            HttpClientHandler handle = new HttpClientHandler();
-            handle.AllowAutoRedirect = true;
-            using (var client = new HttpClient(handle))
-            {
-                serviceURL = "http://" + serviceURL + "/submit/";
-                /// <summary>
-                /// This puts a request to the archive site, so yhea...
-                /// </summary>
-                var response = await client.PostAsync(serviceURL,
-                    new FormUrlEncodedContent(
-                    new Dictionary<string, string>
-                    {
-                        {"url", url }
-                    }));
-                Task.Delay(8000).Wait();
-                string s = await response.Content.ReadAsStringAsync();
-                File.WriteAllText(".\\ErrorsFromArchive.txt", response.ToString() + "\n" + response.RequestMessage.ToString() + "\n" + $"response.Content:\n{s}\n" +  "\n" + response.ReasonPhrase + "\n" + $"RequestMessage: \n {response.RequestMessage.ToString()}");
-                archiveURL = response.RequestMessage.RequestUri.ToString();
-                /// <remarks>
-                /// Fixes the bug where archive.is returns a json file that has a url tag
-                /// </remarks>
-                if (archiveURL == $"http://{serviceURL}/submit/" && !response.IsSuccessStatusCode)
-                {
-                    #region fixing it
-                    using (StringReader reader = new StringReader(response.ToString()))
-                    {
-                        for (int i = 0; i < 3; i++)
-                        {
-                            reader.ReadLine();
-                        }
-                        string wanted = reader.ReadLine();
-                        reader.Dispose();
-                        string[] sides = wanted.Split('=');
-                        archiveURL = sides[1];
-                    }
-                    #endregion
-                }
-            }
-            handle.Dispose();
-            return archiveURL;
-        }
-        /// <summary>
-        /// Making sure that we got the correct archive
-        /// </summary>
-        /// <param name="originalURL">Original URL of archive</param>
-        /// <param name="archiveURL">the url of the archive we recived</param>
-        /// <returns>wether or not it succeded</returns>
-        public static bool VerifyArchiveResult(string originalURL, string archiveURL)
-        {
-            if (archiveURL == null || archiveURL == "http://archive.is/submit/" || archiveURL == "http://archive.fo/submit/")
-            {
-                throw new ArchiveLibrary.FailureToArchiveException($"Failed to archive: {originalURL} \n");
-            }
-            return true;
         }
     }
 }

@@ -32,12 +32,13 @@ namespace ArchiveLibrary
                 /// <summary>
                 /// This puts a request to the archive site, so yhea...
                 /// </summary>
-                var response = await client.PostAsync(serviceURL, 
-                    new FormUrlEncodedContent(
-                    new Dictionary<string, string>
-                    {
-                        {"url", url }
-                    }));
+                var request = new HttpRequestMessage(HttpMethod.Post, serviceURL);
+                request.Headers.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+                request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    {"url", url }
+                });
+                var response = await client.SendAsync(request);
                 Task.Delay(8000).Wait(); // elementary test to make it wait 8 seconds to get around, doesn't work
                 archiveURL = response.RequestMessage.RequestUri.ToString();
                 /// <remarks>
