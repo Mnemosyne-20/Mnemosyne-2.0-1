@@ -11,10 +11,12 @@ namespace Mnemosyne_Of_Mine
         /// <param name="location">location to save the file</param>
         public static void WriteNewData(string location)
         {
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.IndentChars = "\t";
-            settings.WriteEndDocumentOnClose = true;
+            XmlWriterSettings settings = new XmlWriterSettings()
+            {
+                Indent = true,
+                IndentChars = "\t",
+                WriteEndDocumentOnClose = true
+            };
             #region writer
             using (XmlWriter writer = XmlWriter.Create(location, settings))
             {

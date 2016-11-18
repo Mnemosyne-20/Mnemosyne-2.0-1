@@ -10,7 +10,7 @@ namespace Mnemosyne_Of_Mine
         /// </summary>
         /// <param name="settings">settings to write to the file with (tabs, etc)</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String)")]
-        internal static void writeConfig(XmlWriterSettings settings)
+        internal static void WriteConfig(XmlWriterSettings settings)
         {
             XmlWriter writer = null;
             using (writer = XmlWriter.Create(@".\config.xml", settings)) //this should be obvious
@@ -19,35 +19,35 @@ namespace Mnemosyne_Of_Mine
                 writer.WriteStartDocument();
                 writer.WriteStartElement("Settings");
                 Console.WriteLine("So, what is your subreddit this bot will run on?");
-                writer.makeReadable("subreddit", Console.ReadLine());
+                writer.MakeReadable("subreddit", Console.ReadLine());
                 Console.WriteLine("What do you want the request limit to be?");
-                writer.makeReadable("ReqLimit", Console.ReadLine());
+                writer.MakeReadable("ReqLimit", Console.ReadLine());
                 Console.WriteLine("What is the sleep time?");
-                writer.makeReadable("SleepTime", Console.ReadLine());
+                writer.MakeReadable("SleepTime", Console.ReadLine());
                 Console.WriteLine("Use OAuth? (Y/N)");
                 bool bUseOAuth = false;
                 if (Console.ReadLine().ToUpper() == "Y")
                 {
                     bUseOAuth = true;
                 }
-                writer.makeReadable("UseOAuth", bUseOAuth.ToString().ToLower());
+                writer.MakeReadable("UseOAuth", bUseOAuth.ToString().ToLower());
                 if (bUseOAuth)
                 {
                     Console.WriteLine("OAuth Client ID?");
-                    writer.makeReadable("OAuthClientID", Console.ReadLine());
+                    writer.MakeReadable("OAuthClientID", Console.ReadLine());
                     Console.WriteLine("OAuth Client Secret?");
-                    writer.makeReadable("OAuthClientSecret", Console.ReadLine());
+                    writer.MakeReadable("OAuthClientSecret", Console.ReadLine());
                     Console.WriteLine("Redirect URI?"); // pointless for a bot but the auth API still asks for it
-                    writer.makeReadable("RedirectURI", Console.ReadLine());
+                    writer.MakeReadable("RedirectURI", Console.ReadLine());
                 }
                 Console.WriteLine("What is your username?");
-                writer.makeReadable("Username", Console.ReadLine());
+                writer.MakeReadable("Username", Console.ReadLine());
                 Console.WriteLine("What about password? note: this is stored in plaintext, don't actually send out in a git or type Y (just \"Y\") to not use a password in the config, and require one on startup");
-                writer.makeReadable("Password", Console.ReadLine());
+                writer.MakeReadable("Password", Console.ReadLine());
                 Console.WriteLine("You have to add flavortext manually after the fact, go into the config file and seperate each flavor text with a \"");
-                writer.makeReadable("flavortext", "");
+                writer.MakeReadable("flavortext", "");
                 Console.WriteLine("Do you want to use SQLite or a normal file? true/false");
-                writer.makeReadable("UseSQLite", Console.ReadLine().ToLower());
+                writer.MakeReadable("UseSQLite", Console.ReadLine().ToLower());
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
                 writer.Flush();
@@ -60,7 +60,7 @@ namespace Mnemosyne_Of_Mine
         /// <param name="writer">the writer you're using</param>
         /// <param name="element">elemet to write</param>
         /// <param name="text">text to writer</param>
-        private static void makeReadable(this XmlWriter writer, string element, string text)
+        private static void MakeReadable(this XmlWriter writer, string element, string text)
         {
             writer.WriteStartElement(element);
             writer.WriteString(text);

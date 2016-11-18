@@ -10,8 +10,10 @@ namespace Mnemosyne_Of_Mine
         /// <param name="helper">There to allow you to convert</param>
         public UserData(string path)
         {
-            XmlDocument configXML = new XmlDocument();
-            configXML.PreserveWhitespace = true;
+            XmlDocument configXML = new XmlDocument()
+            {
+                PreserveWhitespace = true
+            };
             configXML.Load(path);
 #if DEBUG2
             SubReddits = TryGetElementValue(configXML, "subreddit", new string[1] { "" });
@@ -20,8 +22,8 @@ namespace Mnemosyne_Of_Mine
 #endif
             ReqLimit = TryGetElementValue(configXML, "ReqLimit", 30);
             SleepTime = TryGetElementValue(configXML, "SleepTime", 5);
-            bUseOAuth = TryGetElementValue(configXML, "UseOAuth", false);
-            if (bUseOAuth)
+            BUseOAuth = TryGetElementValue(configXML, "UseOAuth", false);
+            if (BUseOAuth)
             {
                 OAuthClientID = TryGetElementValue(configXML, "OAuthClientID", "");
                 OAuthClientSecret = TryGetElementValue(configXML, "OAuthClientSecret", "");
@@ -49,7 +51,7 @@ namespace Mnemosyne_Of_Mine
         public string Username { get; private set; }
         public int ReqLimit { get; private set; }
         public int SleepTime { get; private set; }
-        public bool bUseOAuth { get; private set; }
+        public bool BUseOAuth { get; private set; }
         public string OAuthClientID { get; private set; }
         public string OAuthClientSecret { get; private set; }
         public string RedirectURI { get; private set; }
@@ -87,8 +89,7 @@ namespace Mnemosyne_Of_Mine
             XmlNode element = doc.DocumentElement.SelectSingleNode(elementID);
             if (element != null)
             {
-                int i;
-                if (int.TryParse(element.InnerText, out i))
+                if (int.TryParse(element.InnerText, out int i))
                 {
                     r = i;
                 }
@@ -102,8 +103,7 @@ namespace Mnemosyne_Of_Mine
             XmlNode element = doc.DocumentElement.SelectSingleNode(elementID);
             if (element != null)
             {
-                bool b;
-                if (bool.TryParse(element.InnerText, out b))
+                if (bool.TryParse(element.InnerText, out bool b))
                 {
                     r = b;
                 }

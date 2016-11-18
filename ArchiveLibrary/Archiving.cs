@@ -7,6 +7,7 @@ namespace ArchiveLibrary
 {
     public class Archiving
     {
+#pragma warning disable IDE1006
         /// <summary>
         /// This gets a post/comment and archives it
         /// </summary>
@@ -24,8 +25,10 @@ namespace ArchiveLibrary
         public static async Task<string> Archive(string serviceURL, string url)
         {
             string archiveURL = null;
-            HttpClientHandler handle = new HttpClientHandler();
-            handle.AllowAutoRedirect = true;
+            HttpClientHandler handle = new HttpClientHandler()
+            {
+                AllowAutoRedirect = true
+            };
             using (var client = new HttpClient(handle))
             {
                 serviceURL = "http://" + serviceURL + "/submit/";
@@ -64,6 +67,7 @@ namespace ArchiveLibrary
             handle.Dispose();
             return archiveURL;
         }
+#pragma warning restore IDE1006
         /// <summary>
         /// Making sure that we got the correct archive
         /// </summary>

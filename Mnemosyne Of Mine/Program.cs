@@ -38,7 +38,7 @@ namespace Mnemosyne_Of_Mine
         internal static string footer = "----\nI am Mnemosyne 2.0, ";
         internal static string botsrights = "^^^^/r/botsrights ^^^^[Contribute](https://github.com/chuggafan/Mnemosyne-2.0-1) ^^^^[Website](https://mnemosyne-20.github.io/Mnemosyne-2.0-1/)";
         static bool readyToDeploy = false;
-        internal static string image_Regex = @"(\.gif|\.jpg|\.png)$";
+        internal static string image_Regex = @"(\.gif|\.jpg|\.png|\.pdf|\.webm)$";
         #endregion
 
         static void Main(string[] args)
@@ -48,10 +48,10 @@ namespace Mnemosyne_Of_Mine
             if (!File.Exists("./config.xml"))
             {
                 Console.WriteLine("Config file doesn't exist, let's setup a config file");
-                createNewConfig();
+                CreateNewConfig();
             }
             UserData ReleventInfo = new UserData("./config.xml");
-            createFiles();
+            CreateFiles();
             IBotStateTracker BotState = null;
             if (!ReleventInfo.SQLite)
                 BotState = new FlatFileBotStateTracker();
@@ -69,7 +69,7 @@ namespace Mnemosyne_Of_Mine
                 ReleventInfo.Password = Console.ReadLine();
                 Console.Clear();
             }
-            if (ReleventInfo.bUseOAuth)
+            if (ReleventInfo.BUseOAuth)
             {
                 OAuthProvider = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI);
                 OAuthToken = OAuthProvider.GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
@@ -78,7 +78,7 @@ namespace Mnemosyne_Of_Mine
             else
             {
                 reddit = new Reddit(WebAgent.RateLimitMode.Pace);
-                reddit.logIn(ReleventInfo);
+                reddit.LogIn(ReleventInfo);
                 reddit.InitOrUpdateUser();
             }
             bAuthenticated = (reddit.User != null);
@@ -122,7 +122,7 @@ namespace Mnemosyne_Of_Mine
                         Console.Title = $"Finding posts in {sub.Name}";
                         if (BotState.DoesBotCommentExist(post.Id))
                             break;
-                        if (new Regex("(www.gobrickindustry|archive.today|archive.is|archive.fo|youtube.com|youtu.be|webcache.googleusercontent.com|web.archive.org|archive.li)").IsMatch(post.Url.ToString()) || new Regex(image_Regex).IsMatch(post.Url.ToString()))
+                        if (new Regex("(www.gobrickindustry|archive.today|reddit.com/message/compose/|archive.is|archive.fo|youtube.com|youtu.be|webcache.googleusercontent.com|web.archive.org|archive.li)").IsMatch(post.Url.ToString().ToLower()) || new Regex(image_Regex).IsMatch(post.Url.ToString().ToLower()))
                             continue;
                         foreach (var comment in post.Comments)
                         {
@@ -198,7 +198,7 @@ namespace Mnemosyne_Of_Mine
                 {
                     try
                     {
-                        if (ReleventInfo.bUseOAuth)
+                        if (ReleventInfo.BUseOAuth)
                         {
                             OAuthToken = new AuthProvider(ReleventInfo.OAuthClientID, ReleventInfo.OAuthClientSecret, ReleventInfo.RedirectURI).GetOAuthToken(ReleventInfo.Username, ReleventInfo.Password);
                             reddit = new Reddit(OAuthToken);
@@ -227,7 +227,7 @@ namespace Mnemosyne_Of_Mine
         /// <summary>
         /// Creates our files
         /// </summary>
-        static void createFiles()
+        static void CreateFiles()
         {
             if (!File.Exists(@".\ReplyTracker.txt"))
                 File.Create(@".\ReplyTracker.txt").Dispose();
@@ -242,16 +242,18 @@ namespace Mnemosyne_Of_Mine
         /// This creates a new config file at the location of .\config.xml
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        static void createNewConfig()
+        static void CreateNewConfig()
         {
             Console.Clear();
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true; // will indent
-            settings.IndentChars = ("\t"); // tabs, because fuck spaces
-            settings.OmitXmlDeclaration = true;
+            XmlWriterSettings settings = new XmlWriterSettings()
+            {
+                Indent = true, // will indent
+                IndentChars = ("\t"), // tabs, because fuck spaces
+                OmitXmlDeclaration = true
+            };
             try
             {
-                ConfigWriter.writeConfig(settings);
+                ConfigWriter.WriteConfig(settings);
             }
             catch (Exception e)
             {

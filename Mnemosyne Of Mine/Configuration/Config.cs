@@ -14,10 +14,12 @@ namespace Mnemosyne_Of_Mine
         public static void ConvertOldToNewData(string location)
         {
             UserData data = new UserData(location);
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.IndentChars = "\t";
-            settings.WriteEndDocumentOnClose = true;
+            XmlWriterSettings settings = new XmlWriterSettings()
+            {
+                Indent = true,
+                IndentChars = "\t",
+                WriteEndDocumentOnClose = true
+            };
             using (XmlWriter writer = XmlWriter.Create(location, settings))
             {
                 writer.WriteStartDocument();
@@ -25,7 +27,7 @@ namespace Mnemosyne_Of_Mine
                 writer.WriteElementString("Username", data.Username);
                 writer.WriteAttributeString("Password", data.Password);
                 writer.WriteFullEndElement();
-                writer.WriteElementString("OAuth", data.bUseOAuth.ToString().ToLower());
+                writer.WriteElementString("OAuth", data.BUseOAuth.ToString().ToLower());
                 writer.WriteAttributeString("Secret", data.OAuthClientSecret);
                 writer.WriteAttributeString("ID", data.OAuthClientID);
                 writer.WriteAttributeString("RedirURI", data.RedirectURI);
