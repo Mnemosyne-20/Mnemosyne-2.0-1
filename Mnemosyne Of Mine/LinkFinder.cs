@@ -13,7 +13,7 @@ namespace Mnemosyne_Of_Mine
         public static List<string> FindLinks(string PostBody)
         {
             List<string> LinksList = new List<string>();
-            var match = Regex.Match(PostBody, @"""(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?""");
+            var match = Regex.Match(PostBody, @"""(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?"""); //voodoo magic of regexes, touch and you will die
             while (match.Success)
             {
                 string foundlink = match.Value.TrimStart('"').TrimEnd('"');

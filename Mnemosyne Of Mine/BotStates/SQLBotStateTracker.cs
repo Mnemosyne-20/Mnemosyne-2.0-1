@@ -11,10 +11,10 @@ namespace Mnemosyne_Of_Mine
         bool isMono;
         string DatabaseFilename;
         SQLiteConnection dbConnection;
-
+#pragma warning disable 0649
         SQLiteCommand SQLCmd_AddBotComment, SQLCmd_AddCheckedComment, SQLCmd_DoesBotCommentExist, SQLCmd_GetBotComment,
             SQLCmd_HasCommentBeenChecked, SQLCmd_IsURLArchived, SQLCmd_GetArchive, SQLCmd_AddArchive, SQLCmd_GetArchivesCount, SQLCmd_SetArchivesCount;//, SQLCmd_AddTrackingLink, SQLCmd_GetNumArchived;
-
+#pragma warning restore
         public SQLBotStateTracker(string filename = "botstate.sqlite")
         {
             isMono = Type.GetType("Mono.Runtime") != null;

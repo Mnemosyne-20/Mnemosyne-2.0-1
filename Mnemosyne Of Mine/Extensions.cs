@@ -13,20 +13,6 @@ namespace Mnemosyne_Of_Mine
         {
             reddit.LogIn(user.Username, user.Password);
         }
-        /// <summary>
-        /// % likelyhood match
-        /// </summary>
-        /// <param name="post">Post from redditsharp see <seealso cref="RedditSharp.Things.Post"/></param>
-        /// <returns>a percent match to the annoying post</returns>
-        internal static double CheckRepost(this RedditSharp.Things.Post post)
-        {
-            double perMatch = 0;
-            string[] h = "difference between girls and guys code programs".Split(' ');
-            foreach (var word in h)
-                if (post.Title.Contains(word))
-                    perMatch++;
-            return (post.Title.Split(' ').Length / perMatch) / 10;
-        }
         static string[] types = new string[] { "*", "^", "~~", "[", "]" };
         static string[] replacement = new string[] { "\\*", "\\^", "\\~~", "\\[", "\\]" };
         internal static string DeMarkup(this string str)

@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System;
 using System.Linq;
+using System.Text;
 namespace Mnemosyne_Of_Mine
 {
     internal static class CSVhandling

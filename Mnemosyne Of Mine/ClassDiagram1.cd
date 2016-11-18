@@ -3,7 +3,7 @@
   <Class Name="Mnemosyne_Of_Mine.Program" Collapsed="true">
     <Position X="17" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AgEAAAQAAAAAEBAAAAgAAACAABAAAAAAAAQBBAAAgAA=</HashCode>
+      <HashCode>EAEAAAQAAAAAFAAAAAgAAACAABACABAAAAQRBAAAgAA=</HashCode>
       <FileName>Program.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -14,14 +14,14 @@
   <Class Name="Mnemosyne_Of_Mine.ConfigWriter" Collapsed="true">
     <Position X="15.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABI=</HashCode>
       <FileName>Configuration\ConfigWriter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Mnemosyne_Of_Mine.UserData">
     <Position X="9.75" Y="1.75" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>BAAARAIgAAAAAIAQAQAAAIAAAABAEAACAAAEJAAAAAA=</HashCode>
+      <HashCode>BAAARAIgAAAAAIAQAQAAAIAAAABAEAQCAAAAJAAAAAA=</HashCode>
       <FileName>UserStorage.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -49,7 +49,7 @@
   <Class Name="Mnemosyne_Of_Mine.Extensions" Collapsed="true">
     <Position X="13.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAQAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAAAAAAABAAAAAAAQIAAAA=</HashCode>
       <FileName>Extensions.cs</FileName>
     </TypeIdentifier>
   </Class>

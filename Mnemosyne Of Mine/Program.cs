@@ -5,9 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Mnemosyne_Of_Mine
@@ -178,17 +176,11 @@ namespace Mnemosyne_Of_Mine
                             if (DateTime.Now.Day != today.Day)
                                 if (DateTime.Now.Month != today.Month)
                                     if (DateTime.Now.Year != today.Year)
-                                    {
                                         CSVhandling.Top10(CSVhandling.ExportYear(BotState.GetArchiveCountDict()));
-                                    }
                                     else
-                                    {
                                         CSVhandling.Top10(CSVhandling.ExportMonth(BotState.GetArchiveCountDict()));
-                                    }
                                 else
-                                {
                                     CSVhandling.Top10(CSVhandling.ExportDay(BotState.GetArchiveCountDict()));
-                                }
 
                         Console.Title = $"waiting for next batch from {sub.Name} New messages: {newMessages}";
                     }
@@ -207,7 +199,7 @@ namespace Mnemosyne_Of_Mine
                     }
                     catch { }
                 }
-                catch (ArchiveLibrary.FailureToArchiveException ex)
+                catch (FailureToArchiveException ex)
                 {
                     File.AppendAllText(@".\Failed.txt", ex.Message + '\n');
                 }
