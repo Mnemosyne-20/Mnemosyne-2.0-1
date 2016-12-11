@@ -1,4 +1,5 @@
 ﻿using ArchiveLibrary;
+using Newtonsoft.Json.Linq;
 using RedditSharp;
 using RedditSharp.Things;
 using System;
@@ -29,7 +30,7 @@ namespace Mnemosyne_Of_Mine
         };
         #region constants
         internal static string top10Head = "Top 10 most archived URLs of the {0} are: \n\n {1} \n\n ---- \n\n [Contribute](https://github.com/chuggafan/Mnemosyne-2.0-1) [Website](https://mnemosyne-20.github.io/Mnemosyne-2.0-1/)";
-        internal static Regex exclude = new Regex(@"(www.gobrickindustry.us|gyazo.com|sli.mg|archive.fo|imgur.com|reddit.com/message/compose/|youtube.com|archive.today|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be|wiki/rules|politics_feedback_results_and_where_it_goes_from|archive.li|archive.org|urbandictionary.com)");
+        internal static Regex exclude = new Regex(@"(streamable.com|megalodon.jp|www.gobrickindustry.us|gyazo.com|sli.mg|archive.fo|imgur.com|reddit.com/message/compose/|youtube.com|archive.today|archive.is|web.archive.org|webcache.googleusercontent.com|youtu.be|wiki/rules|politics_feedback_results_and_where_it_goes_from|archive.li|archive.org|urbandictionary.com)");
         internal static string d_head = "Archives for links in this post: \n\n";
         internal static string p_head = "Archive for this post: \n\n";
         internal static string c_head = "Archives for links in comments: \n\n";
@@ -58,8 +59,10 @@ namespace Mnemosyne_Of_Mine
             Reddit reddit;
             AuthProvider OAuthProvider;
             string OAuthToken = "";
-            bool bAuthenticated = true;
             bool newMessages = false;
+            var CaptchaSolver = new ConsoleCaptchaSolver();
+            var jsonSerializerSettings = new Newtonsoft.Json.JsonSerializerSettings { CheckAdditionalContent = false, DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Ignore };
+            WebAgent agent = new WebAgent();
             #region password and OAuth
             if (ReleventInfo.Password == "Y")
             {
@@ -79,31 +82,27 @@ namespace Mnemosyne_Of_Mine
                 reddit.LogIn(ReleventInfo);
                 reddit.InitOrUpdateUser();
             }
-            bAuthenticated = (reddit.User != null);
-            if (!bAuthenticated)
+            if (reddit.User == null)
                 Console.WriteLine("User authentication failed");
             #endregion
             Subreddit chugga_fan = reddit.GetSubreddit("/r/chugga_fan");
 #if DEBUG2
-            List<Subreddit> subs = new List<Subreddit>();
-            Subreddit[] subreddits = new Subreddit[] { };
+            List<ArchiveSub> subs = new List<ArchiveSub>();
+            ArchiveSub[] subreddits = new ArchiveSub[] { };
             foreach (var i in ReleventInfo.SubReddits)
             {
                 
-                subs.Add(reddit.GetSubreddit(i));
+                subs.Add((ArchiveSub)reddit.GetSubreddit(i));
             }
             subreddits = subs.ToArray();
 #else
-            Subreddit sub = reddit.GetSubreddit(ReleventInfo.SubReddit); // TODO: handle exceptions when reddit is under heavy load and fecal matter hits the rotary impeller
+            ArchiveSub sub = (ArchiveSub)reddit.GetSubreddit(ReleventInfo.SubReddit); // TODO: handle exceptions when reddit is under heavy load and fecal matter hits the rotary impeller
 #endif
-            Subreddit repostSub;                                         // LOL AT THIS ^
-            if (!string.IsNullOrEmpty(ReleventInfo.Repost))
-                repostSub = reddit.GetSubreddit(ReleventInfo.Repost);
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
             bool isMnemosyneThereAlready = false; // ignore visual studio complaining about this
 #pragma warning restore CS0219 // Variable is assigned but its value is never used
             bool bDoPostArchiving = false; // temp off switch for archiving self posts themselves
-#region postChecking
+            #region postChecking
             while (true)
             {
 #if DEBUG2
@@ -120,7 +119,7 @@ namespace Mnemosyne_Of_Mine
                         Console.Title = $"Finding posts in {sub.Name}";
                         if (BotState.DoesBotCommentExist(post.Id))
                             break;
-                        if (new Regex("(www.gobrickindustry|archive.today|reddit.com/message/compose/|archive.is|archive.fo|youtube.com|youtu.be|webcache.googleusercontent.com|web.archive.org|archive.li)").IsMatch(post.Url.ToString().ToLower()) || new Regex(image_Regex).IsMatch(post.Url.ToString().ToLower()))
+                        if (new Regex("(streamable.com|megalodon.jp|www.gobrickindustry|archive.today|reddit.com/message/compose/|archive.is|archive.fo|youtube.com|youtu.be|webcache.googleusercontent.com|web.archive.org|archive.li)").IsMatch(post.Url.ToString().ToLower()) || new Regex(image_Regex).IsMatch(post.Url.ToString().ToLower()))
                             continue;
                         foreach (var comment in post.Comments)
                         {
@@ -161,15 +160,18 @@ namespace Mnemosyne_Of_Mine
                         ///<summary>
                         /// grabs new comments, may need to see if we need to do changes to the ReqLimit to be able to do this, as i currently have a low one of 30
                         ///</summary>
-                        foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit))
+                        //if (sub.ArchiveComments == true)
                         {
-                            if (ArchiveBots.Contains(comment.Author) || BotState.HasCommentBeenChecked(comment.Id))
-                                continue;
-                            List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
-                            if (FoundLinks.Count >= 1 && !BotState.HasCommentBeenChecked(comment.Id))
+                            foreach (Comment comment in sub.Comments.Take(ReleventInfo.ReqLimit))
                             {
-                                CommentArchiver.ArchiveCommentLinks(ReleventInfo, BotState, reddit, comment, FoundLinks);
-                                foreach (var link in FoundLinks) if (!exclude.IsMatch(link)) BotState.AddArchiveCount(link);
+                                if (ArchiveBots.Contains(comment.Author) || BotState.HasCommentBeenChecked(comment.Id))
+                                    continue;
+                                List<string> FoundLinks = LinkFinder.FindLinks(comment.BodyHtml);
+                                if (FoundLinks.Count >= 1 && !BotState.HasCommentBeenChecked(comment.Id))
+                                {
+                                    CommentArchiver.ArchiveCommentLinks(ReleventInfo, BotState, reddit, comment, FoundLinks);
+                                    foreach (var link in FoundLinks) if (!exclude.IsMatch(link)) BotState.AddArchiveCount(link);
+                                }
                             }
                         }
                         if (readyToDeploy)
@@ -185,7 +187,7 @@ namespace Mnemosyne_Of_Mine
                         Console.Title = $"waiting for next batch from {sub.Name} New messages: {newMessages}";
                     }
                 }
-#region errors
+                #region errors
                 catch (System.Net.WebException) // I would prefer to find *why* this is even throwing at all // known reason it's throwing, i failed to verify account, besides, this also works to get a new token when token fails
                 {
                     try
@@ -207,10 +209,10 @@ namespace Mnemosyne_Of_Mine
                 {
                     File.AppendAllText(@".\Errors.txt", $"Error: {e.Message}\n{e}");
                 }
-#endregion
+                #endregion
                 Console.Title = $"Sleeping New messages: {newMessages}";
                 System.Threading.Thread.Sleep(TimeSpan.FromSeconds(ReleventInfo.SleepTime));
-#endregion
+                #endregion
 #if DEBUG2
                 }
 #endif
@@ -255,7 +257,15 @@ namespace Mnemosyne_Of_Mine
             }
         }
 
-
+        internal static T GetThing<T>(string url, Reddit reddit, WebAgent agent) where T : Thing
+        {
+            var request = agent.CreateGet(url);
+            var response = request.GetResponse();
+            var data = agent.GetResponseString(response.GetResponseStream());
+            var json = JToken.Parse(data);
+            var ret = Thing.Parse(reddit, json, agent);
+            return (T)ret;
+        }
         /// <summary>
         /// Archives all links in a post
         /// </summary>
@@ -281,7 +291,7 @@ namespace Mnemosyne_Of_Mine
             }
             return ArchiveLinks;
         }
-        [System.Diagnostics.Conditional("DEBUG2")]
+        [System.Diagnostics.Conditional("DEBUG3")]
         static void PostTop10(SortedDictionary<int, string> top10, int level)
         {
             Reddit reddit = new Reddit();
@@ -290,7 +300,7 @@ namespace Mnemosyne_Of_Mine
             string top10Body = "{0}: {1} {2}\n\n";
             string temp = top10Header;
             int i = 0;
-            foreach(var keypair in top10)
+            foreach (var keypair in top10)
             {
                 temp += string.Format(top10Body, i++, keypair.Key, keypair.Value);
             }

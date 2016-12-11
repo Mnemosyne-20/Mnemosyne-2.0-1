@@ -91,17 +91,12 @@ namespace Mnemosyne_Of_Mine
                 + Program.botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
             Comment botComment = post.Comment(c);
-            string commentID = botComment.Id;
-            if (commentID.Contains("t1_"))
-            {
-                commentID = commentID.Substring(3);
-            }
             try
             {
-                BotState.AddBotComment(post.Id, Regex.Replace(botComment.Id,"t1_",""));
+                BotState.AddBotComment(post.Id, Regex.Replace(botComment.Id, "t1_", ""));
                 Console.WriteLine(c);
             }
-            catch(InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
                 Console.WriteLine($"Caught exception replying to {post.Id} with new comment {Regex.Replace(botComment.Id, "t1_", "")}: {ex.Message}");
                 botComment.Del(); // likely will never happen but this should ensure things don't get dupey if things get dupey
@@ -140,7 +135,7 @@ namespace Mnemosyne_Of_Mine
                                 newCommentText += str;
                             bEditGood = true;
                         }
-                        else if(head[head.Length - 1].StartsWith("* **Post")) // POST
+                        else if (head[head.Length - 1].StartsWith("* **Post")) // POST
                         {
                             newCommentText += "\n\n----\nArchives for links in comments: \n\n";
                             foreach (string str in ArchivesToInsert)

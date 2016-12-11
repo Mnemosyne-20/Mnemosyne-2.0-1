@@ -23,7 +23,6 @@ namespace Mnemosyne_Of_Mine
             {
                 SQLiteConnection.CreateFile(DatabaseFilename);
             }
-
             string assemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             AppDomain.CurrentDomain.SetData("DataDirectory", assemblyPath);
             dbConnection = new SQLiteConnection($"Data Source=|DataDirectory|/{DatabaseFilename};Version=3;");

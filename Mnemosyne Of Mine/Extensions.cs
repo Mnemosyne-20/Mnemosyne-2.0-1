@@ -5,6 +5,7 @@ namespace Mnemosyne_Of_Mine
     internal static class Extensions
     {
         /// <summary>
+        /// 
         /// logs you in, simpler for the UserData method
         /// </summary>
         /// <param name="reddit">the reddit object</param>
@@ -17,9 +18,9 @@ namespace Mnemosyne_Of_Mine
         static string[] replacement = new string[] { "\\*", "\\^", "\\~~", "\\[", "\\]" };
         internal static string DeMarkup(this string str)
         {
-            for(int i = 0; i < types.Length; i++)
+            for (int i = 0; i < types.Length; i++)
             {
-                if(str.Contains(types[i]))
+                if (str.Contains(types[i]))
                 {
                     str.Replace(types[i], replacement[i]);
                 }

@@ -190,14 +190,14 @@ namespace Mnemosyne_Of_Mine
 
             return archives;
         }
-        Dictionary<string,int> ReadArchiveCountTrackingFile(string file)
+        Dictionary<string, int> ReadArchiveCountTrackingFile(string file)
         {
             string fileIn = File.ReadAllText(file);
             string[] elements = fileIn.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < elements.Length; i += 2)
             {
                 string originalURL = Encoding.UTF8.GetString(Convert.FromBase64String(elements[i]));
-                int count = Convert.ToInt32(Encoding.UTF8.GetString(Convert.FromBase64String(elements[i+1])));
+                int count = Convert.ToInt32(Encoding.UTF8.GetString(Convert.FromBase64String(elements[i + 1])));
                 ArchiveCount.Add(originalURL, count);
             }
             return ArchiveCount;
@@ -205,7 +205,7 @@ namespace Mnemosyne_Of_Mine
         void WriteArchiveCountFile(string file)
         {
             string fileWriter = "";
-            foreach(KeyValuePair<string, int> keypair in ArchiveCount)
+            foreach (KeyValuePair<string, int> keypair in ArchiveCount)
             {
                 fileWriter += Convert.ToBase64String(Encoding.UTF8.GetBytes(keypair.Key)) + ';' + Convert.ToBase64String(Encoding.UTF8.GetBytes(keypair.Value.ToString())) + ",";
             }

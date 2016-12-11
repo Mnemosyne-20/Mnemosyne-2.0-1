@@ -10,7 +10,7 @@ namespace Mnemosyne_Of_Mine
         static void ExportCSV(Dictionary<string, int> archiveCount, string name)
         {
             var csv = new StringBuilder();
-            foreach(KeyValuePair<string, int> i in archiveCount)
+            foreach (KeyValuePair<string, int> i in archiveCount)
             {
                 csv.AppendLine($"{Convert.ToBase64String(Encoding.UTF8.GetBytes(i.Key))},{Convert.ToBase64String(Encoding.UTF8.GetBytes(i.Value.ToString()))}"); // html can contain commas
             }
@@ -30,13 +30,13 @@ namespace Mnemosyne_Of_Mine
             int offset = DateTime.DaysInMonth(time.Year, time.Month);
             string name = $"./{time.Year}--{time.Month}ArchiveCount.csv";
             List<Dictionary<string, int>> imports = new List<Dictionary<string, int>>();
-            for(int i = time.DayOfYear - offset; i <= time.DayOfYear; i++)
+            for (int i = time.DayOfYear - offset; i <= time.DayOfYear; i++)
             {
                 imports.Add(ReadArchiveCountTrackingCSV($"./{time.Year}-{i}ArchiveCount.csv"));
             }
             Dictionary<string, int> temp = imports[0];
             imports.RemoveAt(0);
-            foreach(var e in imports)
+            foreach (var e in imports)
             {
                 temp = Merge(temp, e);
             }
@@ -49,13 +49,13 @@ namespace Mnemosyne_Of_Mine
             DateTime time = DateTime.Now.AddDays(-1);
             string name = $"./{time.Year}ArchiveCount.csv";
             List<Dictionary<string, int>> imports = new List<Dictionary<string, int>>();
-            for(int i = 1; i <= 12; i++)
+            for (int i = 1; i <= 12; i++)
             {
                 imports.Add(ReadArchiveCountTrackingCSV($"./{time.Year}--{i}ArchiveCount.csv"));
             }
             Dictionary<string, int> temp = imports[0];
             imports.RemoveAt(0);
-            foreach(var e in imports)
+            foreach (var e in imports)
             {
                 temp = Merge(temp, e);
             }
@@ -71,7 +71,7 @@ namespace Mnemosyne_Of_Mine
         {
             KeyValuePair<string, int> max = new KeyValuePair<string, int>();
             SortedDictionary<int, string> Top10 = new SortedDictionary<int, string>();
-            for(int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 max = ArchiveCount.Aggregate((l, r) => l.Value > r.Value ? l : r);
                 Top10.Add(max.Value, max.Key);
@@ -95,9 +95,9 @@ namespace Mnemosyne_Of_Mine
         static Dictionary<string, int> Merge(Dictionary<string, int> older, Dictionary<string, int> newer)
         {
             Dictionary<string, int> temp = new Dictionary<string, int>();
-            foreach(var e in older)
+            foreach (var e in older)
             {
-                if(newer.ContainsKey(e.Key))
+                if (newer.ContainsKey(e.Key))
                 {
                     temp.Add(e.Key, older[e.Key] + newer[e.Key]);
                 }

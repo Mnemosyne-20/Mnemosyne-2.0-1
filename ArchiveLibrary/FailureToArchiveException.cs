@@ -9,6 +9,6 @@ namespace ArchiveLibrary
     {
         public FailureToArchiveException() : base() { }
         public FailureToArchiveException(string message) : base(message) { }
-        public FailureToArchiveException(string message, Exception inner) : base(message,inner) { }
+        public FailureToArchiveException(string message, Exception inner) : base(message, inner) { }
     }
 }

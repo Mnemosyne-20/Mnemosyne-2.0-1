@@ -32,18 +32,7 @@ namespace Mnemosyne_Of_Mine
             Username = TryGetElementValue(configXML, "Username", "");
             Password = TryGetElementValue(configXML, "Password", "");
             FlavorText = TryGetElementValue(configXML, "flavortext", "Sample Text").Split('\"');
-            Repost = TryGetElementValue(configXML, "Repost", "");
             SQLite = TryGetElementValue(configXML, "UseSQLite", false);
-        }
-        /// <summary>
-        /// Will read the new data
-        /// </summary>
-        /// <param name="reader">reader from the method right above us</param>
-        /// <remarks>This really needs work done on it so it can go "production"</remarks>
-        private void ReadNewData(XmlReader reader)
-        {
-            reader.ReadToFollowing("Username");
-            Username = reader.ReadElementContentAsString();
         }
         public string Password { get; set; }
         public string OAuth { get; private set; }
@@ -60,17 +49,10 @@ namespace Mnemosyne_Of_Mine
 #else
         public string SubReddit { get; private set; }
 #endif
-        public string Repost { get; private set; }
         public bool SQLite { get; private set; }
         private string[] TryGetElementValue(XmlDocument doc, string elementID, string[] defaultValue)
         {
-            string[] r = defaultValue;
-            string s = TryGetElementValue(doc, elementID, "");
-            if (s != null)
-            {
-                r = s.Split(',');
-            }
-            return r;
+            return TryGetElementValue(doc, elementID, "").Split(',') ?? defaultValue;
         }
         private string TryGetElementValue(XmlDocument doc, string elementID, string defaultValue)
         {

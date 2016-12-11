@@ -188,7 +188,7 @@ namespace BotStateTests
         {
             IBotStateTracker botstate = new SQLBotStateTracker("10\\Test.sqlite");
             botstate.AddArchiveCount("hello");
-            if(botstate.GetArchiveCount("hello") != 1)
+            if (botstate.GetArchiveCount("hello") != 1)
                 throw new Exception("Failed to add count");
             botstate = new FlatFileBotStateTracker();
             botstate.AddArchiveCount("hello");
