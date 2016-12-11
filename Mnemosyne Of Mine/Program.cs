@@ -92,11 +92,11 @@ namespace Mnemosyne_Of_Mine
             foreach (var i in ReleventInfo.SubReddits)
             {
                 
-                subs.Add((ArchiveSub)reddit.GetSubreddit(i));
+                subs.Add(reddit.GetSubreddit(i) as ArchiveSub);
             }
             subreddits = subs.ToArray();
 #else
-            ArchiveSub sub = (ArchiveSub)reddit.GetSubreddit(ReleventInfo.SubReddit); // TODO: handle exceptions when reddit is under heavy load and fecal matter hits the rotary impeller
+            Subreddit sub = reddit.GetSubreddit(ReleventInfo.SubReddit); // TODO: handle exceptions when reddit is under heavy load and fecal matter hits the rotary impeller
 #endif
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
             bool isMnemosyneThereAlready = false; // ignore visual studio complaining about this
