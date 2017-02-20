@@ -1,5 +1,5 @@
-﻿using ArchiveLibrary;
-using Newtonsoft.Json.Linq;
+﻿#define DEBUG
+using ArchiveLibrary;
 using RedditSharp;
 using RedditSharp.Things;
 using System;
@@ -26,7 +26,8 @@ namespace Mnemosyne_Of_Mine
             "RemindMeBot",
             "thelinkfixerbot",
             "gifv-bot",
-            "autourbanbot"
+            "autourbanbot",
+            "deepsalter-001"
         };
         #region constants
         internal static string top10Head = "Top 10 most archived URLs of the {0} are: \n\n {1} \n\n ---- \n\n [Contribute](https://github.com/chuggafan/Mnemosyne-2.0-1) [Website](https://mnemosyne-20.github.io/Mnemosyne-2.0-1/)";
@@ -51,18 +52,11 @@ namespace Mnemosyne_Of_Mine
             }
             UserData ReleventInfo = new UserData("./config.xml");
             CreateFiles();
-            IBotStateTracker BotState = null;
-            if (!ReleventInfo.SQLite)
-                BotState = new FlatFileBotStateTracker();
-            else
-                BotState = new SQLBotStateTracker();
+            IBotStateTracker BotState = ReleventInfo.SQLite ? (IBotStateTracker)new SQLBotStateTracker() : new FlatFileBotStateTracker();
             Reddit reddit;
             AuthProvider OAuthProvider;
             string OAuthToken = "";
             bool newMessages = false;
-            var CaptchaSolver = new ConsoleCaptchaSolver();
-            var jsonSerializerSettings = new Newtonsoft.Json.JsonSerializerSettings { CheckAdditionalContent = false, DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Ignore };
-            WebAgent agent = new WebAgent();
             #region password and OAuth
             if (ReleventInfo.Password == "Y")
             {
@@ -91,8 +85,7 @@ namespace Mnemosyne_Of_Mine
             ArchiveSub[] subreddits = new ArchiveSub[] { };
             foreach (var i in ReleventInfo.SubReddits)
             {
-                
-                subs.Add(reddit.GetSubreddit(i) as ArchiveSub);
+                subs.Add(new ArchiveSub(reddit.GetSubreddit(i.Split('|')[0]), bool.Parse(i.Split('|')[1]), bool.Parse(i.Split('|')[2])));
             }
             subreddits = subs.ToArray();
 #else
@@ -116,11 +109,15 @@ namespace Mnemosyne_Of_Mine
                     newMessages = reddit.User.UnreadMessages.Count() >= 1;
                     foreach (var post in sub.New.Take(ReleventInfo.ReqLimit))
                     {
-                        Console.Title = $"Finding posts in {sub.Name}";
+                        Console.Title = $"Finding posts in {sub.Name} New messages: {newMessages}";
                         if (BotState.DoesBotCommentExist(post.Id))
+                        {
                             break;
+                        }
                         if (new Regex("(streamable.com|megalodon.jp|www.gobrickindustry|archive.today|reddit.com/message/compose/|archive.is|archive.fo|youtube.com|youtu.be|webcache.googleusercontent.com|web.archive.org|archive.li)").IsMatch(post.Url.ToString().ToLower()) || new Regex(image_Regex).IsMatch(post.Url.ToString().ToLower()))
+                        {
                             continue;
+                        }
                         foreach (var comment in post.Comments)
                         {
                             if (!bDoPostArchiving)
@@ -147,15 +144,19 @@ namespace Mnemosyne_Of_Mine
                                     ArchiveLinks.Add($"* **Post:** {archiveURL}\n");
                                 if (!exclude.IsMatch(post.Url.ToString()))
                                     BotState.AddArchiveCount(post.Url.ToString());
-                                List<string> FoundLinks = LinkFinder.FindLinks(post.SelfTextHtml);
-                                if (FoundLinks.Count >= 1)
-                                {
-                                    ArchiveLinks.AddRange(ArchivePostLinks(FoundLinks, exclude));
-                                    foreach (var link in FoundLinks) if (!exclude.IsMatch(link)) BotState.AddArchiveCount(link);
-                                }
-                                if (ArchiveLinks.Count >= 1)
-                                    CommentArchiver.PostArchiveLinks(ReleventInfo, BotState, d_head, post, ArchiveLinks);
                             }
+                            List<string> FoundLinks = LinkFinder.FindLinks(post.SelfTextHtml);
+                            if (FoundLinks.Count >= 1)
+                            {
+                                ArchiveLinks.AddRange(ArchivePostLinks(FoundLinks, exclude));
+                                foreach (var link in FoundLinks)
+                                {
+                                    if (!exclude.IsMatch(link))
+                                        BotState.AddArchiveCount(link);
+                                }
+                            }
+                            if (ArchiveLinks.Count >= 1)
+                                CommentArchiver.PostArchiveLinks(ReleventInfo, BotState, d_head, post, ArchiveLinks);
                         }
                         ///<summary>
                         /// grabs new comments, may need to see if we need to do changes to the ReqLimit to be able to do this, as i currently have a low one of 30
@@ -172,18 +173,38 @@ namespace Mnemosyne_Of_Mine
                                     CommentArchiver.ArchiveCommentLinks(ReleventInfo, BotState, reddit, comment, FoundLinks);
                                     foreach (var link in FoundLinks) if (!exclude.IsMatch(link)) BotState.AddArchiveCount(link);
                                 }
+                                if (comment.Body.Contains(@"¯\_(ツ)_/¯"))
+                                {
+                                    Console.Title = (@"Replying to" + comment.Id + @" for ¯\_(ツ)_ /¯");
+                                    Console.WriteLine($"Replied to {comment.Id} for shrug face");
+                                    comment.Reply(@"These are your father's backslashes
+
+    ¯\\\_(ツ)\_\/¯ 
+
+Make use of them in the future.
+
+¯\\\_(ツ)\_\/¯");
+                                    BotState.AddCheckedComment(comment.Id);
+                                }
                             }
                         }
                         if (readyToDeploy)
+                        {
                             if (DateTime.Now.Day != today.Day)
+                            {
                                 if (DateTime.Now.Month != today.Month)
+                                {
                                     if (DateTime.Now.Year != today.Year)
                                         CSVhandling.Top10(CSVhandling.ExportYear(BotState.GetArchiveCountDict()));
                                     else
                                         CSVhandling.Top10(CSVhandling.ExportMonth(BotState.GetArchiveCountDict()));
+                                }
                                 else
+                                {
                                     CSVhandling.Top10(CSVhandling.ExportDay(BotState.GetArchiveCountDict()));
-
+                                }
+                            }
+                        }
                         Console.Title = $"waiting for next batch from {sub.Name} New messages: {newMessages}";
                     }
                 }
@@ -256,16 +277,6 @@ namespace Mnemosyne_Of_Mine
                 Console.ReadKey();
             }
         }
-
-        internal static T GetThing<T>(string url, Reddit reddit, WebAgent agent) where T : Thing
-        {
-            var request = agent.CreateGet(url);
-            var response = request.GetResponse();
-            var data = agent.GetResponseString(response.GetResponseStream());
-            var json = JToken.Parse(data);
-            var ret = Thing.Parse(reddit, json, agent);
-            return (T)ret;
-        }
         /// <summary>
         /// Archives all links in a post
         /// </summary>
@@ -292,7 +303,7 @@ namespace Mnemosyne_Of_Mine
             return ArchiveLinks;
         }
         [System.Diagnostics.Conditional("DEBUG3")]
-        static void PostTop10(SortedDictionary<int, string> top10, int level)
+        static void PostTop10(Dictionary<int, string> top10, int level)
         {
             Reddit reddit = new Reddit();
             Subreddit postSub = reddit.GetSubreddit("/r/chugga_fan");

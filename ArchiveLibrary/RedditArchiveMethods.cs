@@ -7,7 +7,6 @@ namespace ArchiveLibrary
 {
     public class RedditArchiveMethods
     {
-#pragma warning disable IDE1006
         /// <summary>
         /// returns string for your archive links
         /// </summary>
@@ -33,6 +32,5 @@ namespace ArchiveLibrary
             }
             return ArchiveLinks;
         }
-#pragma warning restore
     }
 }

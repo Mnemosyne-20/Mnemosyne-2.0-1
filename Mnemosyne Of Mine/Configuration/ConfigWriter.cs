@@ -26,7 +26,7 @@ namespace Mnemosyne_Of_Mine
                 writer.MakeReadable("SleepTime", Console.ReadLine());
                 Console.WriteLine("Use OAuth? (Y/N)");
                 bool bUseOAuth = false;
-                if (Console.ReadLine().ToUpper() == "Y")
+                if (Console.ReadLine().ToUpper()[0] == 'Y')
                 {
                     bUseOAuth = true;
                 }

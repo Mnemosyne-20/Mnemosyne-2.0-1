@@ -58,14 +58,12 @@ namespace Mnemosyne_Of_Mine
                 {
                     string botCommentThingID = "t1_" + BotState.GetBotCommentForPost(postID);
                     Console.WriteLine($"Already have post in {postID}, getting comment {botCommentThingID.Substring(3)}");
-                    Comment botComment = (Comment)reddit.GetThingByFullname(botCommentThingID);
-                    EditArchiveListComment(botComment, ArchivedLinks);
+                    EditArchiveListComment((Comment)reddit.GetThingByFullname(botCommentThingID), ArchivedLinks);
                 }
                 else
                 {
                     Console.WriteLine($"No comment in {postID} to edit, making new one");
-                    Post post = (Post)reddit.GetThingByFullname(comment.LinkId);
-                    PostArchiveLinks(config, BotState, Program.c_head, post, ArchivedLinks);
+                    PostArchiveLinks(config, BotState, Program.c_head, (Post)reddit.GetThingByFullname(comment.LinkId), ArchivedLinks);
                 }
                 BotState.AddCheckedComment(commentID);
             }
@@ -87,7 +85,7 @@ namespace Mnemosyne_Of_Mine
             string c = head
                 + LinksListBody
                 + "\n" + Program.footer
-                + config.FlavorText[random.Next(0, config.FlavorText.Length - 1)]
+                + config.FlavorText[random.Next(0, config.FlavorText.Length)]
                 + Program.botsrights; //archive for a post or a discussion, archive, footer, flavortext, botsrights link
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
             Comment botComment = post.Comment(c);

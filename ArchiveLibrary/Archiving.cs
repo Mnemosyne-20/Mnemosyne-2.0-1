@@ -6,15 +6,11 @@ namespace ArchiveLibrary
 {
     public class Archiving
     {
-#pragma warning disable IDE1006
         /// <summary>
         /// This gets a post/comment and archives it
         /// </summary>
         /// <param name="postID">id for the post that you want archived</param>
-        public static async Task<string> ArchivePost(string postID, string Subreddit)
-        {
-            return await Archive(@"archive.is", $"https://www.reddit.com/r/{Subreddit}/comments/{postID}");
-        }
+        public static async Task<string> ArchivePost(string postID, string Subreddit) => await Archive(@"archive.is", $"https://www.reddit.com/r/{Subreddit}/comments/{postID}");
         /// <summary>
         /// Gets the url of the Archive, goddamn once this is finished i will have no idea how this works
         /// </summary>
@@ -66,7 +62,6 @@ namespace ArchiveLibrary
             handle.Dispose();
             return archiveURL;
         }
-#pragma warning restore IDE1006
         /// <summary>
         /// Making sure that we got the correct archive
         /// </summary>

@@ -7,11 +7,10 @@ namespace Mnemosyne_Of_Mine
 {
     public class FlatFileBotStateTracker : IBotStateTracker
     {
-        string replyTrackerFilePath;
-        string checkedCommentsFilePath;
-        string archivesTrackerFilePath;
-        string archiveCountFilePath;
-
+        public string ReplyTrackerFilePath { get; private set; }
+        public string CheckedCommentsFilePath { get; private set; }
+        public string ArchivesTrackerFilePath { get; private set; }
+        public string ArchiveCountFilePath { get; private set; }
         static Dictionary<string, string> BotComments = new Dictionary<string, string>();
         static List<string> CheckedComments = new List<string>();
         static Dictionary<string, string> Archives = new Dictionary<string, string>();
@@ -19,12 +18,12 @@ namespace Mnemosyne_Of_Mine
 
         public FlatFileBotStateTracker(string replyFile = "ReplyTracker.txt", string commentFile = "Comments_Seen.txt", string archivesFile = "ArchiveTracker.txt", string archiveCountFile = "ArchiveCount.txt")
         {
-            replyTrackerFilePath = replyFile;
-            checkedCommentsFilePath = commentFile;
-            archivesTrackerFilePath = archivesFile;
-            archiveCountFilePath = archiveCountFile;
-            BotComments = ReadReplyTrackingFile(replyTrackerFilePath);
-            CheckedComments = File.ReadAllLines(checkedCommentsFilePath).ToList();
+            ReplyTrackerFilePath = replyFile;
+            CheckedCommentsFilePath = commentFile;
+            ArchivesTrackerFilePath = archivesFile;
+            ArchiveCountFilePath = archiveCountFile;
+            BotComments = ReadReplyTrackingFile(ReplyTrackerFilePath);
+            CheckedComments = File.ReadAllLines(CheckedCommentsFilePath).ToList();
             ArchiveCount = ReadArchiveCountTrackingFile(archiveCountFile);
             //Archives = ReadArchivesTrackingFile(archivesTrackerFilePath);
         }
@@ -33,10 +32,7 @@ namespace Mnemosyne_Of_Mine
         /// Checks if bot already has a comment in specified post
         /// </summary>
         /// <param name="postID">Post ID</param>
-        public bool DoesBotCommentExist(string postID)
-        {
-            return BotComments.ContainsKey(postID);
-        }
+        public bool DoesBotCommentExist(string postID) => BotComments.ContainsKey(postID);
 
         /// <summary>
         /// Gets ID of bot's comment in specified post
@@ -61,10 +57,7 @@ namespace Mnemosyne_Of_Mine
         /// Checks if bot has already seen and parsed the specified comment
         /// </summary>
         /// <param name="commentID">Comment ID</param>
-        public bool HasCommentBeenChecked(string commentID)
-        {
-            return CheckedComments.Contains(commentID);
-        }
+        public bool HasCommentBeenChecked(string commentID) => CheckedComments.Contains(commentID);
 
         /// <summary>
         /// Add comment to bot's reply tracker
@@ -93,42 +86,37 @@ namespace Mnemosyne_Of_Mine
             if (!CheckedComments.Contains(commentID))
             {
                 CheckedComments.Add(commentID);
-                File.AppendAllText(checkedCommentsFilePath, $"{commentID}{Environment.NewLine}");
+                File.AppendAllText(CheckedCommentsFilePath, $"{commentID}{Environment.NewLine}");
             }
             else
             {
-                Console.WriteLine($"The comment {commentID} already exists in the tracking file");
+                throw new InvalidOperationException($"The comment {commentID} already exists in the tracking file");
             }
         }
-
-        public bool IsURLAlreadyArchived(string url)
-        {
-            //return Archives.ContainsKey(url);
-            return false;
-        }
-
-        public string GetArchiveForURL(string url)
-        {
-            /*if (Archives.ContainsKey(url))
-            {
-                return Archives[url];
-            }
-            else return "";*/
-            return "";
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public bool IsURLAlreadyArchived(string url) => Archives.ContainsKey(url);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public string GetArchiveForURL(string url) => IsURLAlreadyArchived(url) ? Archives[url] : "";
+        /// <summary>
+        /// FIXME REEEEEEEEEEEEEEEEEEEEE
+        /// </summary>
+        /// <param name="originalURL"></param>
+        /// <param name="archiveURL"></param>
         public void AddArchiveForURL(string originalURL, string archiveURL)
         {
             /*Archives.Add(originalURL, archiveURL);
             AppendArchiveTrackingFile(originalURL, archiveURL);*/
         }
 
-        //TODO: Add these
-        public int GetArchiveCount(string url)
-        {
-            return ArchiveCount[url];
-        }
-
+        public int GetArchiveCount(string url) => ArchiveCount[url];
         public void AddArchiveCount(string url)
         {
             if (ArchiveCount.ContainsKey(url))
@@ -139,7 +127,7 @@ namespace Mnemosyne_Of_Mine
             {
                 ArchiveCount.Add(url, 1);
             }
-            WriteArchiveCountFile(archiveCountFilePath);
+            WriteArchiveCountFile(ArchiveCountFilePath);
         }
 
         /// <summary>
@@ -169,11 +157,11 @@ namespace Mnemosyne_Of_Mine
         void AppendReplyTrackingFile(string postID, string commentID)
         {
             string appendStr = postID + ":" + commentID;
-            if (new FileInfo(replyTrackerFilePath).Length > 0)
+            if (new FileInfo(ReplyTrackerFilePath).Length > 0)
             {
                 appendStr = "," + appendStr;
             }
-            File.AppendAllText(replyTrackerFilePath, appendStr);
+            File.AppendAllText(ReplyTrackerFilePath, appendStr);
         }
 
         Dictionary<string, string> ReadArchivesTrackingFile(string file)
@@ -216,16 +204,16 @@ namespace Mnemosyne_Of_Mine
             string encodedOriginalURL = Convert.ToBase64String(Encoding.UTF8.GetBytes(originalURL));
             string encodedArchiveURL = Convert.ToBase64String(Encoding.UTF8.GetBytes(archiveURL));
             string appendStr = encodedOriginalURL + ":" + encodedArchiveURL;
-            if (new FileInfo(archivesTrackerFilePath).Length > 0)
+            if (new FileInfo(ArchivesTrackerFilePath).Length > 0)
             {
                 appendStr = "," + appendStr;
             }
-            File.AppendAllText(archivesTrackerFilePath, appendStr);
+            File.AppendAllText(ArchivesTrackerFilePath, appendStr);
         }
-
-        public Dictionary<string, int> GetArchiveCountDict()
-        {
-            return ArchiveCount;
-        }
+        /// <summary>
+        /// <see cref="Dictionary{string, int}"/>
+        /// </summary>
+        /// <returns>internally used dictionary of archive count</returns>
+        public Dictionary<string, int> GetArchiveCountDict() => ArchiveCount;
     }
 }

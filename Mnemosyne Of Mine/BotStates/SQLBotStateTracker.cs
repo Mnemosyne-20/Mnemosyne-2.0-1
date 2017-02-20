@@ -7,7 +7,7 @@ namespace Mnemosyne_Of_Mine
 {
     public class SQLBotStateTracker : IBotStateTracker, IDisposable
     {
-        
+
         bool isMono;
         string DatabaseFilename;
         SQLiteConnection dbConnection;
@@ -39,9 +39,9 @@ namespace Mnemosyne_Of_Mine
                 SQLCmd_AddBotComment.Parameters["@botReplyID"].Value = commentID;
                 SQLCmd_AddBotComment.ExecuteNonQuery();
             }
-            catch(SQLiteException ex)
+            catch (SQLiteException ex)
             {
-                if(ex.ResultCode == SQLiteErrorCode.Constraint)
+                if (ex.ResultCode == SQLiteErrorCode.Constraint)
                 {
                     throw new InvalidOperationException($"The post {postID} already exists in database");
                 }
@@ -59,7 +59,7 @@ namespace Mnemosyne_Of_Mine
                 SQLCmd_AddCheckedComment.Parameters["@commentID"].Value = commentID;
                 SQLCmd_AddCheckedComment.ExecuteNonQuery();
             }
-            catch(SQLiteException ex)
+            catch (SQLiteException ex)
             {
                 if (ex.ResultCode == SQLiteErrorCode.Constraint)
                 {
@@ -83,7 +83,7 @@ namespace Mnemosyne_Of_Mine
         {
             SQLCmd_GetBotComment.Parameters["@postID"].Value = postID;
             string botReplyID = (string)SQLCmd_GetBotComment.ExecuteScalar();
-            if(string.IsNullOrWhiteSpace(botReplyID))
+            if (string.IsNullOrWhiteSpace(botReplyID))
             {
                 throw new InvalidOperationException($"Comment ID for post {postID} is null or empty");
             }
@@ -97,7 +97,7 @@ namespace Mnemosyne_Of_Mine
             return count != 0;
         }
 
-        //TODO: yes
+        ///<remarks>TODO:FIXME</remarks>
         public bool IsURLAlreadyArchived(string url)
         {
             /*SQLCmd_IsURLArchived.Parameters["@url"].Value = url;
@@ -130,7 +130,7 @@ namespace Mnemosyne_Of_Mine
         public void AddArchiveCount(string url)
         {
             SQLCmd_SetArchivesCount.Parameters["@url"].Value = url;
-            SQLCmd_SetArchivesCount.Parameters["@numArchives"].Value = GetArchiveCount(url)+1;
+            SQLCmd_SetArchivesCount.Parameters["@numArchives"].Value = GetArchiveCount(url) + 1;
             SQLCmd_SetArchivesCount.ExecuteNonQuery();
         }
 
@@ -155,16 +155,16 @@ namespace Mnemosyne_Of_Mine
             SQLCmd_AddBotComment = new SQLiteCommand("insert or abort into replies(postID, botReplyID) values(@postID, @botReplyID)", dbConnection);
             SQLCmd_AddBotComment.Parameters.Add(new SQLiteParameter("@postID"));
             SQLCmd_AddBotComment.Parameters.Add(new SQLiteParameter("@botReplyID"));
-            
+
             SQLCmd_AddCheckedComment = new SQLiteCommand("insert or abort into comments (commentID) values (@commentID)", dbConnection);
             SQLCmd_AddCheckedComment.Parameters.Add(new SQLiteParameter("@commentID"));
-            
+
             SQLCmd_DoesBotCommentExist = new SQLiteCommand("select count(*) from replies where postID = @postID", dbConnection);
             SQLCmd_DoesBotCommentExist.Parameters.Add(new SQLiteParameter("@postID"));
-            
+
             SQLCmd_GetBotComment = new SQLiteCommand("select botReplyID from replies where postID = @postID", dbConnection);
             SQLCmd_GetBotComment.Parameters.Add(new SQLiteParameter("@postID"));
-            
+
             SQLCmd_HasCommentBeenChecked = new SQLiteCommand("select count(commentID) from comments where commentID = @commentID", dbConnection);
             SQLCmd_HasCommentBeenChecked.Parameters.Add(new SQLiteParameter("@commentID"));
 
@@ -189,6 +189,11 @@ namespace Mnemosyne_Of_Mine
 
         public void Dispose()
         {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        protected virtual void Dispose(bool f)
+        {
             dbConnection.Dispose();
             SQLCmd_AddArchive.Dispose();
             SQLCmd_AddBotComment.Dispose();
@@ -201,7 +206,6 @@ namespace Mnemosyne_Of_Mine
             SQLCmd_IsURLArchived.Dispose();
             SQLCmd_SetArchivesCount.Dispose();
         }
-
         public Dictionary<string, int> GetArchiveCountDict()
         {
             throw new NotImplementedException();

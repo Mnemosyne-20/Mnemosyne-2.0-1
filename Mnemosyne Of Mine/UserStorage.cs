@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿#define DEBUG
+using System.Xml;
 namespace Mnemosyne_Of_Mine
 {
     internal class UserData
@@ -50,18 +51,12 @@ namespace Mnemosyne_Of_Mine
         public string SubReddit { get; private set; }
 #endif
         public bool SQLite { get; private set; }
-        private string[] TryGetElementValue(XmlDocument doc, string elementID, string[] defaultValue)
-        {
-            return TryGetElementValue(doc, elementID, "").Split(',') ?? defaultValue;
-        }
+        private string[] TryGetElementValue(XmlDocument doc, string elementID, string[] defaultValue) => TryGetElementValue(doc, elementID, (string)null).Split(',') ?? defaultValue;
         private string TryGetElementValue(XmlDocument doc, string elementID, string defaultValue)
         {
             string r = defaultValue;
             XmlNode element = doc.DocumentElement.SelectSingleNode(elementID);
-            if (element != null)
-            {
-                r = element.InnerText;
-            }
+            r = element.InnerText ?? defaultValue;
             return r;
         }
 
